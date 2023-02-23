@@ -1,2 +1,40 @@
 # smORF-EP
 smORF-EP: predicting the effect of variants in small open reading frames
+
+
+- [Requirements](#requirements)
+  * [Python libraries used](#python-libraries-used)
+- [Usage](#usage)
+- [Annotations description](#annotations-description)
+- [Squence quality filters](#sequence-quality-filtes)
+
+
+
+
+
+# Requirements
+
+## Python libraries used
+
+- pandas (might require installation)
+- re (might require installation)
+- datetime
+- os
+- sys
+- time 
+
+
+# Usage 
+
+
+
+# Annotations description
+
+
+
+# Sequence quality filters
+
+- 3nt periodicity
+- multiple stops
+- last sequence trio is a STOP codon
+- start/end not within an intron (from known transcripts)
