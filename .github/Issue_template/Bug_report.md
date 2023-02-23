@@ -1,4 +1,4 @@
-# Bug Report or unexpected behavior
+# Report bug or unexpected behavior
 
 
 ### System: 
