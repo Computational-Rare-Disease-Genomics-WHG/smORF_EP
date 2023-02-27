@@ -24,6 +24,12 @@ smORF-EP: predicting the effect of variants in small open reading frames
 - time 
 
 
+## Files download and decompression
+
+To obtain the reference genome and transcript information we used *wget* and for decompression we used *gzip*. 
+The scripts provided are using those, and pre-installation is required
+
+
 # Usage 
 
 
