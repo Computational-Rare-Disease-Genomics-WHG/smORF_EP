@@ -10,10 +10,12 @@ import time
 
 start_time = time.time()
 
+## change filename and output for different names
+##filename = 'GCF_000001405.39_GRCh38.p13_genomic.fna'
+##output = '_GRCh38.p13_genomic.fna'
 
-
-filename = 'GCF_000001405.39_GRCh38.p13_genomic.fna'
-output = '_GRCh38.p13_genomic.fna'
+filename = sys.argv[1]
+output = sys.argv[2]
 
 
 f = open(filename, 'r')
