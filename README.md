@@ -29,9 +29,12 @@ smORF-EP: predicting the effect of variants in small open reading frames
 To obtain the reference genome and transcript information we used *wget* and for decompression we used *gzip*. 
 The scripts provided are using those, and pre-installation is required
 
+# Installation
 
-# Usage 
+pip install smORF-EP
 
+
+# Runnng smORF-EP
 
 
 # Annotations description
