@@ -259,7 +259,7 @@ def tool(ref_sequence, transcript_info, introns_df, start, end, strand, ref, alt
         if prot_cons == 'missense_variant':
             return 'missense_variant', 0, prot_cons, change_prot
         elif prot_cons == 'synonymous_variant':
-            return 'SNV', 0, prot_cons, change_prot
+            return 'synonymous_variant', 0, prot_cons, change_prot
 
         ## ------- end of sequence with introns check  -------------
 
@@ -425,6 +425,6 @@ def tool(ref_sequence, transcript_info, introns_df, start, end, strand, ref, alt
         if prot_cons == 'missense_variant':
             return 'missense_variant', 0, prot_cons, change_prot
         elif prot_cons == 'synonymous_variant':
-            return 'SNV', 0, prot_cons, change_prot
+            return 'synonymous_variant', 0, prot_cons, change_prot
 
      
