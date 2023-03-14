@@ -13,7 +13,7 @@ wget -P ref_genome/ https://ftp.ncbi.nlm.nih.gov/genomes/refseq/vertebrate_mamma
 gzip -d ref_genome/GCF_000001405.39_GRCh38.p13_genomic.fna.gz
 
 ## 4- Split reference per chromosome
-python ref_per_chr.py GCF_000001405.39_GRCh38.p13_genomic.fna _GRCh38.p13_genomic.fna
+python3 ref_per_chr.py GCF_000001405.39_GRCh38.p13_genomic.fna _GRCh38.p13_genomic.fna
 ## Excludes 'scaffold', 'patch', 'mitochondrion' sequences 
 ## If others to exclude add condition to line 24 
 ## outputname format: chr<num>_<suffix_user_given> (line above: chr<num>_GRCh38.p13_genomic.fna)
