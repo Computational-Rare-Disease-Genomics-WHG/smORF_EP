@@ -33,7 +33,7 @@ The scripts provided are using those, and pre-installation is required.
 
 # Download human reference and GENCODE transcripts
 
-Follow the [instructions.](https://github.com/Computational-Rare-Disease-Genomics-WHG/smORF-EP/blob/main/data/Readme.md)
+Follow the [instructions.](https://github.com/Computational-Rare-Disease-Genomics-WHG/smORF-EP/blob/main/data)
 
 # Running smORF-EP
 
