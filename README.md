@@ -31,7 +31,7 @@ To obtain the reference genome and transcript information we used *wget* and for
 The scripts provided are using those, and pre-installation is required.
 
 
-# Downlaod human reference and GENCODE transcripts
+# Download human reference and GENCODE transcripts
 
 
 
