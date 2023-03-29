@@ -17,12 +17,15 @@ smORF-EP: predicting the effect of variants in small open reading frames.
 
 ## Python libraries used
 
+requirements.txt file provided with the dependencies for smORF-EP.
+
+<!-- 
 - pandas (might require installation)
 - re (might require installation)
 - datetime
 - os
 - sys
-- time 
+- time -->
 
 
 ## Files download and decompression
