@@ -857,7 +857,7 @@ def stop_transcript_search(seq, transcript_extension, map_coordinates):
 
 
         else: ## stop found within the transcript
-            ## get seqeunce index of the new stop
+            ## get sequence index of the new stop
             new_seq = extended_sequence[:new_stop_index]
             ## independent of the strand, as we work on the transcript sequence start --> stop
 
