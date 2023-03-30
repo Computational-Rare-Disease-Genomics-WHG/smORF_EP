@@ -2,8 +2,19 @@
 
 """
 Setup script for the Python package
-- Used for development setup with `pip install --editable .`
-- Parsed by conda-build to extract version and metainfo
+
+# For development setup
+pip install --editable .
+
+# To build the package
+python3 setup.py install
+
+# Installing from Github 
+pip3 install git+ssh://github.com/Computational-Rare-Disease-Genomics-WHG/smORF_EP.git
+
+# To upload to pypi using twine 
+python3 setup.py sdist bdist_wheel
+twine upload dist/*
 """
 
 import setuptools
@@ -11,7 +22,7 @@ import setuptools
 with open("requirements.txt", encoding='utf-8') as f:
     requirements = f.read().splitlines()
     setuptools.setup(
-        name='smorfep',
+        name='smorfep', # Don't change this name
         version='1.0.0',
         author='Computational Rare Disease Genomics WHG',
         description='My python project',
@@ -23,8 +34,8 @@ with open("requirements.txt", encoding='utf-8') as f:
         install_requires=requirements,
         include_package_data=True,
         zip_safe=False,
-        # Add the initall installation script her
-        scripts=['smorfep/download/compute_transcripts_GENCODE.py',    # 'smorfep/download/preProcess_gff.py' 
+        # Add the installation installation script her
+        scripts=['smorfep/download/compute_transcripts_GENCODE.py',    # 'smorfep/download/preProcess_gff.py'
                  'smorfep/download/compute_introns_GENCODE_perTransc.py',
                  'smorfep/download/ref_per_chr.py'],
         entry_points={
