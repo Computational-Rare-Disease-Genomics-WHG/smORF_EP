@@ -11,7 +11,7 @@ import sys
 import time
 import pandas as pd
 
-from functions import read_file
+from utils.functions import read_file
 
 ##print('python3 compute_introns_GENCODE.py <inputfilemane> <outputfilename_introns>')
 ##print('Example: python3 compute_introns_GENCODE.py gencode/gencode.v41.annotation_columnNames.gff3 gencode/gencode.v41.annotation_introns.tsv')
