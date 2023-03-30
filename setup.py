@@ -8,12 +8,10 @@ Setup script for the Python package
 
 import setuptools
 
-PKG = 'smORF-EP'
-
 with open("requirements.txt", encoding='utf-8') as f:
     requirements = f.read().splitlines()
     setuptools.setup(
-        name=PKG,
+        name='smorfep',
         version='1.0.0',
         author='Computational Rare Disease Genomics WHG',
         description='My python project',
@@ -25,7 +23,16 @@ with open("requirements.txt", encoding='utf-8') as f:
         install_requires=requirements,
         include_package_data=True,
         zip_safe=False,
-        scripts=['smORF_EP.py'],
+        # Add the initall installation script her
+        scripts=['smorfep/download/compute_transcripts_GENCODE.py',    # 'smorfep/download/preProcess_gff.py' 
+                 'smorfep/download/compute_introns_GENCODE_perTransc.py',
+                 'smorfep/download/ref_per_chr.py'],
+        entry_points={
+            'console_scripts': [
+                'smorfep = smorfep.run:main',
+                'smorfinit = smorfep.downloader:main'
+            ],
+        },
         keywords='bioinformatics',
         classifiers=[
             'Environment :: Console',
