@@ -54,27 +54,27 @@ def download_gencode():
     # print(now)
 
     # 1- Creates a new dir for the reference genome
-    os.makedirs('gencode', exist_ok=True)
+    os.makedirs('transcripts', exist_ok=True)
 
     # 2- Download GENCODE
     url = 'https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/gencode.v41.annotation.gff3.gz'
-    urllib.request.urlretrieve(url, 'gencode/gencode.v41.annotation.gff3.gz')
+    urllib.request.urlretrieve(url, 'transcripts/gencode.v41.annotation.gff3.gz')
 
     # 3- Uncompress reference genome and delete compressed version
-    with gzip.open('gencode/gencode.v41.annotation.gff3.gz', 'rb') as f_in:
-        with open('gencode/gencode.v41.annotation.gff3', 'wb') as f_out:
+    with gzip.open('transcripts/gencode.v41.annotation.gff3.gz', 'rb') as f_in:
+        with open('transcripts/gencode.v41.annotation.gff3', 'wb') as f_out:
             f_out.write(f_in.read())
-    os.remove('gencode/gencode.v41.annotation.gff3.gz')
+    os.remove('transcripts/gencode.v41.annotation.gff3.gz')
 
     # 4- Precomputations on genecode file
     # Pre-process gff3 file - single header
-    os.system('preProcess_gff.py gencode/gencode.v41.annotation.gff3 gencode/gencode.v41.annotation_columnNames.gff3')
+    os.system('preProcess_gff.py transcripts/gencode.v41.annotation.gff3 transcripts/gencode.v41.annotation_columnNames.gff3')
 
     # transcript coordinates (15.seconds M1 ship)
-    os.system(f'compute_transcripts_GENCODE.py gencode/gencode.v41.annotation_columnNames.gff3 gencode/gencode.v41.annotation_transcriptCoord_{now}.tsv')
+    os.system(f'compute_transcripts_GENCODE.py transcripts/gencode.v41.annotation_columnNames.gff3 transcripts/gencode.v41.annotation_transcriptCoord_{now}.tsv')
 
     # intron coordinates
-    os.system(f'compute_introns_GENCODE_perTransc.py gencode/gencode.v41.annotation_columnNames.gff3 gencode/gencode.v41.annotation_introns_{now}.tsv')
+    os.system(f'compute_introns_GENCODE_perTransc.py transcripts/gencode.v41.annotation_columnNames.gff3 transcripts/gencode.v41.annotation_introns_{now}.tsv')
 
     print("Done")
 
@@ -83,7 +83,7 @@ def main():
     """
     Main entry point
     """
-    # download_ref_genome()
+    download_ref_genome()
     download_gencode()
 
 if __name__ == '__main__':
