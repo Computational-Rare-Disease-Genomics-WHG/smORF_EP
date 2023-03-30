@@ -25,7 +25,7 @@ with open("requirements.txt", encoding='utf-8') as f:
         name='smorfep', # Don't change this name
         version='1.0.0',
         author='Computational Rare Disease Genomics WHG',
-        description='My python project',
+        description='smORF-EP tool',
         long_description=open('README.md', encoding='utf-8').read(),
         long_description_content_type='text/markdown',
         url='https://github.com/Computational-Rare-Disease-Genomics-WHG/smORF_EP',
@@ -35,7 +35,8 @@ with open("requirements.txt", encoding='utf-8') as f:
         include_package_data=True,
         zip_safe=False,
         # Add the installation installation script her
-        scripts=['smorfep/download/compute_transcripts_GENCODE.py',    # 'smorfep/download/preProcess_gff.py'
+        scripts=['smorfep/download/compute_transcripts_GENCODE.py',  
+                 'smorfep/download/preProcess_gff.py',
                  'smorfep/download/compute_introns_GENCODE_perTransc.py',
                  'smorfep/download/ref_per_chr.py'],
         entry_points={
