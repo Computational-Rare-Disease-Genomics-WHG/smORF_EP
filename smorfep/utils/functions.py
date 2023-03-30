@@ -5,7 +5,7 @@
 ## functions used by main script smORF-EP
 
 
-from utils.genetic_code import * 
+from smorfep.utils.genetic_code import * 
 from typing import List, Optional, Dict, Union
 import pandas as pd
 import re

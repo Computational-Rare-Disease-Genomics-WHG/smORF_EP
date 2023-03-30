@@ -19,23 +19,24 @@
 ## stop lost (genomic)
 
 
-
 import sys
 import os
 import time
 
-from numpy import require
-from utils.functions import *
-from utils.tool_script import *
-from os.path import exists
 import pandas as pd
-from datetime import date
 import argparse 
 
-    
+from os.path import exists
+from datetime import date
+from numpy import require
+
+from smorfep.utils.functions import *
+from smorfep.utils.tool_script import *
 
 
-def main(ref_path, transcripts_filename, introns_filename, splice_site, filename, outputname):
+
+
+def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, filename, outputname):
 
     ## 1- reads the input file
     variants_df = read_variants_file(filename, '\t', 0)
@@ -200,15 +201,11 @@ def main(ref_path, transcripts_filename, introns_filename, splice_site, filename
                 )
                 vars_cons_df = pd.concat([vars_cons_df, consequence_computed])
 
-
     ## write_the output
     vars_cons_df.to_csv(outputname, sep='\t', lineterminator='\n', index=False)
 
 
-
-
-
-if __name__ == '__main__':
+def main():
     ## day date
     today = date.today()
     default_outputname = 'output_'+today.strftime("%Y-%m-%d")+'.tsv'
@@ -253,11 +250,17 @@ if __name__ == '__main__':
         sys.exit()
 
     ## run code
-    main(args.reference_path, args.transcripts_filename, args.introns_filename, args.splice_site, args.variants_filename, args.output)
-
+    run_smorfep(args.reference_path, args.transcripts_filename,
+                args.introns_filename, args.splice_site, 
+                args.variants_filename, args.output)
 
     print('DONE!')
 
     end_time = (time.time() - start_time)#/ 60.0
 
     print(end_time, 'seconds.')
+
+
+
+if __name__ == '__main__':
+    main()
