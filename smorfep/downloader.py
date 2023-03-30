@@ -86,6 +86,9 @@ def main():
 
     ## TODO: Add arguments to download ref and transcripts to allow different versions
 
+
+    ##Add the arguments as in the run.py script
+
     ##args.reference_path, args.transcripts_filename,
     ##            args.introns_filename, args.splice_site, 
     ##            args.variants_filename, args.output
