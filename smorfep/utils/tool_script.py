@@ -5,7 +5,7 @@
 ## main tool function 
 ## Performs the variants annotation 
 
-from utils.functions import *
+from smorfep.utils.functions import *
 
 
 def tool(ref_sequence, transcript_info, introns_df, start, end, strand, ref, alt, variant_pos, splice_site=8):
