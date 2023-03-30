@@ -1,5 +1,6 @@
 
 ref_genome/
+transcripts/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
