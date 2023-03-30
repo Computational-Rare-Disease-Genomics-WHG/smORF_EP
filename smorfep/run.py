@@ -231,23 +231,26 @@ def main():
     ## takes less than 3 min
     if os.path.exists(args.introns_filename):  
         print('introns file available')
+
     else: 
-        print('Computing intron regions...')
-        os.system("python3 1-compute_introns_GENCODE_perTransc.py ../../0.data/GENCODE/gencode.v41.annotation_columnNames.gff3 gencode.v41.annotation_introns_"+ today.strftime("%Y-%m-%d") +".tsv")
-        print('done')
+        print('introns file NOT available\n')
+        print('RUN: smorfinit')
+        sys.exit(1)
+ 
 
     if os.path.exists(args.transcripts_filename):
         print('transcripts coordinates file available')
     else: 
-        print('Computing transcript coordinates...')
-        os.system("python3 1-compute_transcripts_GENCODE.py ../../0.data/GENCODE/gencode.v41.annotation_columnNames.gff3 gencode.v41.annotation_transcriptCoord_"+ today.strftime("%Y-%m-%d") +".tsv")
+        print('introns not transcript coordinates file NOT available\n')
+        print('RUN: smorfinit')
+        sys.exit(1)
 
     if len(os.listdir(args.reference_path)) == 24: ## checks if there are 24 files in the reference genome directory
-        print('reference genome sequences available')
+        print('reference genome available')
     else: 
-        print('reference genome sequences not available')
-        print('Ended')
-        sys.exit()
+        print('reference genome NOT available\n')
+        print('RUN: smorfinit')
+        sys.exit(1)
 
     ## run code
     run_smorfep(args.reference_path, args.transcripts_filename,
