@@ -83,6 +83,13 @@ def main():
     """
     Main entry point
     """
+
+    ## TODO: Add arguments to download ref and transcripts to allow different versions
+
+    ##args.reference_path, args.transcripts_filename,
+    ##            args.introns_filename, args.splice_site, 
+    ##            args.variants_filename, args.output
+
     download_ref_genome()
     download_gencode()
 
