@@ -23,24 +23,24 @@ def download_ref_genome(ref_link):
     """
     print("Downloading reference genome...")
     # 1. Creates a new dir for the reference genome
-    os.makedirs('ref_genome', exist_ok=True)
+    # os.makedirs('ref_genome', exist_ok=True)
 
-    # 2. Download reference from NCBI to the ref_genome/repository -- For GRC38.p13
-    ##url = 'https://ftp.ncbi.nlm.nih.gov/genomes/refseq/vertebrate_mammalian/Homo_sapiens/annotation_releases/109.20211119/GCF_000001405.39_GRCh38.p13/GCF_000001405.39_GRCh38.p13_genomic.fna.gz'
+    # # 2. Download reference from NCBI to the ref_genome/repository -- For GRC38.p13
+    # ##url = 'https://ftp.ncbi.nlm.nih.gov/genomes/refseq/vertebrate_mammalian/Homo_sapiens/annotation_releases/109.20211119/GCF_000001405.39_GRCh38.p13/GCF_000001405.39_GRCh38.p13_genomic.fna.gz'
     
-    ## get the filename from path (last bit): 
+    # ## get the filename from path (last bit): 
     outputname = ref_link.split('/')[-1] 
     outputname_unconpress = outputname.strip('.gz')
-    urllib.request.urlretrieve(ref_link, 'ref_genome/' + outputname)
+    # urllib.request.urlretrieve(ref_link, 'ref_genome/' + outputname)
 
-    # 3. Uncompress reference genome and delete compressed version
-    with gzip.open('ref_genome/' + outputname, 'rb') as f_in:
-        with open('ref_genome/'+ outputname_unconpress, 'wb') as f_out:
-            f_out.write(f_in.read())
-    os.remove('ref_genome/' + outputname)
+    # # 3. Uncompress reference genome and delete compressed version
+    # with gzip.open('ref_genome/' + outputname, 'rb') as f_in:
+    #     with open('ref_genome/'+ outputname_unconpress, 'wb') as f_out:
+    #         f_out.write(f_in.read())
+    # os.remove('ref_genome/' + outputname)
 
     # 4. Split reference per chromosome
-    os.system('ref_per_chr.py ref_genome/' + outputname_unconpress + ' _GRCh38.p13_genomic.fna')
+    os.system('ref_per_chr.py ref_genome/ ' + outputname_unconpress + ' _GRCh38.p13_genomic.fna')
     # Excludes 'scaffold', 'patch', 'mitochondrion' sequences 
     # If others to exclude add condition to line 24 
     # outputname format: chr<num>_<suffix_user_given> (line above: chr<num>_GRCh38.p13_genomic.fna)
