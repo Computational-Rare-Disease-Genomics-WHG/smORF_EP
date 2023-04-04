@@ -11,6 +11,7 @@ import os
 import urllib.request
 import gzip
 import datetime
+import argparse 
 
 def download_ref_genome():
     """
@@ -85,16 +86,41 @@ def main():
     """
 
     ## TODO: Add arguments to download ref and transcripts to allow different versions
-
-
+    parser = argparse.ArgumentParser(description='Script download the reference and/or the transcript information')
     ##Add the arguments as in the run.py script
 
-    ##args.reference_path, args.transcripts_filename,
-    ##            args.introns_filename, args.splice_site, 
-    ##            args.variants_filename, args.output
+    ## define arguments
+    ## arguments mutually exclusive -- ro, to, all (reference only, trancripts only, both)
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument('-ro', '--reference_only', metavar='\b', help='Run reference download', action='store_true')
+    group.add_argument('-to', '--transcripts_only', metavar='\b', help='Run transripts download', action='store_true')
+    group.add_argument('-all', help='Run reference and transcripts download', action='store_true')
 
-    download_ref_genome()
-    download_gencode()
+    ## define the mandatory other arguments deoending on the mutually excluding arguments
+    if args.r: 
+        parser.add_argument('-ref_link', required=True, type=str, help='reference genome link')
+
+    elif args.t: 
+        parser.add_argument('-transc_link', required=True, type=str, help='transcripts link')
+        
+    elif args.all: 
+        parser.add_argument('-ref_link', metavar='\b', required=True, type=str, help='reference genome link')
+        parser.add_argument('-transc_link', required=True, type=str, help='transcripts link')
+
+    args = parser.parse_args()
+
+
+    if args.r: 
+        download_ref_genome(args.ref_link)
+
+    elif args.t: 
+        download_gencode(args.transc_link)
+
+    elif args.all: 
+        download_ref_genome(args.ref_link)
+        download_gencode(args.transc_link)
+
+
 
 if __name__ == '__main__':
     main()
