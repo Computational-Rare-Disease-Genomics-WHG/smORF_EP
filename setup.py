@@ -38,7 +38,11 @@ with open("requirements.txt", encoding='utf-8') as f:
         scripts=['smorfep/download/compute_transcripts_GENCODE.py',  
                  'smorfep/download/preProcess_gff.py',
                  'smorfep/download/compute_introns_GENCODE_perTransc.py',
-                 'smorfep/download/ref_per_chr.py'],
+                 'smorfep/download/ref_per_chr.py', 
+                 'smorfep/utils/genetic_code.py',
+                 'smorfep/utils/functions.py',
+                 'smorfep/utils/tool_script.py'
+                 ],
         entry_points={
             'console_scripts': [
                 'smorfep = smorfep.run:main',
