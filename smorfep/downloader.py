@@ -8,14 +8,18 @@ Usage: smorfinit [OPTIONS]
 
 
 import os 
+import sys
 import urllib.request
 import gzip
 import datetime
 import argparse 
 
-def download_ref_genome():
+def download_ref_genome(ref_link):
     """
     Downloads the reference genome from NCBI and splits it per chromosome
+
+    Input: 
+    - ref_link: Full link for the reference file to be downloaded.
     """
     print("Downloading reference genome...")
     # 1. Creates a new dir for the reference genome
@@ -41,9 +45,12 @@ def download_ref_genome():
 
 
 
-def download_gencode():
+def download_gencode(transc_link):
     """
     Downloads Gencode
+
+    Input: 
+    -transc_link: Full link for the transcripts gff3 file (we used GENCODE)
     """
     print("Downloading transcripts...")
     # Script to obtain transcript information from GENCODE
@@ -92,28 +99,30 @@ def main():
     ## define arguments
     ## arguments mutually exclusive -- ro, to, all (reference only, trancripts only, both)
     group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument('-ro', '--reference_only', metavar='\b', help='Run reference download', action='store_true')
-    group.add_argument('-to', '--transcripts_only', metavar='\b', help='Run transripts download', action='store_true')
+    group.add_argument('-reference', help='Run reference download', action='store_true')
+    group.add_argument('-transcripts', help='Run transripts download', action='store_true')
     group.add_argument('-all', help='Run reference and transcripts download', action='store_true')
 
+
     ## define the mandatory other arguments deoending on the mutually excluding arguments
-    if args.r: 
+    if '-reference' in sys.argv: 
         parser.add_argument('-ref_link', required=True, type=str, help='reference genome link')
 
-    elif args.t: 
+    elif '-transcripts' in sys.argv: 
         parser.add_argument('-transc_link', required=True, type=str, help='transcripts link')
         
-    elif args.all: 
-        parser.add_argument('-ref_link', metavar='\b', required=True, type=str, help='reference genome link')
+    elif '-all' in sys.argv: 
+        parser.add_argument('-ref_link', required=True, type=str, help='reference genome link')
         parser.add_argument('-transc_link', required=True, type=str, help='transcripts link')
+
 
     args = parser.parse_args()
 
 
-    if args.r: 
+    if args.reference: 
         download_ref_genome(args.ref_link)
 
-    elif args.t: 
+    elif args.transcripts: 
         download_gencode(args.transc_link)
 
     elif args.all: 
