@@ -2,7 +2,7 @@
 
 ## Script to get just the main sequence for each chromosome
 
-
+## usage: ref_chr ref_genome/ filename outputname
 
 import sys
 import time
@@ -14,12 +14,13 @@ start_time = time.time()
 ##filename = 'GCF_000001405.39_GRCh38.p13_genomic.fna'
 ##output = '_GRCh38.p13_genomic.fna'
 
-filename = sys.argv[1]
-output = sys.argv[2]
+path = sys.argv[1]
+filename = sys.argv[2]
+output = sys.argv[3]
 
 
-f = open(filename, 'r')
-out = open('chr1' + output, 'w') ## used for the cycle to work
+f = open(path + filename, 'r')
+out = open(path + 'chr1' + output, 'w') ## used for the cycle to work
 
 for line in f:
     if line[0] == '>': ## header line
@@ -30,7 +31,7 @@ for line in f:
             h = True
             out.close() ## closes previous file
             c = line.split(',')[0].split(' ')[-1]
-            out = open('chr'+ c + output, 'w')
+            out = open(path + 'chr'+ c + output, 'w')
             out.write(line)
         else:
             out.close()
