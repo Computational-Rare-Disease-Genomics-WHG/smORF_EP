@@ -234,7 +234,7 @@ def main():
 
     else: 
         print('introns file NOT available\n')
-        print('RUN: smorfinit')
+        print('RUN: smorfinit -transcripts ')
         sys.exit(1)
  
 
@@ -242,14 +242,14 @@ def main():
         print('transcripts coordinates file available')
     else: 
         print('introns not transcript coordinates file NOT available\n')
-        print('RUN: smorfinit')
+        print('RUN: smorfinit - transcripts')
         sys.exit(1)
 
     if len(os.listdir(args.reference_path)) == 24: ## checks if there are 24 files in the reference genome directory
         print('reference genome available')
     else: 
         print('reference genome NOT available\n')
-        print('RUN: smorfinit')
+        print('RUN: smorfinit -reference -ref_link <link>')
         sys.exit(1)
 
     ## run code
