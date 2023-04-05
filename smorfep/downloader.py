@@ -107,21 +107,21 @@ def main():
     ## define arguments
     ## arguments mutually exclusive -- ro, to, all (reference only, trancripts only, both)
     group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument('-reference', help='Run reference download', action='store_true')
-    group.add_argument('-transcripts', help='Run transripts download', action='store_true')
-    group.add_argument('-all', help='Run reference and transcripts download', action='store_true')
+    group.add_argument('--reference', help='Run reference download', action='store_true')
+    group.add_argument('--transcripts', help='Run transripts download', action='store_true')
+    group.add_argument('--all', help='Run reference and transcripts download', action='store_true')
 
 
     ## define the mandatory other arguments deoending on the mutually excluding arguments
     if '-reference' in sys.argv: 
-        parser.add_argument('-ref_link', required=True, type=str, help='reference genome link')
+        parser.add_argument('--ref_link', required=True, type=str, help='reference genome link')
 
     elif '-transcripts' in sys.argv: 
-        parser.add_argument('-transc_link', required=True, type=str, help='transcripts link')
+        parser.add_argument('--transc_link', required=True, type=str, help='transcripts link')
         
     elif '-all' in sys.argv: 
-        parser.add_argument('-ref_link', required=True, type=str, help='reference genome link')
-        parser.add_argument('-transc_link', required=True, type=str, help='transcripts link')
+        parser.add_argument('--ref_link', required=True, type=str, help='reference genome link')
+        parser.add_argument('--transc_link', required=True, type=str, help='transcripts link')
 
 
     args = parser.parse_args()
