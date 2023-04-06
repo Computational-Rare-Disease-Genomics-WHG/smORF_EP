@@ -31,7 +31,7 @@ def download_ref_genome(ref_link):
     # ## get the filename from path (last bit): 
     outputname = ref_link.split('/')[-1] 
     outputname_unconpress = outputname.strip('.gz')
-    
+
     urllib.request.urlretrieve(ref_link, 'ref_genome/' + outputname)
 
     # # 3. Uncompress reference genome and delete compressed version
@@ -73,25 +73,28 @@ def download_gencode(transc_link):
     ##url = 'https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/gencode.v41.annotation.gff3.gz'
     outputname = transc_link.split('/')[-1] 
     outputname_unconpress = outputname.strip('.gz')
+   
 
-    urllib.request.urlretrieve(transc_link, 'transcripts/'+ outputname)
+    ##urllib.request.urlretrieve(transc_link, 'transcripts/'+ outputname)
 
     # 3- Uncompress reference genome and delete compressed version
-    with gzip.open('transcripts/' + outputname, 'rb') as f_in:
-        with open('transcripts/'+ outputname_unconpress, 'wb') as f_out:
-            f_out.write(f_in.read())
-    os.remove('transcripts/'+ outputname)
+    # with gzip.open('transcripts/' + outputname, 'rb') as f_in:
+    #     with open('transcripts/'+ outputname_unconpress, 'wb') as f_out:
+    #         f_out.write(f_in.read())
+    # os.remove('transcripts/'+ outputname)
 
     # 4- Precomputations on genecode file
     # Pre-process gff3 file - single header ## TODO: make the names 
     prefix = outputname_unconpress.strip('.gff3')
-    os.system('preProcess_gff.py transcripts/gencode.v41.annotation.gff3 transcripts/gencode.v41.annotation_columnNames.gff3')
+
+    print(outputname, outputname_unconpress, prefix)
+    ##os.system('preProcess_gff.py transcripts/gencode.v41.annotation.gff3 transcripts/gencode.v41.annotation_columnNames.gff3')
 
     # transcript coordinates (15.seconds M1 ship)
-    os.system(f'compute_transcripts_GENCODE.py transcripts/gencode.v41.annotation_columnNames.gff3 transcripts/gencode.v41.annotation_transcriptCoord_{now}.tsv')
+    #os.system(f'compute_transcripts_GENCODE.py transcripts/gencode.v41.annotation_columnNames.gff3 transcripts/gencode.v41.annotation_transcriptCoord_{now}.tsv')
 
     # intron coordinates
-    os.system(f'compute_introns_GENCODE_perTransc.py transcripts/gencode.v41.annotation_columnNames.gff3 transcripts/gencode.v41.annotation_introns_{now}.tsv')
+    #os.system(f'compute_introns_GENCODE_perTransc.py transcripts/gencode.v41.annotation_columnNames.gff3 transcripts/gencode.v41.annotation_introns_{now}.tsv')
 
     print("Done")
 
@@ -114,13 +117,13 @@ def main():
 
 
     ## define the mandatory other arguments deoending on the mutually excluding arguments
-    if '-reference' in sys.argv: 
+    if '--reference' in sys.argv: 
         parser.add_argument('--ref_link', required=True, type=str, help='reference genome link')
 
-    elif '-transcripts' in sys.argv: 
+    elif '--transcripts' in sys.argv: 
         parser.add_argument('--transc_link', required=True, type=str, help='transcripts link')
         
-    elif '-all' in sys.argv: 
+    elif '--all' in sys.argv: 
         parser.add_argument('--ref_link', required=True, type=str, help='reference genome link')
         parser.add_argument('--transc_link', required=True, type=str, help='transcripts link')
 
