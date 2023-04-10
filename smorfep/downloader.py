@@ -30,7 +30,8 @@ def download_ref_genome(ref_link):
     
     # ## get the filename from path (last bit): 
     outputname = ref_link.split('/')[-1] 
-    outputname_unconpress = outputname.strip('.gz')
+    outputname_unconpress = outputname.replace('.gz', '')
+    extension = '.' + outputname_unconpress.split('.')[-1]
 
     urllib.request.urlretrieve(ref_link, 'ref_genome/' + outputname)
 
@@ -72,7 +73,7 @@ def download_gencode(transc_link):
     # 2- Download GENCODE
     ##url = 'https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/gencode.v41.annotation.gff3.gz'
     outputname = transc_link.split('/')[-1] 
-    outputname_unconpress = outputname.strip('.gz')
+    outputname_unconpress = outputname.replace('.gz', '')
    
 
     ##urllib.request.urlretrieve(transc_link, 'transcripts/'+ outputname)
@@ -85,7 +86,7 @@ def download_gencode(transc_link):
 
     # 4- Precomputations on genecode file
     # Pre-process gff3 file - single header ## TODO: make the names 
-    prefix = outputname_unconpress.strip('.gff3')
+    prefix = outputname_unconpress.replace('.gff3', '')
 
     print(outputname, outputname_unconpress, prefix)
     ##os.system('preProcess_gff.py transcripts/gencode.v41.annotation.gff3 transcripts/gencode.v41.annotation_columnNames.gff3')
