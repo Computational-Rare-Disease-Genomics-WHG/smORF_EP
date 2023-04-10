@@ -88,14 +88,14 @@ def download_gencode(transc_link):
     # Pre-process gff3 file - single header ## TODO: make the names 
     prefix = outputname_unconpress.replace('.gff3', '')
 
-    print(outputname, outputname_unconpress, prefix)
-    ##os.system('preProcess_gff.py transcripts/gencode.v41.annotation.gff3 transcripts/gencode.v41.annotation_columnNames.gff3')
+    ##print(outputname, outputname_unconpress, prefix)
+    os.system('preProcess_gff.py transcripts/'+outputname_unconpress+' transcripts/'+prefix+'_columnNames.gff3')
 
     # transcript coordinates (15.seconds M1 ship)
-    #os.system(f'compute_transcripts_GENCODE.py transcripts/gencode.v41.annotation_columnNames.gff3 transcripts/gencode.v41.annotation_transcriptCoord_{now}.tsv')
+    os.system(f'compute_transcripts_GENCODE.py transcripts/'+prefix+'_columnNames.gff3 transcripts/'+prefix+'_transcriptCoord_{now}.tsv')
 
     # intron coordinates
-    #os.system(f'compute_introns_GENCODE_perTransc.py transcripts/gencode.v41.annotation_columnNames.gff3 transcripts/gencode.v41.annotation_introns_{now}.tsv')
+    os.system(f'compute_introns_GENCODE_perTransc.py transcripts/'+prefix+'_columnNames.gff3 transcripts/'+prefix+'_introns_{now}.tsv')
 
     print("Done")
 
