@@ -76,13 +76,13 @@ def download_gencode(transc_link):
     outputname_unconpress = outputname.replace('.gz', '')
    
 
-    ##urllib.request.urlretrieve(transc_link, 'transcripts/'+ outputname)
+    urllib.request.urlretrieve(transc_link, 'transcripts/'+ outputname)
 
     # 3- Uncompress reference genome and delete compressed version
-    # with gzip.open('transcripts/' + outputname, 'rb') as f_in:
-    #     with open('transcripts/'+ outputname_unconpress, 'wb') as f_out:
-    #         f_out.write(f_in.read())
-    # os.remove('transcripts/'+ outputname)
+    with gzip.open('transcripts/' + outputname, 'rb') as f_in:
+        with open('transcripts/'+ outputname_unconpress, 'wb') as f_out:
+            f_out.write(f_in.read())
+    os.remove('transcripts/'+ outputname)
 
     # 4- Precomputations on genecode file
     # Pre-process gff3 file - single header ## TODO: make the names 
