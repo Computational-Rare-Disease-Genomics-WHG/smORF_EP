@@ -47,6 +47,7 @@ with open("requirements.txt", encoding='utf-8') as f:
             'console_scripts': [
                 'smorfep = smorfep.run:main',
                 'smorfinit = smorfep.downloader:main'
+                ## Add 'smorfinp = smorfep.converter:main'
             ],
         },
         keywords='bioinformatics',
