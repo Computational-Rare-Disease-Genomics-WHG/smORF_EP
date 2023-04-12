@@ -106,9 +106,7 @@ def main():
     Main entry point
     """
 
-    ## TODO: Add arguments to download ref and transcripts to allow different versions
     parser = argparse.ArgumentParser(description='Script download the reference and/or the transcript information')
-    ##Add the arguments as in the run.py script
 
     ## define arguments
     ## arguments mutually exclusive -- ro, to, all (reference only, trancripts only, both)
