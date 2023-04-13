@@ -4,10 +4,11 @@ smORF-EP: predicting the effect of variants in small open reading frames.
 
 
 - [Requirements](#requirements)
-  * [Python libraries used](#python-libraries-used)
-- [Usage](#usage)
+- [Install smORF-EP](#install-smorf-ep)
+- [Download Ref and transcripts](#donwload-reference-and-transcripts)
+- [Run smORF-EP](#run-smorf-ep)
 - [Annotations description](#annotations-description)
-- [Squence quality filters](#sequence-quality-filtes)
+- [Sequence quality filters](#sequence-quality-filtes)
 
 
 
@@ -17,7 +18,8 @@ smORF-EP: predicting the effect of variants in small open reading frames.
 
 ## Python libraries used
 
-requirements.txt file provided with the dependencies for smORF-EP.
+requirements.txt file provides the dependencies for smORF-EP.
+
 
 <!-- 
 - pandas (might require installation)
@@ -28,17 +30,18 @@ requirements.txt file provided with the dependencies for smORF-EP.
 - time -->
 
 
-## Files download and decompression
 
-To obtain the reference genome and transcript information we used *wget* and for decompression we used *gzip*. 
-The scripts provided are using those, and pre-installation is required.
+# Download reference and GENCODE transcripts
+<!--Follow the [instructions.](https://github.com/Computational-Rare-Disease-Genomics-WHG/smORF-EP/blob/main/data)-->
 
 
-# Download human reference and GENCODE transcripts
+# Install smORF-EP
 
-Follow the [instructions.](https://github.com/Computational-Rare-Disease-Genomics-WHG/smORF-EP/blob/main/data)
+pip install smORF-EP
 
-# Running smORF-EP
+
+
+# Run smORF-EP
 
 Example:
 ```
@@ -49,10 +52,6 @@ python3 smORF-EP.py -r ref_genome/ -t transcriptCoord.tsv -i introns.tsv -f vari
 **-i**: file with the introns coordinates for the transcripts in the study.
 **-f**: input file with the variants and respective smORF region (see Input(#input)).
 **-o**: output file (see Output(#output))
-
-<!-- # Installation
-
-pip install smORF-EP -->
 
 
 
@@ -65,10 +64,3 @@ pip install smORF-EP -->
 
 ## Output
 
-
-# Sequence quality filters
-
-- 3nt periodicity
-- multiple stops
-- last sequence trio is a STOP codon
-- start/end not within an intron (from known transcripts)
