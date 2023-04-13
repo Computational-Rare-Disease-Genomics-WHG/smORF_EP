@@ -37,7 +37,37 @@ requirements.txt file provides the dependencies for smORF-EP.
 
 # Install smORF-EP
 
+## Installation from repository
+
+1. Download smORF-EP repository
+```
+git clone https://github.com/Computational-Rare-Disease-Genomics-WHG/smORF-EP/
+```
+
+2. Move inside smORF-EP repository
+```
+cd smORF-EP
+```
+
+3. Install through pip
+```
+pip3 install .
+
+python setup.py install
+```
+
+
+<!--
+```
+
+```
+-->
+
+<!--
+Command when the package is in pip
+
 pip install smORF-EP
+-->
 
 
 
