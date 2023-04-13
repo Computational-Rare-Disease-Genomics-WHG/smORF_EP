@@ -42,12 +42,12 @@ with open("requirements.txt", encoding='utf-8') as f:
                  'smorfep/utils/genetic_code.py',
                  'smorfep/utils/functions.py',
                  'smorfep/utils/tool_script.py'
-                 ],
+                 ], ##TODO: add here the functions to generate the input file
         entry_points={
             'console_scripts': [
                 'smorfep = smorfep.run:main',
                 'smorfinit = smorfep.downloader:main'
-                ## Add 'smorfinp = smorfep.converter:main'
+                ## TODO: Add 'smorfinp = smorfep.input_generator:main'
             ],
         },
         keywords='bioinformatics',
