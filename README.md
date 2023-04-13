@@ -5,10 +5,11 @@ smORF-EP: predicting the effect of variants in small open reading frames.
 
 - [Requirements](#requirements)
 - [Install smORF-EP](#install-smorf-ep)
-- [Download Ref and transcripts](#donwload-reference-and-transcripts)
+- [Download Reference and transcripts](#donwload-reference-and-transcripts)
+- [Generate input](#generate-input)
 - [Run smORF-EP](#run-smorf-ep)
+- [Input and ](#sequence-quality-filtes)
 - [Annotations description](#annotations-description)
-- [Sequence quality filters](#sequence-quality-filtes)
 
 
 
@@ -29,10 +30,6 @@ requirements.txt file provides the dependencies for smORF-EP.
 - sys
 - time -->
 
-
-
-# Download reference and GENCODE transcripts
-<!--Follow the [instructions.](https://github.com/Computational-Rare-Disease-Genomics-WHG/smORF-EP/blob/main/data)-->
 
 
 # Install smORF-EP
@@ -70,12 +67,18 @@ pip install smORF-EP
 -->
 
 
+# Download reference and GENCODE transcripts
+<!--Follow the [instructions.](https://github.com/Computational-Rare-Disease-Genomics-WHG/smORF-EP/blob/main/data)-->
+
+
+# Generate input
+
 
 # Run smORF-EP
 
 Example:
 ```
-python3 smORF-EP.py -r ref_genome/ -t transcriptCoord.tsv -i introns.tsv -f variants_file.tsv -o outputname.tsv
+smorfep -r ref_genome/ -t transcriptCoord.tsv -i introns.tsv -f variants_file.tsv -o outputname.tsv
 ```
 **-r**: reference genome repository, where the sequences per chromosome are stored.
 **-t**: file with the transcripts coordiantes (start and end).
