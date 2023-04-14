@@ -105,7 +105,12 @@ smorfinput -b <BED file> -v <VCF file> -o <outputname>
 
 Add --bedheader if the first line in the BED file is the file header. 
 
-Add --vheader if the first line in the VCF file is the file header.
+Add --vcfheader if the first line in the VCF file is the file header.
+
+Example for both input files with header: 
+```
+smorfinput -b <BED file> --bedheader -v <VCF file> --vcfheader -o <outputname>
+```
 
 
 # Run smORF-EP
