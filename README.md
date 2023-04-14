@@ -72,17 +72,19 @@ pip install smORF-EP
 
 ## Download reference and GENCODE transcripts 
 
-Example ()
+Example (download reference GCF_000001405.39_GRCh38.p13 and GENCODE v41): 
 
 ```
-smorfinit --all --ref_link 
+smorfinit --all --ref_link https://ftp.ncbi.nlm.nih.gov/genomes/refseq/vertebrate_mammalian/Homo_sapiens/annotation_releases/109.20211119/GCF_000001405.39_GRCh38.p13/GCF_000001405.39_GRCh38.p13_genomic.fna.gz --transc_link https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/gencode.v41.annotation.gff3.gz
 ```
 
 
 ## Download refernce genome only
 
+Example (download reference version GCF_000001405.39_GRCh38.p13): 
+
 ```
-smorfinit --ref --transc_link https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/gencode.v41.annotation.gff3.gz
+smorfinit -reference -ref_link https://ftp.ncbi.nlm.nih.gov/genomes/refseq/vertebrate_mammalian/Homo_sapiens/annotation_releases/109.20211119/GCF_000001405.39_GRCh38.p13/GCF_000001405.39_GRCh38.p13_genomic.fna.gz
 ```
 
 
