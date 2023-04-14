@@ -8,7 +8,7 @@ smORF-EP: predicting the effect of variants in small open reading frames.
 - [Download Reference and transcripts](#donwload-reference-and-transcripts)
 - [Generate input](#generate-input)
 - [Run smORF-EP](#run-smorf-ep)
-- [Input and ](#sequence-quality-filtes)
+- [Input and output](#intput-and-output)
 - [Annotations description](#annotations-description)
 
 
@@ -111,13 +111,13 @@ smorfep -r ref_genome/ -t <transcriptCoord.tsv> -i <introns.tsv> -f <variants_fi
 **-f**: input file with the variants and respective smORF region (see Input(#input)).
 **-o**: output file (see Output(#output)). 
 
-
-# Annotations description
-
-
-# Input and output description
+# Input and output
 
 ## Input
 
 ## Output
 
+
+
+
+# Annotations description
