@@ -8,6 +8,7 @@ Usage: smorfinput [OPTIONS]
 """
 
 import time
+import datetime
 
 import pandas as pd
 import argparse 
@@ -33,23 +34,10 @@ def bedvcf2intput(bedfilename, vcffilename, outputname):
     smorfs_df.columns = ['chrm', 'start', 'end', 'smORF_id', 'score', 'strand']
     ## rm chr prefix from chrm column
     smorfs_df['chrm'] = smorfs_df['chrm'].str.strip('chr')
-    ##print(smorfs_df)
 
 
     ## generate a new df to store the new formated vars
     vars_df = pd.DataFrame(data=None, columns=['chrm','var_pos','ref','alt','start','end','strand','var_id', 'smORF_id'])
-    ##print(vars_df)
-
-    # all_chromosomes = smorfs_df['chrm'].unique()
-    # ##print(all_chromosomes)
-    ## iterate per chromosome
-    ##for c in all_chromosomes:
-        ##print(c)
-    
-    ## For itetation over all chromosomes uncomment before  
-    ## and ident the block below
-        
-    filename = gnomad_prefix+c+gnomad_suffix
 
     chrom_smorf_df = smorfs_df[smorfs_df['chrm'] == c] ## consider only smORFs in the same chromosome ß
     total_smorfs = chrom_smorf_df.shape[0] ## number of smORFs in the chromosome
@@ -58,7 +46,7 @@ def bedvcf2intput(bedfilename, vcffilename, outputname):
 
 
     ## read variants file
-    variants_df = openFile(vars_dir+filename, '\t', 0)
+    variants_df = read_file(vcffilename, '\t', 0)
     variants_df = variants_df.drop(['QUAL', 'FILTER', 'AC', 'AN', 'AF'], axis=1)
     variants_df['CHROM'] = variants_df['CHROM'].str.strip('chr')
     ##print(variants_df)
@@ -70,7 +58,7 @@ def bedvcf2intput(bedfilename, vcffilename, outputname):
     smorf_index = 1
 
     ## output name
-    today = date.today()
+    now = datetime.datetime.now().strftime('%Y-%m-%d')
     outputname = outputname_prefix + c + '_input_'+ today.strftime("%Y-%m-%d") +'.tsv'
 
     first = True
