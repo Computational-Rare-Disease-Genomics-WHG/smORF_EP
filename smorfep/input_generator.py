@@ -174,8 +174,8 @@ def main():
     parser.add_argument('-b','--bedfile', required=True, type=str, help='BED file with the smORFs regions')
     parser.add_argument('-v', '--vcffile', required=True, type=str, help='VCF file with the variants')
     parser.add_argument('-o', '--outputfile', required=True, type=str, help='output file name')
-    parser.add_argument('--bedheader', type=str, help='BED file: first line is the header')
-    parser.add_argument('--vcfheader', type=str, help='VCF file: first line is the header')
+    parser.add_argument('--bedheader', help='BED file: first line is the header', action='store_true')
+    parser.add_argument('--vcfheader', help='VCF file: first line is the header', action='store_true')
 
 
     args = parser.parse_args()
