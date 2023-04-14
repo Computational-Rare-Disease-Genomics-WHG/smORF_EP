@@ -35,9 +35,9 @@ with open("requirements.txt", encoding='utf-8') as f:
         include_package_data=True,
         zip_safe=False,
         # Add the installation installation script her
-        scripts=['smorfep/download/compute_transcripts_GENCODE.py',  
-                 'smorfep/download/preProcess_gff.py',
-                 'smorfep/download/compute_introns_GENCODE_perTransc.py',
+        scripts=['smorfep/download/compute_transcripts_gencode.py',  
+                 'smorfep/download/preprocess_gff.py',
+                 'smorfep/download/compute_introns_gencode_per_transc.py',
                  'smorfep/download/ref_per_chr.py', 
                  'smorfep/utils/genetic_code.py',
                  'smorfep/utils/functions.py',
@@ -47,7 +47,7 @@ with open("requirements.txt", encoding='utf-8') as f:
             'console_scripts': [
                 'smorfep = smorfep.run:main',
                 'smorfinit = smorfep.downloader:main'
-                ## TODO: Add 'smorfinp = smorfep.input_generator:main'
+                ## TODO: Add 'smorfinput = smorfep.input_generator:main'
             ],
         },
         keywords='bioinformatics',
