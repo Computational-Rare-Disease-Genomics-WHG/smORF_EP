@@ -28,6 +28,8 @@ def bedvcf2intput(bedfilename, vcffilename, outputname, bheader):
 
     start_time = time.time()
 
+    if bheader != None: 
+        bheader = int(bheader)
 
     ## read bedfile - smorf regions
     smorfs_df = read_file(bedfilename, '\t', bheader)
