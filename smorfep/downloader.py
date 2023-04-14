@@ -23,7 +23,7 @@ def download_ref_genome(ref_link):
     """
     print("Downloading reference genome...")
     # 1. Creates a new dir for the reference genome
-    # os.makedirs('ref_genome', exist_ok=True)
+    os.makedirs('ref_genome', exist_ok=True)
 
     # # 2. Download reference from NCBI to the ref_genome/repository -- For GRC38.p13
     # ##url = 'https://ftp.ncbi.nlm.nih.gov/genomes/refseq/vertebrate_mammalian/Homo_sapiens/annotation_releases/109.20211119/GCF_000001405.39_GRCh38.p13/GCF_000001405.39_GRCh38.p13_genomic.fna.gz'
@@ -47,6 +47,8 @@ def download_ref_genome(ref_link):
     # If others to exclude add condition to line 24 
     # outputname format: chr<num>_<suffix_user_given> (line above: chr<num>_GRCh38.p13_genomic.fna)
 
+    print('ref_per_chr.py ref_genome/ ' + outputname_unconpress + ' _GRCh38.p13_genomic.'+ extension)
+
     print("Done")
 
 
@@ -65,10 +67,10 @@ def download_gencode(transc_link):
     # Uses urllib.request
 
     now = datetime.datetime.now().strftime('%Y-%m-%d')
-    # print(now)
+    ##print(now)
 
     # 1- Creates a new dir for the reference genome
-    os.makedirs('transcripts', exist_ok=True)
+    ##os.makedirs('transcripts', exist_ok=True)
 
     # 2- Download GENCODE
     ##url = 'https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/gencode.v41.annotation.gff3.gz'
@@ -79,7 +81,7 @@ def download_gencode(transc_link):
 
     urllib.request.urlretrieve(transc_link, 'transcripts/'+ outputname)
 
-    # 3- Uncompress reference genome and delete compressed version
+    ## 3- Uncompress reference genome and delete compressed version
     with gzip.open('transcripts/' + outputname, 'rb') as f_in:
         with open('transcripts/'+ outputname_unconpress, 'wb') as f_out:
             f_out.write(f_in.read())
@@ -90,13 +92,16 @@ def download_gencode(transc_link):
     prefix = outputname_unconpress.replace('.'+ extension, '')
 
     ##print(outputname, outputname_unconpress, prefix)
-    os.system('preprocess_gff.py transcripts/'+outputname_unconpress+' transcripts/'+prefix+'_columnNames.' + extension)
+    os.system('preprocess_gff.py transcripts/'+outputname_unconpress+ ' transcripts/'+prefix+'_columnNames'+extension)
+    ##print('preprocess_gff.py transcripts/'+outputname_unconpress+ ' transcripts/'+prefix+'_columnNames'+extension)
 
     # transcript coordinates (15.seconds M1 ship)
-    os.system(f'compute_transcripts_gencode.py transcripts/'+prefix+'_columnNames.' + extension+ 'transcripts/'+prefix+'_transcriptCoord_{now}.tsv')
+    os.system(f'compute_transcripts_gencode.py transcripts/'+prefix+'_columnNames'+extension+ ' transcripts/'+prefix+'_transcriptCoord_{now}.tsv')
+    ##print('compute_transcripts_gencode.py transcripts/'+prefix+'_columnNames'+extension+ ' transcripts/'+prefix+'_transcriptCoord_{now}.tsv')
 
     # intron coordinates
-    os.system(f'compute_introns_gencode_per_transc.py transcripts/'+prefix+'_columnNames.' + extension+ 'transcripts/'+prefix+'_introns_{now}.tsv')
+    os.system(f'compute_introns_gencode_per_transc.py transcripts/'+prefix+'_columnNames'+extension+ ' transcripts/'+prefix+'_introns_{now}.tsv')
+    ##print('compute_introns_gencode_per_transc.py transcripts/'+prefix+'_columnNames'+extension+ ' transcripts/'+prefix+'_introns_{now}.tsv')
 
     print("Done")
 
