@@ -74,7 +74,14 @@ def bedvcf2intput(bedfilename, vcffilename, outputname, bheader):
 
         if not smorf_variants_df.empty:
             for index_var, row_var in smorf_variants_df.iterrows():
-                var_id = 'VAR-' + str(vars_id_index)
+
+                ## take variant ID from 3rd column in the VCF, if not empty
+                if row_var[3] != '':
+                    var_id = row_var[3]
+                    print(var_id)
+
+                else: ## if no ID provided generate one
+                    var_id = 'VAR-' + str(vars_id_index)
 
                 if strand_smorf == '+':
                     ## gnomad variants are on the forward strand, no special edits 
@@ -147,9 +154,6 @@ def bedvcf2intput(bedfilename, vcffilename, outputname, bheader):
     print(end_time, ' minutes.')
 
     return None
-
-
-
 
 
 
