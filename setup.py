@@ -46,8 +46,8 @@ with open("requirements.txt", encoding='utf-8') as f:
         entry_points={
             'console_scripts': [
                 'smorfep = smorfep.run:main',
-                'smorfinit = smorfep.downloader:main'
-                ## TODO: Add 'smorfinput = smorfep.input_generator:main'
+                'smorfinit = smorfep.downloader:main',
+                'smorfinput = smorfep.input_generator:main'
             ],
         },
         keywords='bioinformatics',
