@@ -84,7 +84,7 @@ def bedvcf2intput(bedfilename, vcffilename, outputname, bheader, vheader):
                 ## take variant ID from 3rd column in the VCF, if not empty
                 if row_var.ID != '':
                     var_id = row_var.ID
-                    print(var_id)
+                    ##print(var_id)
 
                 else: ## if no ID provided generate one
                     var_id = 'VAR-' + str(vars_id_index)
