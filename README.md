@@ -70,6 +70,29 @@ pip install smORF-EP
 # Download reference and GENCODE transcripts
 <!--Follow the [instructions.](https://github.com/Computational-Rare-Disease-Genomics-WHG/smORF-EP/blob/main/data)-->
 
+## Download reference and GENCODE transcripts 
+
+Example ()
+
+```
+smorfinit --all --ref_link 
+```
+
+
+## Download refernce genome only
+
+```
+smorfinit --ref --transc_link https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/gencode.v41.annotation.gff3.gz
+```
+
+
+## Download GENCODE transcripts only
+
+Example (download GENCODE v41):
+
+```
+smorfinit --transcripts --transc_link https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/gencode.v41.annotation.gff3.gz
+```
 
 # Generate input
 
@@ -78,14 +101,13 @@ pip install smORF-EP
 
 Example:
 ```
-smorfep -r ref_genome/ -t transcriptCoord.tsv -i introns.tsv -f variants_file.tsv -o outputname.tsv
+smorfep -r ref_genome/ -t <transcriptCoord.tsv> -i <introns.tsv> -f <variants_file>.tsv -o <outputname.tsv>
 ```
 **-r**: reference genome repository, where the sequences per chromosome are stored.
 **-t**: file with the transcripts coordiantes (start and end).
 **-i**: file with the introns coordinates for the transcripts in the study.
 **-f**: input file with the variants and respective smORF region (see Input(#input)).
-**-o**: output file (see Output(#output))
-
+**-o**: output file (see Output(#output)). 
 
 
 # Annotations description
