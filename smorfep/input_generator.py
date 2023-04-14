@@ -16,7 +16,7 @@ from smorfep.utils.functions import *
 
 
 
-def bedvcf2intput(bedfilename, vcffilename, outputname):
+def bedvcf2intput(bedfilename, vcffilename, outputname, bheader):
     """
     Compiles the input file read by smorfep.
 
@@ -28,8 +28,9 @@ def bedvcf2intput(bedfilename, vcffilename, outputname):
 
     start_time = time.time()
 
+
     ## read bedfile - smorf regions
-    smorfs_df = read_file(bedfilename, '\t', None)
+    smorfs_df = read_file(bedfilename, '\t', bheader)
     smorfs_df.columns = ['chrm', 'start', 'end', 'smORF_id', 'score', 'strand']
     ## rm chr prefix from chrm column
     smorfs_df['chrm'] = smorfs_df['chrm'].str.strip('chr')
@@ -157,19 +158,20 @@ def main():
     Main entry point
     """
 
+    ## by default assumes BED file with no header
+    default_bedheader = None 
+
     parser = argparse.ArgumentParser(description='Script to convert BED and VCF into smorfep input file')
 
     parser.add_argument('-b','--bedfile', required=True, type=str, help='BED file with the smORFs regions')
     parser.add_argument('-v', '--vcffile', required=True, type=str, help='VCF file with the variants')
     parser.add_argument('-o', '--outputfile', required=True, type=str, help='output file name')
+    parser.add_argument('--bedheader', metavar='\b', type=str, default=default_bedheader, help='header line on the BED file')
 
     args = parser.parse_args()
 
     ## generate the input file: var-smorf pairs
-
-
-
-
+    bedvcf2intput(args.bedfile, args.vcffile, args.outputfile, args.bedheader)
 
 
 if __name__ == '__main__':
