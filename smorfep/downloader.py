@@ -96,11 +96,11 @@ def download_gencode(transc_link):
     ##print('preprocess_gff.py transcripts/'+outputname_unconpress+ ' transcripts/'+prefix+'_columnNames'+extension)
 
     # transcript coordinates (15.seconds M1 ship)
-    os.system(f'compute_transcripts_gencode.py transcripts/'+prefix+'_columnNames'+extension+ ' transcripts/'+prefix+'_transcriptCoord_{now}.tsv')
+    os.system('compute_transcripts_gencode.py transcripts/'+prefix+'_columnNames'+extension+ ' transcripts/'+prefix+'_transcriptCoord_'+now+'.tsv')
     ##print('compute_transcripts_gencode.py transcripts/'+prefix+'_columnNames'+extension+ ' transcripts/'+prefix+'_transcriptCoord_{now}.tsv')
 
     # intron coordinates
-    os.system(f'compute_introns_gencode_per_transc.py transcripts/'+prefix+'_columnNames'+extension+ ' transcripts/'+prefix+'_introns_{now}.tsv')
+    os.system('compute_introns_gencode_per_transc.py transcripts/'+prefix+'_columnNames'+extension+ ' transcripts/'+prefix+'_introns_'+now+'.tsv')
     ##print('compute_introns_gencode_per_transc.py transcripts/'+prefix+'_columnNames'+extension+ ' transcripts/'+prefix+'_introns_{now}.tsv')
 
     print("Done")

@@ -17,6 +17,7 @@ from smorfep.utils.functions import *
 
 
 def bedvcf2intput(bedfilename, vcffilename, outputname, bheader, vheader):
+
     """
     Compiles the input file read by smorfep.
 
@@ -28,8 +29,6 @@ def bedvcf2intput(bedfilename, vcffilename, outputname, bheader, vheader):
 
     start_time = time.time()
 
-    if bheader != None: 
-        bheader = int(bheader)
 
     ## 1- read bedfile - smorf regions
     smorfs_df = read_file(bedfilename, '\t', bheader)
@@ -59,6 +58,7 @@ def bedvcf2intput(bedfilename, vcffilename, outputname, bheader, vheader):
 
     ## unique index for variants
     vars_id_index = 1
+
     ## smorf index 
     smorf_index = 1
 
@@ -67,6 +67,7 @@ def bedvcf2intput(bedfilename, vcffilename, outputname, bheader, vheader):
 
     ## iterate per smORF
     for index, row in smorfs_df.iterrows():
+
         chrm_smorf = row.chrm
         start_smorf = row.start+1 ## +1 for the exact start coordinate as bed has start-1 format
         end_smorf = row.end
@@ -88,6 +89,7 @@ def bedvcf2intput(bedfilename, vcffilename, outputname, bheader, vheader):
 
                 else: ## if no ID provided generate one
                     var_id = 'VAR-' + str(vars_id_index)
+
 
                 if strand_smorf == '+':
                     ## gnomad variants are on the forward strand, no special edits 
@@ -146,6 +148,7 @@ def bedvcf2intput(bedfilename, vcffilename, outputname, bheader, vheader):
 
         else: ## print smORF ID witout variants in it
             #print(smorfid)
+
             smORFs_no_vars += 1
         
         smorf_index += 1
