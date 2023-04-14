@@ -1,6 +1,12 @@
 
+# data repository
 ref_genome/
 transcripts/
+
+## bash scripts 
+get_reference_genome.sh
+get_transcripts_GENCODE.sh
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
