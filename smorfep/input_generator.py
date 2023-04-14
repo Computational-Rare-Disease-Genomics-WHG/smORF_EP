@@ -16,7 +16,7 @@ from smorfep.utils.functions import *
 
 
 
-def bedvcf2intput(bedfilename, vcffilename, outputname, bheader):
+def bedvcf2intput(bedfilename, vcffilename, outputname, bheader, vheader):
     """
     Compiles the input file read by smorfep.
 
@@ -51,8 +51,8 @@ def bedvcf2intput(bedfilename, vcffilename, outputname, bheader):
     vars_df = pd.DataFrame(data=None, columns=['chrm','var_pos','ref','alt','start','end','strand','var_id', 'smORF_id'])
 
     ## read variants file
-    variants_df = read_file(vcffilename, '\t', 0)
-    variants_df = variants_df.drop(['QUAL', 'FILTER', 'AC', 'AN', 'AF'], axis=1)
+    variants_df = read_file(vcffilename, '\t', vheader)
+    variants_df = smorfs_df = smorfs_df.iloc[:, :7]
     variants_df['CHROM'] = variants_df['CHROM'].str.strip('chr')
     ##print(variants_df)
 
@@ -168,19 +168,30 @@ def main():
     """
 
     ## by default assumes BED file with no header
-    default_bedheader = None 
 
     parser = argparse.ArgumentParser(description='Script to convert BED and VCF into smorfep input file')
 
     parser.add_argument('-b','--bedfile', required=True, type=str, help='BED file with the smORFs regions')
     parser.add_argument('-v', '--vcffile', required=True, type=str, help='VCF file with the variants')
     parser.add_argument('-o', '--outputfile', required=True, type=str, help='output file name')
-    parser.add_argument('--bedheader', metavar='\b', type=str, default=default_bedheader, help='header line on the BED file')
+    parser.add_argument('--bedheader', type=str, help='BED file: first line is the header')
+    parser.add_argument('--vcfheader', type=str, help='VCF file: first line is the header')
+
 
     args = parser.parse_args()
 
+    if args.bedheader:
+        bedheader = 0
+    else: 
+        bedheader = None
+    if args.vcfheader: 
+        vcfheader = 0
+    else: 
+        vcfheader = None
+
+
     ## generate the input file: var-smorf pairs
-    bedvcf2intput(args.bedfile, args.vcffile, args.outputfile, args.bedheader)
+    bedvcf2intput(args.bedfile, args.vcffile, args.outputfile, bedheader, vcfheader)
 
 
 if __name__ == '__main__':
