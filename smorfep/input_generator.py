@@ -7,11 +7,14 @@ Usage: smorfinput [OPTIONS]
 
 """
 
+import time
 
-import sys
+import pandas as pd
+import argparse 
+
 from smorfep.utils.functions import *
 
-import argparse 
+
 
 def bedvcf2intput(bedfilename, vcffilename, outputname):
     """
@@ -26,7 +29,7 @@ def bedvcf2intput(bedfilename, vcffilename, outputname):
     start_time = time.time()
 
     ## read bedfile - smorf regions
-    smorfs_df = openFile(bedfilename, '\t', None)
+    smorfs_df = read_file(bedfilename, '\t', None)
     smorfs_df.columns = ['chrm', 'start', 'end', 'smORF_id', 'score', 'strand']
     ## rm chr prefix from chrm column
     smorfs_df['chrm'] = smorfs_df['chrm'].str.strip('chr')
