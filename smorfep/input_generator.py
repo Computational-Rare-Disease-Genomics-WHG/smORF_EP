@@ -8,7 +8,6 @@ Usage: smorfinput [OPTIONS]
 """
 
 import time
-import datetime
 
 import pandas as pd
 import argparse 
@@ -53,18 +52,11 @@ def bedvcf2intput(bedfilename, vcffilename, outputname):
 
     ## unique index for variants
     vars_id_index = 1
-
     ## smorf index 
     smorf_index = 1
 
-    ## output name
-    now = datetime.datetime.now().strftime('%Y-%m-%d')
-    outputname = outputname_prefix + c + '_input_'+ today.strftime("%Y-%m-%d") +'.tsv'
-
-    first = True
-
+    first = True ## to print the header in the file only once
     smORFs_no_vars = 0 ## count the number of smORFs with no variants
-
 
     ## iterate per smORF
     for index, row in chrom_smorf_df.iterrows():
@@ -81,16 +73,7 @@ def bedvcf2intput(bedfilename, vcffilename, outputname):
 
         if not smorf_variants_df.empty:
             for index_var, row_var in smorf_variants_df.iterrows():
-                var_id = 'XX' + str(vars_id_index)
-
-                ## testing block
-                # if row_var.POS == 6228696:
-                #     print(6228696)
-                #     print(row_var.REF, row_var.ALT)
-                #     print(smorfid)
-                #     print(strand_smorf)
-                #     print(start_smorf, end_smorf)
-
+                var_id = 'VAR-' + str(vars_id_index)
 
                 if strand_smorf == '+':
                     ## gnomad variants are on the forward strand, no special edits 
@@ -147,34 +130,27 @@ def bedvcf2intput(bedfilename, vcffilename, outputname):
                     # append data frame to CSV file
                     df.to_csv(outputname, mode='a', sep='\t', lineterminator='\n', index=False, header=False)
 
-
         else: ## print smORF ID witout variants in it
-            print(smorfid)
+            #print(smorfid)
             smORFs_no_vars += 1
         
         smorf_index += 1
 
-        if smorf_index % 20 == 0: 
-            print(smorf_index)
+        if smorf_index % 1000 == 0: 
+            print(smorf_index, 'smorfs processed')
 
-
-    print('#smORFs NO vars: ', smORFs_no_vars) 
-
-
+    print('#smORFs without vars: ', smORFs_no_vars) 
     print('DONE!')
 
-
-
     end_time = (time.time() - start_time)/ 60.0
-
     print(end_time, ' minutes.')
 
+    return None
 
 
 
 
 
-    
 
 def main():
     """
@@ -183,19 +159,16 @@ def main():
 
     parser = argparse.ArgumentParser(description='Script to convert BED and VCF into smorfep input file')
 
+    parser.add_argument('-b','--bedfile', required=True, type=str, help='BED file with the smORFs regions')
+    parser.add_argument('-v', '--vcffile', required=True, type=str, help='VCF file with the variants')
+    parser.add_argument('-o', '--outputfile', required=True, type=str, help='output file name')
 
     args = parser.parse_args()
 
+    ## generate the input file: var-smorf pairs
 
-    if args.reference: 
-        download_ref_genome(args.ref_link)
 
-    elif args.transcripts: 
-        download_gencode(args.transc_link)
 
-    elif args.all: 
-        download_ref_genome(args.ref_link)
-        download_gencode(args.transc_link)
 
 
 
