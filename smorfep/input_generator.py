@@ -31,21 +31,24 @@ def bedvcf2intput(bedfilename, vcffilename, outputname, bheader):
     if bheader != None: 
         bheader = int(bheader)
 
-    ## read bedfile - smorf regions
+    ## 1- read bedfile - smorf regions
     smorfs_df = read_file(bedfilename, '\t', bheader)
+    ## Keep onlyt the first 6 columns in the BED file -- info we need
+    smorfs_df = smorfs_df.iloc[:, :6]
+    ## rename the columns
     smorfs_df.columns = ['chrm', 'start', 'end', 'smORF_id', 'score', 'strand']
     ## rm chr prefix from chrm column
     smorfs_df['chrm'] = smorfs_df['chrm'].str.strip('chr')
 
-
-    ## generate a new df to store the new formated vars
-    vars_df = pd.DataFrame(data=None, columns=['chrm','var_pos','ref','alt','start','end','strand','var_id', 'smORF_id'])
-
-    chrom_smorf_df = smorfs_df[smorfs_df['chrm'] == c] ## consider only smORFs in the same chromosome ß
-    total_smorfs = chrom_smorf_df.shape[0] ## number of smORFs in the chromosome
+    ## stats on the smorfs
+    total_smorfs = smorf_df.shape[0] ## number of smORFs in the chromosome
     print('#smORFs: ', total_smorfs) 
     ##print(chrom_smorf_df)
 
+
+    ## 2- Process variants
+    ## generate a new df to store the new formated vars
+    vars_df = pd.DataFrame(data=None, columns=['chrm','var_pos','ref','alt','start','end','strand','var_id', 'smORF_id'])
 
     ## read variants file
     variants_df = read_file(vcffilename, '\t', 0)
