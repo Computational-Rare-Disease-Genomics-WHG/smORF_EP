@@ -23,7 +23,8 @@ output_transcript_coord = sys.argv[2]
 gencode = read_file(gencode_file, '\t', 0)
 # print(gencode)
 # print(gencode.keys())
-print(gencode.shape) ## total lines: 3 373 604
+##print(gencode.shape) ## total lines: 3 373 604
+##print(gencode.shape[0], ' transcripts')
 
 ##How may different categories are in the file
 #print(gencode['type'].unique())
@@ -60,8 +61,8 @@ gencode_transcripts = gencode_transcripts.drop(columns='new_info')
 for i in ['ID', 'gene_id', 'transcript_id', 'transcript_type',]:
     gencode_transcripts[i] = gencode_transcripts[i].str.split('=').str[1]
 
-print(gencode_transcripts)
-##print(gencode_transcripts.shape)
+##print(gencode_transcripts)
+print(gencode_transcripts.shape[0], 'transcripts')
 
 
 ## write transcripts to file
