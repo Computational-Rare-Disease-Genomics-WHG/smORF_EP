@@ -41,7 +41,7 @@ def bedvcf2intput(bedfilename, vcffilename, outputname, bheader):
     smorfs_df['chrm'] = smorfs_df['chrm'].str.strip('chr')
 
     ## stats on the smorfs
-    total_smorfs = smorf_df.shape[0] ## number of smORFs in the chromosome
+    total_smorfs = smorfs_df.shape[0] ## number of smORFs in the chromosome
     print('#smORFs: ', total_smorfs) 
     ##print(chrom_smorf_df)
 
