@@ -16,7 +16,8 @@ from smorfep.utils.functions import *
 
 
 
-def bedvcf2intput(bedfilename, vcffilename, outputname):
+def bedvcf2intput(bedfilename, vcffilename, outputname, bheader, vheader):
+
     """
     Compiles the input file read by smorfep.
 
@@ -28,38 +29,30 @@ def bedvcf2intput(bedfilename, vcffilename, outputname):
 
     start_time = time.time()
 
-    ## read bedfile - smorf regions
-    smorfs_df = read_file(bedfilename, '\t', None)
+
+    ## 1- read bedfile - smorf regions
+    smorfs_df = read_file(bedfilename, '\t', bheader)
+    ## Keep onlyt the first 6 columns in the BED file -- info we need
+    smorfs_df = smorfs_df.iloc[:, :6]
+    ## rename the columns
     smorfs_df.columns = ['chrm', 'start', 'end', 'smORF_id', 'score', 'strand']
     ## rm chr prefix from chrm column
     smorfs_df['chrm'] = smorfs_df['chrm'].str.strip('chr')
-    ##print(smorfs_df)
 
+    ## stats on the smorfs
+    total_smorfs = smorfs_df.shape[0] ## number of smORFs in the chromosome
+    print('#smORFs: ', total_smorfs) 
 
+    ## 2- Process variants
     ## generate a new df to store the new formated vars
     vars_df = pd.DataFrame(data=None, columns=['chrm','var_pos','ref','alt','start','end','strand','var_id', 'smORF_id'])
-    ##print(vars_df)
-
-    # all_chromosomes = smorfs_df['chrm'].unique()
-    # ##print(all_chromosomes)
-    ## iterate per chromosome
-    ##for c in all_chromosomes:
-        ##print(c)
-    
-    ## For itetation over all chromosomes uncomment before  
-    ## and ident the block below
-        
-    filename = gnomad_prefix+c+gnomad_suffix
-
-    chrom_smorf_df = smorfs_df[smorfs_df['chrm'] == c] ## consider only smORFs in the same chromosome ß
-    total_smorfs = chrom_smorf_df.shape[0] ## number of smORFs in the chromosome
-    print('#smORFs: ', total_smorfs) 
-    ##print(chrom_smorf_df)
-
 
     ## read variants file
-    variants_df = openFile(vars_dir+filename, '\t', 0)
-    variants_df = variants_df.drop(['QUAL', 'FILTER', 'AC', 'AN', 'AF'], axis=1)
+    variants_df = read_file(vcffilename, '\t', vheader)
+    variants_df = variants_df.iloc[:, :7]
+    ## name columns
+    variants_df.columns = ['CHROM', 'POS', 'ID', 'REF', 'ALT', 'QUAL', 'FILTER']
+
     variants_df['CHROM'] = variants_df['CHROM'].str.strip('chr')
     ##print(variants_df)
 
@@ -69,17 +62,12 @@ def bedvcf2intput(bedfilename, vcffilename, outputname):
     ## smorf index 
     smorf_index = 1
 
-    ## output name
-    today = date.today()
-    outputname = outputname_prefix + c + '_input_'+ today.strftime("%Y-%m-%d") +'.tsv'
-
-    first = True
-
+    first = True ## to print the header in the file only once
     smORFs_no_vars = 0 ## count the number of smORFs with no variants
 
-
     ## iterate per smORF
-    for index, row in chrom_smorf_df.iterrows():
+    for index, row in smorfs_df.iterrows():
+
         chrm_smorf = row.chrm
         start_smorf = row.start+1 ## +1 for the exact start coordinate as bed has start-1 format
         end_smorf = row.end
@@ -93,15 +81,14 @@ def bedvcf2intput(bedfilename, vcffilename, outputname):
 
         if not smorf_variants_df.empty:
             for index_var, row_var in smorf_variants_df.iterrows():
-                var_id = 'XX' + str(vars_id_index)
 
-                ## testing block
-                # if row_var.POS == 6228696:
-                #     print(6228696)
-                #     print(row_var.REF, row_var.ALT)
-                #     print(smorfid)
-                #     print(strand_smorf)
-                #     print(start_smorf, end_smorf)
+                ## take variant ID from 3rd column in the VCF, if not empty
+                if row_var.ID != '':
+                    var_id = row_var.ID
+                    ##print(var_id)
+
+                else: ## if no ID provided generate one
+                    var_id = 'VAR-' + str(vars_id_index)
 
 
                 if strand_smorf == '+':
@@ -159,56 +146,56 @@ def bedvcf2intput(bedfilename, vcffilename, outputname):
                     # append data frame to CSV file
                     df.to_csv(outputname, mode='a', sep='\t', lineterminator='\n', index=False, header=False)
 
-
         else: ## print smORF ID witout variants in it
-            print(smorfid)
+            #print(smorfid)
+
             smORFs_no_vars += 1
         
         smorf_index += 1
 
-        if smorf_index % 20 == 0: 
-            print(smorf_index)
+        if smorf_index % 1000 == 0: 
+            print(smorf_index, 'smorfs processed')
 
-
-    print('#smORFs NO vars: ', smORFs_no_vars) 
-
-
+    print('#smORFs without vars: ', smORFs_no_vars) 
     print('DONE!')
 
-
-
     end_time = (time.time() - start_time)/ 60.0
-
     print(end_time, ' minutes.')
 
+    return None
 
 
-
-
-
-    
 
 def main():
     """
     Main entry point
     """
 
+    ## by default assumes BED file with no header
+
     parser = argparse.ArgumentParser(description='Script to convert BED and VCF into smorfep input file')
+
+    parser.add_argument('-b','--bedfile', required=True, type=str, help='BED file with the smORFs regions')
+    parser.add_argument('-v', '--vcffile', required=True, type=str, help='VCF file with the variants')
+    parser.add_argument('-o', '--outputfile', required=True, type=str, help='output file name')
+    parser.add_argument('--bedheader', help='BED file: first line is the header', action='store_true')
+    parser.add_argument('--vcfheader', help='VCF file: first line is the header', action='store_true')
 
 
     args = parser.parse_args()
 
+    if args.bedheader:
+        bedheader = 0
+    else: 
+        bedheader = None
+    if args.vcfheader: 
+        vcfheader = 0
+    else: 
+        vcfheader = None
 
-    if args.reference: 
-        download_ref_genome(args.ref_link)
 
-    elif args.transcripts: 
-        download_gencode(args.transc_link)
-
-    elif args.all: 
-        download_ref_genome(args.ref_link)
-        download_gencode(args.transc_link)
-
+    ## generate the input file: var-smorf pairs
+    bedvcf2intput(args.bedfile, args.vcffile, args.outputfile, bedheader, vcfheader)
 
 
 if __name__ == '__main__':
