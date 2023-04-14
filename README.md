@@ -112,7 +112,7 @@ Add --vheader if the first line in the VCF file is the file header.
 
 Example:
 ```
-smorfep -r ref_genome/ -t <transcriptCoord.tsv> -i <introns.tsv> -f <variants_file>.tsv -o <outputname.tsv>
+smorfep -r ref_genome/ -t transcripts/<transcriptCoord.tsv> -i transcripts/<introns.tsv> -f <variants_file>.tsv -o <outputname.tsv>
 ```
 **-r**: reference genome repository, where the sequences per chromosome are stored.
 **-t**: file with the transcripts coordiantes (start and end).
