@@ -43,8 +43,6 @@ def bedvcf2intput(bedfilename, vcffilename, outputname, bheader, vheader):
     ## stats on the smorfs
     total_smorfs = smorfs_df.shape[0] ## number of smORFs in the chromosome
     print('#smORFs: ', total_smorfs) 
-    ##print(chrom_smorf_df)
-
 
     ## 2- Process variants
     ## generate a new df to store the new formated vars
@@ -52,7 +50,10 @@ def bedvcf2intput(bedfilename, vcffilename, outputname, bheader, vheader):
 
     ## read variants file
     variants_df = read_file(vcffilename, '\t', vheader)
-    variants_df = smorfs_df = smorfs_df.iloc[:, :7]
+    variants_df = variants_df.iloc[:, :7]
+    ## name columns
+    variants_df.columns = ['CHROM', 'POS', 'ID', 'REF', 'ALT', 'QUAL', 'FILTER']
+
     variants_df['CHROM'] = variants_df['CHROM'].str.strip('chr')
     ##print(variants_df)
 
@@ -65,7 +66,7 @@ def bedvcf2intput(bedfilename, vcffilename, outputname, bheader, vheader):
     smORFs_no_vars = 0 ## count the number of smORFs with no variants
 
     ## iterate per smORF
-    for index, row in chrom_smorf_df.iterrows():
+    for index, row in smorfs_df.iterrows():
         chrm_smorf = row.chrm
         start_smorf = row.start+1 ## +1 for the exact start coordinate as bed has start-1 format
         end_smorf = row.end
@@ -81,8 +82,8 @@ def bedvcf2intput(bedfilename, vcffilename, outputname, bheader, vheader):
             for index_var, row_var in smorf_variants_df.iterrows():
 
                 ## take variant ID from 3rd column in the VCF, if not empty
-                if row_var[3] != '':
-                    var_id = row_var[3]
+                if row_var.ID != '':
+                    var_id = row_var.ID
                     print(var_id)
 
                 else: ## if no ID provided generate one
