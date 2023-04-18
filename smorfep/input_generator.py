@@ -132,11 +132,11 @@ def bedvcf2intput(ref_path, bedfilename, vcffilename, outputname, bheader, vhead
                     elif len(row_var.REF) > len(row_var.ALT): ## deletion - OK
                         ##print('deletion')
                         pos_diff = len(row_var.REF) - len(row_var.ALT)
-                        print(pos_diff)
-                        print(str(chrm_smorf), int(row_var.POS)+pos_diff+1, int(row_var.POS)+pos_diff+1, strand_smorf)
+                        # print(pos_diff)
+                        # print(str(chrm_smorf), int(row_var.POS)+pos_diff+1, int(row_var.POS)+pos_diff+1, strand_smorf)
 
 
-                        a = get_sequence(str(chrm_smorf), int(row_var.POS)+pos_diff+1, int(row_var.POS)+pos_diff+1, strand_smorf)
+                        a = get_sequence(int(row_var.POS)+pos_diff+1, int(row_var.POS)+pos_diff+1, strand_smorf, reference_genome[chrm_smorf])
                         ref_allele_sufix = reverse_complement_seq(row_var.REF)
                         r = a + ref_allele_sufix[:-1] ## removes the last nt
 
@@ -145,7 +145,7 @@ def bedvcf2intput(ref_path, bedfilename, vcffilename, outputname, bheader, vhead
 
                     elif len(row_var.REF) < len(row_var.ALT): ## insertion 
                         ##print('insertion')
-                        r = get_sequence(str(chrm_smorf), int(row_var.POS)+1, int(row_var.POS)+1, strand_smorf)
+                        r = get_sequence(int(row_var.POS)+1, int(row_var.POS)+1, strand_smorf, reference_genome[chrm_smorf])
                         alt_allele_sufix = reverse_complement_seq(row_var.ALT)
                         a = r + alt_allele_sufix[:-1] ## removes the last nt
                         new_var_pos = row_var.POS+1 ## same position as reported
