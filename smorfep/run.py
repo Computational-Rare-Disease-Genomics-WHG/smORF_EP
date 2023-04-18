@@ -247,7 +247,13 @@ def main():
         print('This command generates both transcript and introns files')
         sys.exit(1)
 
-    if len(os.listdir(args.reference_path)) == 24: ## checks if there are 24 files in the reference genome directory
+    ## list of files in the reference dir
+    ref_dir_files = os.listdir(args.reference_path)
+    chrom_list = ['chr1','chr1','chr2','chr3','chr4','chr5','chr6','chr7','chr8',\
+                'chr9','chr10','chr11','chr12','chr13','chr14','chr15','chr16',\
+                'chr17','chr18','chr19','chr20','chr21','chr22','chrX','chrY']
+    matching = [each for each in ref_dir_files if any(ch in each for ch in chrom_list)]
+    if len(matching) == 24: ## checks if there are 24 files matching the chromosomes in the reference genome directory
         print('reference genome available')
     else: 
         print('reference genome NOT available\n')
