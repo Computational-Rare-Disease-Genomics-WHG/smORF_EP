@@ -29,7 +29,6 @@ def bedvcf2intput(bedfilename, vcffilename, outputname, bheader, vheader):
 
     start_time = time.time()
 
-
     ## 1- read bedfile - smorf regions
     smorfs_df = read_file(bedfilename, '\t', bheader)
     ## Keep onlyt the first 6 columns in the BED file -- info we need
@@ -43,9 +42,15 @@ def bedvcf2intput(bedfilename, vcffilename, outputname, bheader, vheader):
     total_smorfs = smorfs_df.shape[0] ## number of smORFs in the chromosome
     print('#smORFs: ', total_smorfs) 
 
-    ## 2- Process variants
+    ## 2- Loads reference genome
+    ## the chromosomes the smORFs are in
+
+    
+
+
+    ## 3- Process variants
     ## generate a new df to store the new formated vars
-    vars_df = pd.DataFrame(data=None, columns=['chrm','var_pos','ref','alt','start','end','strand','var_id', 'smORF_id'])
+    ##vars_df = pd.DataFrame(data=None, columns=['chrm','var_pos','ref','alt','start','end','strand','var_id', 'smORF_id'])
 
     ## read variants file
     variants_df = read_file(vcffilename, '\t', vheader)
@@ -81,6 +86,7 @@ def bedvcf2intput(bedfilename, vcffilename, outputname, bheader, vheader):
 
         if not smorf_variants_df.empty:
             for index_var, row_var in smorf_variants_df.iterrows():
+                print(row_var.POS, row_var.REF, row_var.ALT, row.chrm, row.start+1, row.end, row.strand)
 
                 ## take variant ID from 3rd column in the VCF, if not empty
                 if row_var.ID != '':
@@ -108,6 +114,10 @@ def bedvcf2intput(bedfilename, vcffilename, outputname, bheader, vheader):
                     elif len(row_var.REF) > len(row_var.ALT): ## deletion - OK
                         ##print('deletion')
                         pos_diff = len(row_var.REF) - len(row_var.ALT)
+                        print(pos_diff)
+                        print(str(chrm_smorf), int(row_var.POS)+pos_diff+1, int(row_var.POS)+pos_diff+1, strand_smorf)
+
+
                         a = get_sequence(str(chrm_smorf), int(row_var.POS)+pos_diff+1, int(row_var.POS)+pos_diff+1, strand_smorf)
                         ref_allele_sufix = reverse_complement_seq(row_var.REF)
                         r = a + ref_allele_sufix[:-1] ## removes the last nt
@@ -153,7 +163,7 @@ def bedvcf2intput(bedfilename, vcffilename, outputname, bheader, vheader):
         
         smorf_index += 1
 
-        if smorf_index % 1000 == 0: 
+        if smorf_index % 10000 == 0: 
             print(smorf_index, 'smorfs processed')
 
     print('#smORFs without vars: ', smORFs_no_vars) 
