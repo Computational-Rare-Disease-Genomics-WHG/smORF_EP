@@ -16,19 +16,22 @@ from smorfep.utils.functions import *
 
 
 
-def bedvcf2intput(bedfilename, vcffilename, outputname, bheader, vheader):
+def bedvcf2intput(ref_path, bedfilename, vcffilename, outputname, bheader, vheader):
 
     """
     Compiles the input file read by smorfep.
 
     Input: 
+    - ref_path: dir where the reference is stored
     - bedfile: BED file with the smORFs start and end coordinates
     - vcffile: VCF file with the variants 
+    - output: output filename
+    - bheader: 0 if bed file has header, None otherwise
+    - vheader: 0 if vcf file has header, None otherwise
     """
     print("Generating smorfep input file...")
 
     start_time = time.time()
-
 
     ## 1- read bedfile - smorf regions
     smorfs_df = read_file(bedfilename, '\t', bheader)
@@ -43,9 +46,29 @@ def bedvcf2intput(bedfilename, vcffilename, outputname, bheader, vheader):
     total_smorfs = smorfs_df.shape[0] ## number of smORFs in the chromosome
     print('#smORFs: ', total_smorfs) 
 
-    ## 2- Process variants
+    ## 2- Loads reference genome
+    ## the chromosomes the smORFs are in
+    all_chromosomes = smorfs_df.chrm.unique()
+
+    ## read reference
+    ## stores reference per chromosome into a dictionary
+    reference_genome = {} ## stores the sequence per chromosome
+
+    ## check files prefix and suffix 
+    files_prefix, files_suffix = check_prefix_sufix_ref_files(ref_path)
+    
+    for chrom_ref in all_chromosomes: 
+        r = read_single_fasta(str(chrom_ref), ref_path, files_prefix, files_suffix)
+
+        reference_genome[chrom_ref] = r
+
+    print('reference ready')
+    
+
+
+    ## 3- Process variants
     ## generate a new df to store the new formated vars
-    vars_df = pd.DataFrame(data=None, columns=['chrm','var_pos','ref','alt','start','end','strand','var_id', 'smORF_id'])
+    ##vars_df = pd.DataFrame(data=None, columns=['chrm','var_pos','ref','alt','start','end','strand','var_id', 'smORF_id'])
 
     ## read variants file
     variants_df = read_file(vcffilename, '\t', vheader)
@@ -81,6 +104,7 @@ def bedvcf2intput(bedfilename, vcffilename, outputname, bheader, vheader):
 
         if not smorf_variants_df.empty:
             for index_var, row_var in smorf_variants_df.iterrows():
+                print(row_var.POS, row_var.REF, row_var.ALT, row.chrm, row.start+1, row.end, row.strand)
 
                 ## take variant ID from 3rd column in the VCF, if not empty
                 if row_var.ID != '':
@@ -108,7 +132,11 @@ def bedvcf2intput(bedfilename, vcffilename, outputname, bheader, vheader):
                     elif len(row_var.REF) > len(row_var.ALT): ## deletion - OK
                         ##print('deletion')
                         pos_diff = len(row_var.REF) - len(row_var.ALT)
-                        a = get_sequence(str(chrm_smorf), int(row_var.POS)+pos_diff+1, int(row_var.POS)+pos_diff+1, strand_smorf)
+                        # print(pos_diff)
+                        # print(str(chrm_smorf), int(row_var.POS)+pos_diff+1, int(row_var.POS)+pos_diff+1, strand_smorf)
+
+
+                        a = get_sequence(int(row_var.POS)+pos_diff+1, int(row_var.POS)+pos_diff+1, strand_smorf, reference_genome[chrm_smorf])
                         ref_allele_sufix = reverse_complement_seq(row_var.REF)
                         r = a + ref_allele_sufix[:-1] ## removes the last nt
 
@@ -117,7 +145,7 @@ def bedvcf2intput(bedfilename, vcffilename, outputname, bheader, vheader):
 
                     elif len(row_var.REF) < len(row_var.ALT): ## insertion 
                         ##print('insertion')
-                        r = get_sequence(str(chrm_smorf), int(row_var.POS)+1, int(row_var.POS)+1, strand_smorf)
+                        r = get_sequence(int(row_var.POS)+1, int(row_var.POS)+1, strand_smorf, reference_genome[chrm_smorf])
                         alt_allele_sufix = reverse_complement_seq(row_var.ALT)
                         a = r + alt_allele_sufix[:-1] ## removes the last nt
                         new_var_pos = row_var.POS+1 ## same position as reported
@@ -153,7 +181,7 @@ def bedvcf2intput(bedfilename, vcffilename, outputname, bheader, vheader):
         
         smorf_index += 1
 
-        if smorf_index % 1000 == 0: 
+        if smorf_index % 10000 == 0: 
             print(smorf_index, 'smorfs processed')
 
     print('#smORFs without vars: ', smORFs_no_vars) 
@@ -175,6 +203,7 @@ def main():
 
     parser = argparse.ArgumentParser(description='Script to convert BED and VCF into smorfep input file')
 
+    parser.add_argument('-r','--refpath', required=True, type=str, help='Path to the reference genome')
     parser.add_argument('-b','--bedfile', required=True, type=str, help='BED file with the smORFs regions')
     parser.add_argument('-v', '--vcffile', required=True, type=str, help='VCF file with the variants')
     parser.add_argument('-o', '--outputfile', required=True, type=str, help='output file name')
@@ -195,7 +224,7 @@ def main():
 
 
     ## generate the input file: var-smorf pairs
-    bedvcf2intput(args.bedfile, args.vcffile, args.outputfile, bedheader, vcfheader)
+    bedvcf2intput(args.refpath, args.bedfile, args.vcffile, args.outputfile, bedheader, vcfheader)
 
 
 if __name__ == '__main__':
