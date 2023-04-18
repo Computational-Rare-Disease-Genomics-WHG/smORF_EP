@@ -16,14 +16,18 @@ from smorfep.utils.functions import *
 
 
 
-def bedvcf2intput(bedfilename, vcffilename, outputname, bheader, vheader):
+def bedvcf2intput(ref_path, bedfilename, vcffilename, outputname, bheader, vheader):
 
     """
     Compiles the input file read by smorfep.
 
     Input: 
+    - ref_path: dir where the reference is stored
     - bedfile: BED file with the smORFs start and end coordinates
     - vcffile: VCF file with the variants 
+    - output: output filename
+    - bheader: 0 if bed file has header, None otherwise
+    - vheader: 0 if vcf file has header, None otherwise
     """
     print("Generating smorfep input file...")
 
