@@ -104,7 +104,7 @@ def bedvcf2intput(ref_path, bedfilename, vcffilename, outputname, bheader, vhead
 
         if not smorf_variants_df.empty:
             for index_var, row_var in smorf_variants_df.iterrows():
-                print(row_var.POS, row_var.REF, row_var.ALT, row.chrm, row.start+1, row.end, row.strand)
+                ##print(row_var.POS, row_var.REF, row_var.ALT, row.chrm, row.start+1, row.end, row.strand)
 
                 ## take variant ID from 3rd column in the VCF, if not empty
                 if row_var.ID != '':
