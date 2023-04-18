@@ -48,7 +48,21 @@ def bedvcf2intput(ref_path, bedfilename, vcffilename, outputname, bheader, vhead
 
     ## 2- Loads reference genome
     ## the chromosomes the smORFs are in
+    all_chromosomes = smorfs_df.chrm.unique()
 
+    ## read reference
+    ## stores reference per chromosome into a dictionary
+    reference_genome = {} ## stores the sequence per chromosome
+
+    ## check files prefix and suffix 
+    files_prefix, files_suffix = check_prefix_sufix_ref_files(ref_path)
+    
+    for chrom_ref in all_chromosomes: 
+        r = read_single_fasta(str(chrom_ref), ref_path, files_prefix, files_suffix)
+
+        reference_genome[chrom_ref] = r
+
+    print('reference ready')
     
 
 
@@ -189,6 +203,7 @@ def main():
 
     parser = argparse.ArgumentParser(description='Script to convert BED and VCF into smorfep input file')
 
+    parser.add_argument('-r','--refpath', required=True, type=str, help='Path to the reference genome')
     parser.add_argument('-b','--bedfile', required=True, type=str, help='BED file with the smORFs regions')
     parser.add_argument('-v', '--vcffile', required=True, type=str, help='VCF file with the variants')
     parser.add_argument('-o', '--outputfile', required=True, type=str, help='output file name')
@@ -209,7 +224,7 @@ def main():
 
 
     ## generate the input file: var-smorf pairs
-    bedvcf2intput(args.bedfile, args.vcffile, args.outputfile, bedheader, vcfheader)
+    bedvcf2intput(args.refpath, args.bedfile, args.vcffile, args.outputfile, bedheader, vcfheader)
 
 
 if __name__ == '__main__':
