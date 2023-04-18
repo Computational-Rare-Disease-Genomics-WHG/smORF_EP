@@ -52,7 +52,7 @@ def bedvcf2intput(ref_path, bedfilename, vcffilename, outputname, bheader, vhead
 
     ## read reference
     ## stores reference per chromosome into a dictionary
-    reference_genome = {} ## stores the sequence per chromosome
+    reference_genome = {} 
 
     ## check files prefix and suffix 
     files_prefix, files_suffix = check_prefix_sufix_ref_files(ref_path)
@@ -68,7 +68,6 @@ def bedvcf2intput(ref_path, bedfilename, vcffilename, outputname, bheader, vhead
 
     ## 3- Process variants
     ## generate a new df to store the new formated vars
-    ##vars_df = pd.DataFrame(data=None, columns=['chrm','var_pos','ref','alt','start','end','strand','var_id', 'smORF_id'])
 
     ## read variants file
     variants_df = read_file(vcffilename, '\t', vheader)
@@ -77,7 +76,6 @@ def bedvcf2intput(ref_path, bedfilename, vcffilename, outputname, bheader, vhead
     variants_df.columns = ['CHROM', 'POS', 'ID', 'REF', 'ALT', 'QUAL', 'FILTER']
 
     variants_df['CHROM'] = variants_df['CHROM'].str.strip('chr')
-    ##print(variants_df)
 
     ## unique index for variants
     vars_id_index = 1
@@ -100,7 +98,6 @@ def bedvcf2intput(ref_path, bedfilename, vcffilename, outputname, bheader, vhead
 
         ## variants in the smORF
         smorf_variants_df = variants_df[(variants_df['CHROM'] == chrm_smorf) & (variants_df['POS']>= start_smorf) & (variants_df['POS'] <= end_smorf)]
-        ##print(smorf_variants_df)
 
         if not smorf_variants_df.empty:
             for index_var, row_var in smorf_variants_df.iterrows():
@@ -122,29 +119,21 @@ def bedvcf2intput(ref_path, bedfilename, vcffilename, outputname, bheader, vhead
                     new_var_pos = row_var.POS ## same position as reported
 
                 elif strand_smorf == '-':
-                    ##print('here')
                     if len(row_var.REF) == len(row_var.ALT): ##SNV
-                        ##print('SNV')
                         r = complement_seq(row_var.REF)
                         a = complement_seq(row_var.ALT)
                         new_var_pos = row_var.POS ## same position as reported
 
                     elif len(row_var.REF) > len(row_var.ALT): ## deletion - OK
-                        ##print('deletion')
                         pos_diff = len(row_var.REF) - len(row_var.ALT)
-                        # print(pos_diff)
-                        # print(str(chrm_smorf), int(row_var.POS)+pos_diff+1, int(row_var.POS)+pos_diff+1, strand_smorf)
-
 
                         a = get_sequence(int(row_var.POS)+pos_diff+1, int(row_var.POS)+pos_diff+1, strand_smorf, reference_genome[chrm_smorf])
                         ref_allele_sufix = reverse_complement_seq(row_var.REF)
                         r = a + ref_allele_sufix[:-1] ## removes the last nt
-
                         new_var_pos = int(row_var.POS)+pos_diff+1 ## var pos next position after the deletion section
                         
 
                     elif len(row_var.REF) < len(row_var.ALT): ## insertion 
-                        ##print('insertion')
                         r = get_sequence(int(row_var.POS)+1, int(row_var.POS)+1, strand_smorf, reference_genome[chrm_smorf])
                         alt_allele_sufix = reverse_complement_seq(row_var.ALT)
                         a = r + alt_allele_sufix[:-1] ## removes the last nt
@@ -176,7 +165,6 @@ def bedvcf2intput(ref_path, bedfilename, vcffilename, outputname, bheader, vhead
 
         else: ## print smORF ID witout variants in it
             #print(smorfid)
-
             smORFs_no_vars += 1
         
         smorf_index += 1
