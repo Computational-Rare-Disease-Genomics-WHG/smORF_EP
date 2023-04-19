@@ -1154,5 +1154,18 @@ def check_stop_transcript(seq, new_sequence, start, end, variant_pos, strand, ma
     return None, '-', '-', '-'
         
 
+def check_smorf_transcript(ref_sequence, transcript_info, introns_df, smorf_start, smorf_end, strand):
+    """
+    Function to check the compatibility of smORF and transcript coordinates. 
+
+    Input:
+    - ref_sequence = reference sequence for the chromosome in analysis
+    - transcript_info = dataframe structure line with the information about the transcript (start, end, id, etc)
+    - introns_df = intronic regions dataframe for the chromosome in analysis
+    - start = start of the region of interest
+    - end = end of the region of interest
+    - strand 
+
+    """
 
 
