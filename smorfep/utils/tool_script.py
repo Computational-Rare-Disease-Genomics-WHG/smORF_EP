@@ -20,8 +20,9 @@ def tool(ref_sequence, transcript_info, introns_df, start, end, strand, ref, alt
         - start = start of the region of interest
         - end = end of the region of interest
         - strand 
-        - variant = ref-alt
-        - variant_pos
+        - ref = reference allele
+        - alt = alternative allele
+        - variant_pos = variant genomic position
         - splice_site = size from the start/end of exonic region to be considered splice site. 
                         ## 1-2 bases are assumed as donor and acceptor
                         By default, this is set to 8 (VEP used range)
