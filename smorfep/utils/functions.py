@@ -1158,6 +1158,8 @@ def check_smorf_transcript(ref_sequence, transcript_info, introns_df, smorf_star
     """
     Function to check the compatibility of smORF and transcript coordinates. 
 
+    Compares one smorf with all the transcripts it falls completely within.
+
     Input:
     - ref_sequence:  reference sequence for the chromosome in analysis
     - transcript_info: dataframe structure line with the information about the transcript (start, end, id, etc)
@@ -1168,5 +1170,41 @@ def check_smorf_transcript(ref_sequence, transcript_info, introns_df, smorf_star
 
     returns a list of matching transcripts, a dataframe with unmatching transcript and the respective reason for exclusion
     """
+
+    matching_transcripts = []
+    unmatching_trancripts = pd.DataFrame(columns=['transcript_id','flag', 'type'])
+
+    if strand == '+':
+        ## check if start is within an intron
+        start_intron = introns_df[(introns_df['start']<= smorf_start) & (introns_df['end']>= smorf_start)]
+        ## check if end is within an intron
+        end_intron = introns_df[(introns_df['start']<= smorf_end) & (introns_df['end']>= smorf_end)]
+
+        if not start_intron.empty:
+            return 'wrong_sequence', 'start within intron'
+
+        elif not end_intron.empty:
+            return 'wrong_sequence', 'end within intron'
+
+    elif strand == '-': 
+        ## check if start is within an intron
+        start_intron = introns_df[(introns_df['start']<= smorf_end) & (introns_df['end']>= smorf_end)]
+        ## check if end is within an intron
+        end_intron = introns_df[(introns_df['start']<= smorf_start) & (introns_df['end']>= smorf_start)]
+        
+        if not start_intron.empty:
+            return 'wrong_sequence', 'start within intron'
+        
+        elif not end_intron.empty:
+            return 'wrong_sequence', 'end within intron'
+    
+    
+
+
+
+
+
+
+
 
 
