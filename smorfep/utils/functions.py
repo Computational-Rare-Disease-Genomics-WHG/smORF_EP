@@ -1197,6 +1197,14 @@ def check_smorf_transcript(ref_sequence, transcript_info, introns_df, smorf_star
         
         elif not end_intron.empty:
             return 'wrong_sequence', 'end within intron'
+    
+    
+
+
+
+
+
+
 
 
 
