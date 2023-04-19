@@ -1174,29 +1174,37 @@ def check_smorf_transcript(ref_sequence, transcript_info, introns_df, smorf_star
     matching_transcripts = []
     unmatching_trancripts = pd.DataFrame(columns=['transcript_id','flag', 'type'])
 
-    if strand == '+':
-        ## check if start is within an intron
-        start_intron = introns_df[(introns_df['start']<= smorf_start) & (introns_df['end']>= smorf_start)]
-        ## check if end is within an intron
-        end_intron = introns_df[(introns_df['start']<= smorf_end) & (introns_df['end']>= smorf_end)]
+    for index, row in transcript_info.iterrows():
 
-        if not start_intron.empty:
-            return 'wrong_sequence', 'start within intron'
+        ## check periodicity, multiple stops and XXX
 
-        elif not end_intron.empty:
-            return 'wrong_sequence', 'end within intron'
-
-    elif strand == '-': 
-        ## check if start is within an intron
-        start_intron = introns_df[(introns_df['start']<= smorf_end) & (introns_df['end']>= smorf_end)]
-        ## check if end is within an intron
-        end_intron = introns_df[(introns_df['start']<= smorf_start) & (introns_df['end']>= smorf_start)]
         
-        if not start_intron.empty:
-            return 'wrong_sequence', 'start within intron'
-        
-        elif not end_intron.empty:
-            return 'wrong_sequence', 'end within intron'
 
+        ## check introns
+        if strand == '+':
+            ## check if start is within an intron
+            start_intron = introns_df[(introns_df['start']<= smorf_start) & (introns_df['end']>= smorf_start)]
+            ## check if end is within an intron
+            end_intron = introns_df[(introns_df['start']<= smorf_end) & (introns_df['end']>= smorf_end)]
+
+            if not start_intron.empty:
+                return 'wrong_sequence', 'start within intron'
+
+            elif not end_intron.empty:
+                return 'wrong_sequence', 'end within intron'
+
+        elif strand == '-': 
+            ## check if start is within an intron
+            start_intron = introns_df[(introns_df['start']<= smorf_end) & (introns_df['end']>= smorf_end)]
+            ## check if end is within an intron
+            end_intron = introns_df[(introns_df['start']<= smorf_start) & (introns_df['end']>= smorf_start)]
+            
+            if not start_intron.empty:
+                return 'wrong_sequence', 'start within intron'
+            
+            elif not end_intron.empty:
+                return 'wrong_sequence', 'end within intron'
+        
+        
 
 
