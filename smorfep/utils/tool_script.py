@@ -14,15 +14,16 @@ def tool(ref_sequence, transcript_info, introns_df, start, end, strand, ref, alt
         Function that runs the variant consequence check.
 
         Input:
-        - ref_sequence = reference sequence for the chromosome in analysis
-        - transcript_info = dataframe structure line with the information about the transcript (start, end, id, etc)
-        - introns_df = intronic regions dataframe for the chromosome in analysis
-        - start = start of the region of interest
-        - end = end of the region of interest
+        - ref_sequence: reference sequence for the chromosome in analysis
+        - transcript_info: dataframe structure line with the information about the transcript (start, end, id, etc)
+        - introns_df: intronic regions dataframe for the chromosome in analysis
+        - start: start of the region of interest
+        - end: end of the region of interest
         - strand 
-        - variant = ref-alt
-        - variant_pos
-        - splice_site = size from the start/end of exonic region to be considered splice site. 
+        - ref: reference allele
+        - alt: alternative allele
+        - variant_pos: variant genomic position
+        - splice_site: size from the start/end of exonic region to be considered splice site. 
                         ## 1-2 bases are assumed as donor and acceptor
                         By default, this is set to 8 (VEP used range)
 
