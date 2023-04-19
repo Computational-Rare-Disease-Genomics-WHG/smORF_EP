@@ -75,15 +75,15 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
     for each_chrom in all_chromosomes: ## runs per chromosome
         ## TODO: OPTIMIZE --> allow cache freeing after each chromosome -- remove chromosome from the ref_genome dictionary
 
-        ## smorfs per chromosome
-        ## TODO: OPTIMIZe --> After each smORF, we can also remove the smORF from the analysis table -- Write outputfile before
-
-        ## variants per chromosome
+        ## variants/smorfs per chromosome
         small_df = variants_df.loc[variants_df['chrm'] == each_chrom]
+        ## TODO: OPTIMIZe --> After each smORF, we can also remove the smORF from the analysis table -- Write outputfile before
 
         ## transcripts and introns in the chromosome
         transcripts_chr = transcripts_df.loc[transcripts_df['chr'] == 'chr'+str(each_chrom)]
         introns_small = introns_df.loc[introns_df['chr'] == 'chr'+str(each_chrom)]
+        ## TODO: OPTIMIZE --> allow cache freeing after each chromosome -- remove chromosome from the ref_genome dictionary
+
 
         ## per variant
         for index, row in small_df.iterrows(): ## iterates per line 
