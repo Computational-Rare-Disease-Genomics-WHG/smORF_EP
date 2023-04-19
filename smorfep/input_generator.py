@@ -38,7 +38,7 @@ def bedvcf2intput(ref_path, bedfilename, vcffilename, outputname, bheader, vhead
     ## Keep onlyt the first 6 columns in the BED file -- info we need
     smorfs_df = smorfs_df.iloc[:, :6]
     ## rename the columns
-    smorfs_df.columns = ['chrm', 'start', 'end', 'smORF_id', 'score', 'strand']
+    smorfs_df.columns = ['chrm', 'start', 'end', 'smorf_id', 'score', 'strand']
     ## rm chr prefix from chrm column
     smorfs_df['chrm'] = smorfs_df['chrm'].str.strip('chr')
 
@@ -93,7 +93,7 @@ def bedvcf2intput(ref_path, bedfilename, vcffilename, outputname, bheader, vhead
         chrm_smorf = row.chrm
         start_smorf = row.start+1 ## +1 for the exact start coordinate as bed has start-1 format
         end_smorf = row.end
-        smorfid = row.smORF_id
+        smorfid = row.smorf_id
         strand_smorf = row.strand
         ##print(chrm_smorf, start_smorf, end_smorf, smorfid, strand_smorf)
 
@@ -150,7 +150,7 @@ def bedvcf2intput(ref_path, bedfilename, vcffilename, outputname, bheader, vhead
                     'end': [end_smorf],
                     'strand': [strand_smorf], 
                     'var_id': [var_id], 
-                    'smORF_id' : [smorfid]           
+                    'smorf_id' : [smorfid]           
                     })
 
                 df = pd.DataFrame(new_var) ## creates a temporary dataframe
