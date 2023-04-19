@@ -1179,7 +1179,6 @@ def check_smorf_transcript(ref_sequence, transcript_info, introns_df, smorf_star
         ## check periodicity, multiple stops and XXX
 
 
-
         ## check introns
         if strand == '+':
             ## check if start is within an intron
