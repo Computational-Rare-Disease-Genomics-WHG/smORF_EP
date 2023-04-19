@@ -89,8 +89,8 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
         ## 2 - iterate per smORFs
         ## 3- collect the transcript info per smORF -- check_smorf_transcript
         ## 4- Check each variant in the smORF -- 4.1 check trancript info first and exclude the unmatching transcripts first; 4.2 run the tool for the matching transcripts
-        list_smorfs = small_df
 
+        list_smorfs = small_df[]
 
         ## per variant
         for index, row in small_df.iterrows(): ## iterates per line 
@@ -145,7 +145,7 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
                             'end' : variants_df.iloc[r_index]['end'],
                             'strand' : variants_df.iloc[r_index]['strand'],
                             'var_id' : variants_df.iloc[r_index]['var_id'],
-                            'smORF_id': variants_df.iloc[r_index]['smORF_id'], ## TODO: generalise if used for other regions
+                            'smorf_id': variants_df.iloc[r_index]['smorf_id'], ## TODO: generalise if used for other regions
                             'transcript_id' : row_t.transcript_id, 
                             'transcript_type' : row_t.transcript_type,
                             'DNA_consequence' : consequence,
@@ -172,7 +172,7 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
                         'end' : variants_df.iloc[r_index]['end'],
                         'strand' : variants_df.iloc[r_index]['strand'],
                         'var_id' : variants_df.iloc[r_index]['var_id'],
-                        'smORF_id': variants_df.iloc[r_index]['smORF_id'],
+                        'smorf_id': variants_df.iloc[r_index]['smorf_id'],
                         'transcript_id' : 'no_transcript_full_region', 
                         'transcript_type' : '-',
                         'DNA_consequence' : '-',

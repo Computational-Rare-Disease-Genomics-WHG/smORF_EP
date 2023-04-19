@@ -1208,10 +1208,3 @@ def check_smorf_transcript(ref_sequence, transcript_info, introns_df, smorf_star
         
 
 
-
-
-
-
-
-
-
