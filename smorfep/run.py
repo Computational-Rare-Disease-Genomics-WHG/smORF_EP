@@ -73,12 +73,24 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
 
     ## 4- Check variant effect per transcript
     for each_chrom in all_chromosomes: ## runs per chromosome
-        ## variants per chromosome
+        ## TODO: OPTIMIZE --> allow cache freeing after each chromosome -- remove chromosome from the ref_genome dictionary
+
+        ## variants/smorfs per chromosome
         small_df = variants_df.loc[variants_df['chrm'] == each_chrom]
+        ## TODO: OPTIMIZe --> After each smORF, we can also remove the smORF from the analysis table -- Write outputfile before
 
         ## transcripts and introns in the chromosome
         transcripts_chr = transcripts_df.loc[transcripts_df['chr'] == 'chr'+str(each_chrom)]
         introns_small = introns_df.loc[introns_df['chr'] == 'chr'+str(each_chrom)]
+        ## TODO: OPTIMIZE --> allow cache freeing after each chromosome -- remove chromosome from the ref_genome dictionary
+
+        ## per smORF
+        ## 1- Collect hte list of smORFs
+        ## 2 - iterate per smORFs
+        ## 3- collect the transcript info per smORF -- check_smorf_transcript
+        ## 4- Check each variant in the smORF -- 4.1 check trancript info first and exclude the unmatching transcripts first; 4.2 run the tool for the matching transcripts
+        list_smorfs = small_df
+
 
         ## per variant
         for index, row in small_df.iterrows(): ## iterates per line 
