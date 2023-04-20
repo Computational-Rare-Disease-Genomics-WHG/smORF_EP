@@ -1172,14 +1172,14 @@ def check_smorf_transcript(ref_sequence, transcript_info, introns_df, smorf_star
     """
 
     matching_transcripts = []
-    unmatching_trancripts = pd.DataFrame(columns=['transcript_id','flag', 'type'])
+    unmatching_trancripts = pd.DataFrame(columns=['transcript_id','flag', 'type', 'length'])
 
     for index, row in transcript_info.iterrows():
 
-        ## check periodicity, multiple stops and XXX
+        ## 1- check smorf start/end within transcript
 
 
-        ## check introns
+        ## 2- check introns
         if strand == '+':
             ## check if start is within an intron
             start_intron = introns_df[(introns_df['start']<= smorf_start) & (introns_df['end']>= smorf_start)]
@@ -1203,7 +1203,11 @@ def check_smorf_transcript(ref_sequence, transcript_info, introns_df, smorf_star
             
             elif not end_intron.empty:
                 return 'wrong_sequence', 'end within intron'
-        
-        
 
+        ## 3- check periodicity
+
+
+        ## 4- check multiple stop codons
+        
+        
 
