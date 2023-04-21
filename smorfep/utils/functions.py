@@ -1154,7 +1154,7 @@ def check_stop_transcript(seq, new_sequence, start, end, variant_pos, strand, ma
     return None, '-', '-', '-'
         
 
-def check_smorf_transcript(ref_sequence, transcript_info, introns_df, smorf_start, smorf_end, strand, map_transc2gen):
+def check_smorf_transcript(ref_sequence, transcript_info, introns_df, smorf_start, smorf_end, strand):
     """
     Function to check the compatibility of smORF and transcript coordinates. 
 
@@ -1183,6 +1183,13 @@ def check_smorf_transcript(ref_sequence, transcript_info, introns_df, smorf_star
         introns_transcript = introns_df[]
 
         smorf_seq, new_len = remove_introns(introns_transcript, smorf_start, smorf_end, strand, ref_sequence)
+
+
+        ## compute coordinates map 
+        if strand == '+':
+            map_gen2transc, map_transc2gen = genome2transcript_coords(smorf_start, row.end, strand, introns_transcript)
+        elif strand == '-':
+            map_gen2transc, map_transc2gen = genome2transcript_coords(row.start, smorf_end, strand, introns_transcript)
 
 
 
