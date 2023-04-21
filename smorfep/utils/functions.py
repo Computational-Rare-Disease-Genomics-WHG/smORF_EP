@@ -1172,7 +1172,7 @@ def check_smorf_transcript(ref_sequence, transcript_info, introns_df, smorf_star
     """
 
     matching_transcripts = []
-    unmatching_transcripts = pd.DataFrame(columns=['transcript_id','flag', 'type', 'length'])
+    unmatching_trancripts = pd.DataFrame(columns=['transcript_id','flag', 'type', 'length'])
 
     for index, row in transcript_info.iterrows(): ## transcript coordinates, each line assumed to be a different transcript
 
@@ -1218,4 +1218,4 @@ def check_smorf_transcript(ref_sequence, transcript_info, introns_df, smorf_star
         
         
 
-    return matching_transcripts, unmatching_transcripts
+    return matching_transcripts, unmatching_trancripts
