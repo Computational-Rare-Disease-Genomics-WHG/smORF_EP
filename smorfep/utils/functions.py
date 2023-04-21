@@ -1174,7 +1174,9 @@ def check_smorf_transcript(ref_sequence, transcript_info, introns_df, smorf_star
     matching_transcripts = []
     unmatching_trancripts = pd.DataFrame(columns=['transcript_id','flag', 'type', 'length'])
 
-    for index, row in transcript_info.iterrows():
+    for index, row in transcript_info.iterrows(): ## transcript coordinates, each line assumed to be a different transcript
+
+        t_id = row.transcript_id
 
         ## 1- check smorf start/end within transcript
 
@@ -1187,11 +1189,11 @@ def check_smorf_transcript(ref_sequence, transcript_info, introns_df, smorf_star
             end_intron = introns_df[(introns_df['start']<= smorf_end) & (introns_df['end']>= smorf_end)]
 
             if not start_intron.empty:
-                new_row = {'transcript_id': , 'flag': 'wrong_sequence', 'type':'start within intron' , 'length': '-' }
+                new_row = {'transcript_id': t_id, 'flag': 'wrong_sequence', 'type':'start within intron' , 'length': '-' }
                 unmatching_trancripts = unmatching_trancripts.append(new_row, ignore_index=True)
 
             elif not end_intron.empty:
-                new_row = {'transcript_id': , 'flag': 'wrong_sequence', 'type': 'end within intron', 'length': '-' }
+                new_row = {'transcript_id': t_id, 'flag': 'wrong_sequence', 'type': 'end within intron', 'length': '-' }
                 unmatching_trancripts = unmatching_trancripts.append(new_row, ignore_index=True)
 
         elif strand == '-': 
@@ -1201,11 +1203,11 @@ def check_smorf_transcript(ref_sequence, transcript_info, introns_df, smorf_star
             end_intron = introns_df[(introns_df['start']<= smorf_start) & (introns_df['end']>= smorf_start)]
             
             if not start_intron.empty:
-                new_row = {'transcript_id': , 'flag': 'wrong_sequence', 'type':'start within intron' , 'length': '-' }
+                new_row = {'transcript_id': t_id, 'flag': 'wrong_sequence', 'type':'start within intron' , 'length': '-' }
                 unmatching_trancripts = unmatching_trancripts.append(new_row, ignore_index=True)
             
             elif not end_intron.empty:
-                new_row = {'transcript_id': , 'flag': 'wrong_sequence', 'type': 'end within intron', 'length': '-' }
+                new_row = {'transcript_id': t_id, 'flag': 'wrong_sequence', 'type': 'end within intron', 'length': '-' }
                 unmatching_trancripts = unmatching_trancripts.append(new_row, ignore_index=True)
 
 
