@@ -20,7 +20,7 @@ from smorfep.utils.functions import *
 
 
 
-def test_check_smorf_transcript(ref_path, transcripts_filename, introns_filename, splice_site, filename, outputname):
+def test_check_smorf_transcript(ref_path, transcripts_filename, introns_filename, filename):
 
     ## 1- reads the input file
     variants_df = read_variants_file(filename, '\t', 0)
@@ -70,6 +70,7 @@ def test_check_smorf_transcript(ref_path, transcripts_filename, introns_filename
 
         ## per smORF
         list_smorfs = small_df['smorf_id'].unique() ## TODO: check if this is a list or needs to be converted
+        print(list_smorfs)
 
         ## per variant
         for index, row in small_df.iterrows(): ## iterates per line 
@@ -97,7 +98,7 @@ def test_check_smorf_transcript(ref_path, transcripts_filename, introns_filename
                     ## introns per transcript
                     introns_transcript = introns_small.loc[introns_small['transcript_id'] == row_t.transcript_id]
 
-                    check_smorf_transcript(reference_genome[each_chrom], transcripts_small, introns)
+                    check_smorf_transcript(reference_genome[each_chrom], transcripts_small, introns_transcript)
 
                 
 
@@ -106,7 +107,16 @@ def test_check_smorf_transcript(ref_path, transcripts_filename, introns_filename
 def main(): 
     """
     Testing arguments
+
     """ 
+
+    ref_path = "/Users/mariaf/Desktop/GitHub/smORF_EP/ref_genome/"
+    transcripts_path = "/Users/mariaf/Desktop/GitHub/smORF_EP/transcripts/gencode.v41.annotation.gff3_transcriptCoord_2023-04-14.tsv"
+    introns_path = "/Users/mariaf/Desktop/GitHub/smORF_EP/transcripts/gencode.v41.annotation.gff3_introns_2023-04-14.tsv" 
+    inptuname = "/Users/mariaf/Desktop/GitHub/smORF_EP/smorfep/test/test15_Final_test_introns.tsv"
+
+
+    test_check_smorf_transcript(ref_path, transcripts_path, introns_path, inptuname)
 
 
 
