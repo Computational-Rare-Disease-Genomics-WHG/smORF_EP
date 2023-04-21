@@ -1174,48 +1174,64 @@ def check_smorf_transcript(ref_sequence, transcript_info, introns_df, smorf_star
     matching_transcripts = []
     unmatching_trancripts = pd.DataFrame(columns=['transcript_id','flag', 'type', 'length'])
 
+    stop_codons = ['TAG', 'TAA', 'TGA']
+
     for index, row in transcript_info.iterrows(): ## transcript coordinates, each line assumed to be a different transcript
 
         t_id = row.transcript_id
 
+        introns_transcript = introns_df[]
+
+        smorf_seq, new_len = remove_introns(introns_transcript, smorf_start, smorf_end, strand, ref_sequence)
+
+
+
         ## 1- check smorf start/end within transcript
 
 
-        ## 2- check introns
-        if strand == '+':
-            ## check if start is within an intron
-            start_intron = introns_df[(introns_df['start']<= smorf_start) & (introns_df['end']>= smorf_start)]
-            ## check if end is within an intron
-            end_intron = introns_df[(introns_df['start']<= smorf_end) & (introns_df['end']>= smorf_end)]
+        ## 2- check 3nt periodicity
+        if new_len % 3 != 0: 
+            new_row = {'transcript_id': t_id, 'flag': 'wrong_sequence', 'type': 'not_multiple_of_3', 'length': new_len }
+            unmatching_trancripts = unmatching_trancripts.append(new_row, ignore_index=True)
 
-            if not start_intron.empty:
-                new_row = {'transcript_id': t_id, 'flag': 'wrong_sequence', 'type':'start within intron' , 'length': '-' }
-                unmatching_trancripts = unmatching_trancripts.append(new_row, ignore_index=True)
-
-            elif not end_intron.empty:
-                new_row = {'transcript_id': t_id, 'flag': 'wrong_sequence', 'type': 'end within intron', 'length': '-' }
-                unmatching_trancripts = unmatching_trancripts.append(new_row, ignore_index=True)
-
-        elif strand == '-': 
-            ## check if start is within an intron
-            start_intron = introns_df[(introns_df['start']<= smorf_end) & (introns_df['end']>= smorf_end)]
-            ## check if end is within an intron
-            end_intron = introns_df[(introns_df['start']<= smorf_start) & (introns_df['end']>= smorf_start)]
+        ## 3- Last trio is not a stop
+        elif smorf_seq[len(smorf_seq)-3:len(smorf_seq)+1] not in stop_codons:
+            return 'wrong_sequence', 'last_trio_not_a_stop', smorf_seq[len(seq)-3:len(seq)+1], '-'
             
-            if not start_intron.empty:
-                new_row = {'transcript_id': t_id, 'flag': 'wrong_sequence', 'type':'start within intron' , 'length': '-' }
-                unmatching_trancripts = unmatching_trancripts.append(new_row, ignore_index=True)
-            
-            elif not end_intron.empty:
-                new_row = {'transcript_id': t_id, 'flag': 'wrong_sequence', 'type': 'end within intron', 'length': '-' }
-                unmatching_trancripts = unmatching_trancripts.append(new_row, ignore_index=True)
-
-
-        ## 3- check periodicity
-
-
+        
         ## 4- check multiple stop codons
-        
-        
+
+
+        ## 5- check introns
+        else: 
+            if strand == '+':
+                ## check if start is within an intron
+                start_intron = introns_df[(introns_df['start']<= smorf_start) & (introns_df['end']>= smorf_start)]
+                ## check if end is within an intron
+                end_intron = introns_df[(introns_df['start']<= smorf_end) & (introns_df['end']>= smorf_end)]
+
+                if not start_intron.empty:
+                    new_row = {'transcript_id': t_id, 'flag': 'wrong_sequence', 'type':'start within intron' , 'length': '-' }
+                    unmatching_trancripts = unmatching_trancripts.append(new_row, ignore_index=True)
+
+                elif not end_intron.empty:
+                    new_row = {'transcript_id': t_id, 'flag': 'wrong_sequence', 'type': 'end within intron', 'length': '-' }
+                    unmatching_trancripts = unmatching_trancripts.append(new_row, ignore_index=True)
+
+            elif strand == '-': 
+                ## check if start is within an intron
+                start_intron = introns_df[(introns_df['start']<= smorf_end) & (introns_df['end']>= smorf_end)]
+                ## check if end is within an intron
+                end_intron = introns_df[(introns_df['start']<= smorf_start) & (introns_df['end']>= smorf_start)]
+                
+                if not start_intron.empty:
+                    new_row = {'transcript_id': t_id, 'flag': 'wrong_sequence', 'type':'start within intron' , 'length': '-' }
+                    unmatching_trancripts = unmatching_trancripts.append(new_row, ignore_index=True)
+                
+                elif not end_intron.empty:
+                    new_row = {'transcript_id': t_id, 'flag': 'wrong_sequence', 'type': 'end within intron', 'length': '-' }
+                    unmatching_trancripts = unmatching_trancripts.append(new_row, ignore_index=True)
+            
+            
 
     return matching_transcripts, unmatching_trancripts
