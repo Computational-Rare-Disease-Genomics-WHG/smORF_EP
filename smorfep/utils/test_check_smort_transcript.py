@@ -98,7 +98,7 @@ def test_check_smorf_transcript(ref_path, transcripts_filename, introns_filename
                     ## introns per transcript
                     introns_transcript = introns_small.loc[introns_small['transcript_id'] == row_t.transcript_id]
 
-                    check_smorf_transcript(reference_genome[each_chrom], transcripts_small, introns_transcript)
+                    check_smorf_transcript(reference_genome[each_chrom], transcripts_small, introns_transcript, smorf_start, smorf_end, smorf_strand)
 
                 
 
