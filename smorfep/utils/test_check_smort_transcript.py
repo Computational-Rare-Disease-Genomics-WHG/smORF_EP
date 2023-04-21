@@ -113,8 +113,10 @@ def main():
     inptuname = "/Users/mariaf/Desktop/GitHub/smORF_EP/smorfep/test/test14_Final_test.tsv"
 
 
-    test_check_smorf_transcript(ref_path, transcripts_path, introns_path, inptuname)
+    matching_t, unmatching_t = test_check_smorf_transcript(ref_path, transcripts_path, introns_path, inptuname)
+    print(matching_t)
 
+    print(unmatching_t)
 
 
 if __name__ == '__main__':
