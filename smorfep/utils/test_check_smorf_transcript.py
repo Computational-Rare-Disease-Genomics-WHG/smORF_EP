@@ -57,16 +57,12 @@ def test_check_smorf_transcript(ref_path, transcripts_filename, introns_filename
 
     ## 4- Check variant effect per transcript
     for each_chrom in all_chromosomes: ## runs per chromosome
-        ## TODO: OPTIMIZE --> allow cache freeing after each chromosome -- remove chromosome from the ref_genome dictionary
-
         ## variants/smorfs per chromosome
         small_df = variants_df.loc[variants_df['chrm'] == each_chrom]
-        ## TODO: OPTIMIZe --> After each smORF, we can also remove the smORF from the analysis table -- Write outputfile before
 
         ## transcripts and introns in the chromosome
         transcripts_chr = transcripts_df.loc[transcripts_df['chr'] == 'chr'+str(each_chrom)]
         introns_small = introns_df.loc[introns_df['chr'] == 'chr'+str(each_chrom)]
-        ## TODO: OPTIMIZE --> allow cache freeing after each chromosome -- remove chromosome from the ref_genome dictionary
 
         ## per smORF
         list_smorfs = small_df['smorf_id'].unique() ## list of unique smorf ID in the chromosome
@@ -97,8 +93,10 @@ def test_check_smorf_transcript(ref_path, transcripts_filename, introns_filename
                     ## introns per transcript
                     introns_transcript = introns_small.loc[introns_small['transcript_id'] == row_t.transcript_id]
 
-                    check_smorf_transcript(reference_genome[each_chrom], transcripts_small, introns_transcript, smorf_start, smorf_end, smorf_strand)
+                    matching_t, unmatching_t = check_smorf_transcript(reference_genome[each_chrom], transcripts_small, introns_transcript, smorf_start, smorf_end, smorf_strand)
+                    print(matching_t)
 
+                    print(unmatching_t)
                 
 
 def main(): 
@@ -110,13 +108,10 @@ def main():
     ref_path = "/Users/mariaf/Desktop/GitHub/smORF_EP/ref_genome/"
     transcripts_path = "/Users/mariaf/Desktop/GitHub/smORF_EP/transcripts/gencode.v41.annotation.gff3_transcriptCoord_2023-04-14.tsv"
     introns_path = "/Users/mariaf/Desktop/GitHub/smORF_EP/transcripts/gencode.v41.annotation.gff3_introns_2023-04-14.tsv" 
-    inptuname = "/Users/mariaf/Desktop/GitHub/smORF_EP/smorfep/test/test14_Final_test.tsv"
+    inputname = "/Users/mariaf/Desktop/GitHub/smORF_EP/smorfep/test/test14_Final_test.tsv"
 
 
-    matching_t, unmatching_t = test_check_smorf_transcript(ref_path, transcripts_path, introns_path, inptuname)
-    print(matching_t)
-
-    print(unmatching_t)
+    test_check_smorf_transcript(ref_path, transcripts_path, introns_path, inputname)
 
 
 if __name__ == '__main__':
