@@ -1253,4 +1253,9 @@ def check_smorf_transcript(ref_sequence, transcript_info, introns_df, smorf_star
         else:
             matching_transcripts.append(t_id)
 
-    return matching_transcripts, unmatching_trancripts
+    print(matching_transcripts)
+    print(unmatching_trancripts)
+    print(map_gen2transc)
+    print(map_transc2gen)
+
+    return matching_transcripts, unmatching_trancripts, map_gen2transc, map_transc2gen
