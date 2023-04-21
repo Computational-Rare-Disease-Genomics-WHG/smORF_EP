@@ -1238,7 +1238,7 @@ def check_smorf_transcript(ref_sequence, transcript_info, introns_df, smorf_star
                     new_row = {'transcript_id': t_id, 'flag': 'wrong_sequence', 'type': 'end within intron', 'length': '-' }
                     unmatching_trancripts = unmatching_trancripts.append(new_row, ignore_index=True)
         
-        else:
+        elif : ## TODO
             ## 5- check multiple stop codons
             if strand == '+':
                 s, s_index = find_stop_inframe(smorf_seq[:len(smorf_seq)-3], map_transc2gen) ## removes last codon and searches for stop codons inframe
@@ -1249,5 +1249,8 @@ def check_smorf_transcript(ref_sequence, transcript_info, introns_df, smorf_star
                 new_row = {'transcript_id': t_id, 'flag': 'wrong_sequence', 'type': 'more_than_one_stop', 'length': '-' }
                 unmatching_trancripts = unmatching_trancripts.append(new_row, ignore_index=True)
             
+        ## transcript matches 
+        else:
+            matching_transcripts.append(t_id)
 
     return matching_transcripts, unmatching_trancripts
