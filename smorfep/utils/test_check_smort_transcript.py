@@ -20,7 +20,7 @@ from smorfep.utils.functions import *
 
 
 
-def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, filename, outputname):
+def test_check_smorf_transcript(ref_path, transcripts_filename, introns_filename, splice_site, filename, outputname):
 
     ## 1- reads the input file
     variants_df = read_variants_file(filename, '\t', 0)
@@ -69,11 +69,6 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
         ## TODO: OPTIMIZE --> allow cache freeing after each chromosome -- remove chromosome from the ref_genome dictionary
 
         ## per smORF
-        ## 1- Collect hte list of smORFs
-        ## 2 - iterate per smORFs
-        ## 3- collect the transcript info per smORF -- check_smorf_transcript
-        ## 4- Check each variant in the smORF -- 4.1 check trancript info first and exclude the unmatching transcripts first; 4.2 run the tool for the matching transcripts
-
         list_smorfs = small_df['smorf_id'].unique() ## TODO: check if this is a list or needs to be converted
 
         ## per variant
@@ -91,13 +86,29 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
             ## transcript needs to cover the full sequence region
             ## transcript in the same strand
 
-            ## check if the variant is within the region of interest, only run the tool if it is within
-            if variant_position >= seq_start and variant_position <= seq_end: 
+            ## Unique IDs from transcripts_small
+            t_unique_ids = transcripts_small['transcript_id'].unique()
 
-                if not transcripts_small.empty:
-                    
-                    ##4.2 - check the consequence per transcript
-                    for index_t, row_t in transcripts_small.iterrows():
+            if not transcripts_small.empty:
+                
+                ##4.2 - iterare per transcript
+                for index_t, row_t in transcripts_small.iterrows():
 
-                        ## introns per transcript
-                        introns_transcript = introns_small.loc[introns_small['transcript_id'] == row_t.transcript_id]
+                    ## introns per transcript
+                    introns_transcript = introns_small.loc[introns_small['transcript_id'] == row_t.transcript_id]
+
+                    check_smorf_transcript(reference_genome[each_chrom], transcripts_small, introns)
+
+                
+
+
+
+def main(): 
+    """
+    Testing arguments
+    """ 
+
+
+
+if __name__ == '__main__':
+    main()
