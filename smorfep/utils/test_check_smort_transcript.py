@@ -113,7 +113,7 @@ def main():
     ref_path = "/Users/mariaf/Desktop/GitHub/smORF_EP/ref_genome/"
     transcripts_path = "/Users/mariaf/Desktop/GitHub/smORF_EP/transcripts/gencode.v41.annotation.gff3_transcriptCoord_2023-04-14.tsv"
     introns_path = "/Users/mariaf/Desktop/GitHub/smORF_EP/transcripts/gencode.v41.annotation.gff3_introns_2023-04-14.tsv" 
-    inptuname = "/Users/mariaf/Desktop/GitHub/smORF_EP/smorfep/test/test15_Final_test_introns.tsv"
+    inptuname = "/Users/mariaf/Desktop/GitHub/smORF_EP/smorfep/test/test14_Final_test.tsv"
 
 
     test_check_smorf_transcript(ref_path, transcripts_path, introns_path, inptuname)
