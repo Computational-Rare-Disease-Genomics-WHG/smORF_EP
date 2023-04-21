@@ -1187,10 +1187,12 @@ def check_smorf_transcript(ref_sequence, transcript_info, introns_df, smorf_star
             end_intron = introns_df[(introns_df['start']<= smorf_end) & (introns_df['end']>= smorf_end)]
 
             if not start_intron.empty:
-                return 'wrong_sequence', 'start within intron'
+                new_row = {'transcript_id': , 'flag': 'wrong_sequence', 'type':'start within intron' , 'length': '-' }
+                unmatching_trancripts = unmatching_trancripts.append(new_row, ignore_index=True)
 
             elif not end_intron.empty:
-                return 'wrong_sequence', 'end within intron'
+                new_row = {'transcript_id': , 'flag': 'wrong_sequence', 'type': 'end within intron', 'length': '-' }
+                unmatching_trancripts = unmatching_trancripts.append(new_row, ignore_index=True)
 
         elif strand == '-': 
             ## check if start is within an intron
@@ -1205,6 +1207,7 @@ def check_smorf_transcript(ref_sequence, transcript_info, introns_df, smorf_star
             elif not end_intron.empty:
                 new_row = {'transcript_id': , 'flag': 'wrong_sequence', 'type': 'end within intron', 'length': '-' }
                 unmatching_trancripts = unmatching_trancripts.append(new_row, ignore_index=True)
+
 
         ## 3- check periodicity
 
