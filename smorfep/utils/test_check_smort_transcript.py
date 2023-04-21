@@ -69,8 +69,7 @@ def test_check_smorf_transcript(ref_path, transcripts_filename, introns_filename
         ## TODO: OPTIMIZE --> allow cache freeing after each chromosome -- remove chromosome from the ref_genome dictionary
 
         ## per smORF
-        list_smorfs = small_df['smorf_id'].unique() ## TODO: check if this is a list or needs to be converted
-        print(list_smorfs)
+        list_smorfs = small_df['smorf_id'].unique() ## list of unique smorf ID in the chromosome
 
         ## per variant
         for index, row in small_df.iterrows(): ## iterates per line 
@@ -101,8 +100,6 @@ def test_check_smorf_transcript(ref_path, transcripts_filename, introns_filename
                     check_smorf_transcript(reference_genome[each_chrom], transcripts_small, introns_transcript, smorf_start, smorf_end, smorf_strand)
 
                 
-
-
 
 def main(): 
     """
