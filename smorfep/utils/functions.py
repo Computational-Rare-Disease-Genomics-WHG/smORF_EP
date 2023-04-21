@@ -1154,7 +1154,7 @@ def check_stop_transcript(seq, new_sequence, start, end, variant_pos, strand, ma
     return None, '-', '-', '-'
         
 
-def check_smorf_transcript(ref_sequence, transcript_info, introns_df, smorf_start, smorf_end, strand):
+def check_smorf_transcript(ref_sequence, transcript_info, introns_df, smorf_start, smorf_end, strand, map_transc2gen):
     """
     Function to check the compatibility of smORF and transcript coordinates. 
 
@@ -1196,14 +1196,13 @@ def check_smorf_transcript(ref_sequence, transcript_info, introns_df, smorf_star
 
         ## 3- Last trio is not a stop
         elif smorf_seq[len(smorf_seq)-3:len(smorf_seq)+1] not in stop_codons:
-            return 'wrong_sequence', 'last_trio_not_a_stop', smorf_seq[len(seq)-3:len(seq)+1], '-'
-            
-        
-        ## 4- check multiple stop codons
+            last_codon = smorf_seq[len(smorf_seq)-3:len(smorf_seq)+1]
+            new_row = {'transcript_id': t_id, 'flag': 'wrong_sequence', 'type': 'last_trio_not_a_stop', 'length': last_codon }
+            unmatching_trancripts = unmatching_trancripts.append(new_row, ignore_index=True)
+    
 
-
-        ## 5- check introns
-        else: 
+        ## 4- check introns
+        elif not introns_transcript.empty:
             if strand == '+':
                 ## check if start is within an intron
                 start_intron = introns_df[(introns_df['start']<= smorf_start) & (introns_df['end']>= smorf_start)]
@@ -1231,7 +1230,17 @@ def check_smorf_transcript(ref_sequence, transcript_info, introns_df, smorf_star
                 elif not end_intron.empty:
                     new_row = {'transcript_id': t_id, 'flag': 'wrong_sequence', 'type': 'end within intron', 'length': '-' }
                     unmatching_trancripts = unmatching_trancripts.append(new_row, ignore_index=True)
-            
+        
+        else:
+            ## 5- check multiple stop codons
+            if strand == '+':
+                s, s_index = find_stop_inframe(seq[:len(seq)-3], map_transc2gen) ## removes last codon and searches for stop codons inframe
+            elif strand == '-':
+                s, s_index = find_stop_inframe(seq[:len(seq)-3], map_transc2gen)
+
+            if s != None: ## Multiple stop codons in the sequence 
+                return 'wrong_sequence', 'More_than_one_stop', '-', '-'
+
             
 
     return matching_transcripts, unmatching_trancripts
