@@ -77,13 +77,13 @@ def test_check_smorf_transcript(ref_path, transcripts_filename, introns_filename
             
             ##4.1 - find transcripts the region falls in:
             variant_position = small_df.loc[index]['var_pos']
-            seq_start = small_df.loc[index]['start']
-            seq_end = small_df.loc[index]['end']
-            seq_strand = small_df.loc[index]['strand']
+            smorf_start = small_df.loc[index]['start']
+            smorf_end = small_df.loc[index]['end']
+            smorf_strand = small_df.loc[index]['strand']
             variant_id = small_df.loc[index]['var_id']
 
 
-            transcripts_small = transcripts_chr.loc[(transcripts_chr.start <= seq_start) & (transcripts_chr.end >= seq_end) & (transcripts_chr.strand == seq_strand)]
+            transcripts_small = transcripts_chr.loc[(transcripts_chr.start <= smorf_start) & (transcripts_chr.end >= smorf_end) & (transcripts_chr.strand == smorf_strand)]
             ## transcript needs to cover the full sequence region
             ## transcript in the same strand
 
