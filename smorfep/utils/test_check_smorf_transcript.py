@@ -101,7 +101,7 @@ def test_check_smorf_transcript(ref_path, transcripts_filename, introns_filename
                     print(smorf_end)
                     print(smorf_strand)
 
-                    matching_t, unmatching_t, map_gen2transc, map_transc2gen = check_smorf_transcript(reference_genome[each_chrom], transcripts_small, introns_transcript, smorf_start, smorf_end, smorf_strand)
+                    ##matching_t, unmatching_t, map_gen2transc, map_transc2gen = compatibility_smorf_transcript(reference_genome[each_chrom], transcripts_small, introns_transcript, smorf_start, smorf_end, smorf_strand)
                     print(matching_t)
 
                     print(unmatching_t)
