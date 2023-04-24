@@ -145,7 +145,7 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
                             'end' : variants_df.iloc[r_index]['end'],
                             'strand' : variants_df.iloc[r_index]['strand'],
                             'var_id' : variants_df.iloc[r_index]['var_id'],
-                            'smorf_id': variants_df.iloc[r_index]['smorf_id'], ## TODO: generalise if used for other regions
+                            'smorf_id': variants_df.iloc[r_index]['smorf_id'], 
                             'transcript_id' : row_t.transcript_id, 
                             'transcript_type' : row_t.transcript_type,
                             'DNA_consequence' : consequence,
