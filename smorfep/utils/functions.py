@@ -1154,7 +1154,7 @@ def check_stop_transcript(seq, new_sequence, start, end, variant_pos, strand, ma
     return None, '-', '-', '-'
         
 
-def check_smorf_transcript(ref_sequence, transcript_info, introns_df, smorf_start, smorf_end, strand):
+def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, smorf_start, smorf_end, strand):
     """
     Function to check the compatibility of smORF and transcript coordinates. 
 
