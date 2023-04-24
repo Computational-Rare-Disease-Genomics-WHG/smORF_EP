@@ -93,21 +93,9 @@ def test_check_smorf_transcript(ref_path, transcripts_filename, introns_filename
                     ## introns per transcript
                     introns_transcript = introns_small.loc[introns_small['transcript_id'] == row_t.transcript_id]
 
-                    ## print arguments
-                    ##print(reference_genome[each_chrom])
-                    #print(transcripts_small)
-                    ##print(introns_transcript)
-                    print(smorf_start)
-                    print(smorf_end)
-                    print(smorf_strand)
-
                     matching_t, unmatching_t, map_gen2transc, map_transc2gen = compatibility_smorf_transcript(reference_genome[each_chrom], transcripts_small, introns_transcript, smorf_start, smorf_end, smorf_strand)
-                    print(matching_t)
-
-                    print(unmatching_t)
-
-                    #print(map_gen2transc)
-                    #print(map_transc2gen)
+    
+    return matching_t, unmatching_t, map_gen2transc, map_transc2gen
                 
 
 def main(): 
@@ -122,8 +110,10 @@ def main():
     ##inputname = "/Users/mariaf/Desktop/GitHub/smORF_EP/smorfep/test/test14_Final_test.tsv"
     inputname = "/Users/mariaf/Desktop/GitHub/smORF_EP/smorfep/test/test_long_smorfinput.tsv"
 
-    test_check_smorf_transcript(ref_path, transcripts_path, introns_path, inputname)
+    matching_t, unmatching_t, map_gen2transc, map_transc2gen = test_check_smorf_transcript(ref_path, transcripts_path, introns_path, inputname)
+    print(matching_t)
 
+    print(unmatching_t) 
 
 if __name__ == '__main__':
     main()
