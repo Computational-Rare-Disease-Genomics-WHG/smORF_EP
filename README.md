@@ -117,13 +117,17 @@ smorfinput -b <BED file> --bedheader -v <VCF file> --vcfheader -o <outputname>
 
 Example:
 ```
-smorfep -r ref_genome/ -t transcripts/<transcriptCoord.tsv> -i transcripts/<introns.tsv> -f <variants_file>.tsv -o <outputname.tsv>
+smorfep -r <path_to_ref_genome/>ref_genome/ -t <path_to_transcriptCoord_file/transcriptCoord.tsv> -i <path_to_transcriptCoord_file/introns.tsv> -f <variants_file>.tsv -o <outputname.tsv>
 ```
 **-r**: reference genome repository, where the sequences per chromosome are stored.
 **-t**: file with the transcripts coordiantes (start and end).
 **-i**: file with the introns coordinates for the transcripts in the study.
 **-f**: input file with the variants and respective smORF region (see Input(#input)).
 **-o**: output file (see Output(#output)). 
+
+Note: 
+Add path before input and output filename for scpecific locations.
+
 
 # Input and output
 
