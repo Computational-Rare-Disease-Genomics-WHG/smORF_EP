@@ -1180,10 +1180,10 @@ def check_smorf_transcript(ref_sequence, transcript_info, introns_df, smorf_star
 
         t_id = row.transcript_id
 
-        introns_transcript = introns_df[]
+        ## introns for the transcript
+        introns_transcript = introns_df.loc[introns_df['transcript_id']== t_id]
 
         smorf_seq, new_len = remove_introns(introns_transcript, smorf_start, smorf_end, strand, ref_sequence)
-
 
         ## compute coordinates map 
         if strand == '+':
