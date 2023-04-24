@@ -1202,11 +1202,11 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
 
                 if not start_intron.empty:
                     new_row = {'transcript_id': t_id, 'flag': 'wrong_sequence', 'type':'start within intron' , 'length': '-' }
-                    unmatching_trancripts = unmatching_trancripts.append(new_row, ignore_index=True)
+                    unmatching_trancripts = pd.concat([unmatching_trancripts, new_row], ignore_index=True)
 
                 elif not end_intron.empty:
                     new_row = {'transcript_id': t_id, 'flag': 'wrong_sequence', 'type': 'end within intron', 'length': '-' }
-                    unmatching_trancripts = unmatching_trancripts.append(new_row, ignore_index=True)
+                    unmatching_trancripts = pd.concat([unmatching_trancripts, new_row], ignore_index=True)
 
             elif strand == '-': 
                 ## check if start is within an intron
@@ -1216,11 +1216,11 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
                 
                 if not start_intron.empty:
                     new_row = {'transcript_id': t_id, 'flag': 'wrong_sequence', 'type':'start within intron' , 'length': '-' }
-                    unmatching_trancripts = unmatching_trancripts.append(new_row, ignore_index=True)
+                    unmatching_trancripts = pd.concat([unmatching_trancripts, new_row], ignore_index=True)
                 
                 elif not end_intron.empty:
                     new_row = {'transcript_id': t_id, 'flag': 'wrong_sequence', 'type': 'end within intron', 'length': '-' }
-                    unmatching_trancripts = unmatching_trancripts.append(new_row, ignore_index=True)
+                    unmatching_trancripts = pd.concat([unmatching_trancripts, new_row], ignore_index=True)
         
 
         ## compute coordinates map 
@@ -1240,27 +1240,27 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
         ## 2- check smorf start/end within transcript
         if smorf_start < t_start: ## smorf start
             new_row = {'transcript_id': t_id, 'flag': 'wrong_sequence', 'type': 'start_off_transcript', 'length': '-' }
-            unmatching_trancripts = unmatching_trancripts.append(new_row, ignore_index=True)
+            unmatching_trancripts = pd.concat([unmatching_trancripts, new_row], ignore_index=True)
         elif smorf_end > t_end: ## smorf end
             new_row = {'transcript_id': t_id, 'flag': 'wrong_sequence', 'type': 'end_off_transcript', 'length': '-' }
-            unmatching_trancripts = unmatching_trancripts.append(new_row, ignore_index=True)
+            unmatching_trancripts = pd.concat([unmatching_trancripts, new_row], ignore_index=True)
 
         ## 3- check 3nt periodicity
         elif smorf_len % 3 != 0: 
             new_row = {'transcript_id': t_id, 'flag': 'wrong_sequence', 'type': 'not_multiple_of_3', 'length': smorf_len }
-            unmatching_trancripts = unmatching_trancripts.append(new_row, ignore_index=True)
+            unmatching_trancripts = pd.concat([unmatching_trancripts, new_row], ignore_index=True)
 
         ## 4- Last trio is not a stop
         elif smorf_seq[len(smorf_seq)-3:len(smorf_seq)+1] not in stop_codons:
             last_codon = smorf_seq[len(smorf_seq)-3:len(smorf_seq)+1]
             new_row = {'transcript_id': t_id, 'flag': 'wrong_sequence', 'type': 'last_trio_not_a_stop', 'length': last_codon }
-            unmatching_trancripts = unmatching_trancripts.append(new_row, ignore_index=True)
+            unmatching_trancripts = pd.concat([unmatching_trancripts, new_row], ignore_index=True)
         
         ## 5- check multiple stop codons
 
         elif s != None: ## Multiple stop codons in the sequence 
             new_row = {'transcript_id': t_id, 'flag': 'wrong_sequence', 'type': 'more_than_one_stop', 'length': '-' }
-            unmatching_trancripts = unmatching_trancripts.append(new_row, ignore_index=True)
+            unmatching_trancripts = pd.concat([unmatching_trancripts, new_row], ignore_index=True)
         
         ## transcript matches 
         else:
