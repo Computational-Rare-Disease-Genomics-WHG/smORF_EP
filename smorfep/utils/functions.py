@@ -1179,16 +1179,18 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
     for index, row in transcript_info.iterrows(): ## transcript coordinates, each line assumed to be a different transcript
 
         t_id = row.transcript_id
+        t_start = row.start
+        t_end = row.end
 
         ## introns for the transcript
         introns_transcript = introns_df.loc[introns_df['transcript_id']== t_id]
 
         if introns_transcript.empty:
             smorf_seq = get_sequence(smorf_start, smorf_end, strand, ref_sequence)
-
+            smorf_len = len(smorf_seq)
 
         elif not introns_transcript.empty:
-            smorf_seq, new_len = remove_introns(introns_transcript, smorf_start, smorf_end, strand, ref_sequence)
+            smorf_seq, smorf_len = remove_introns(introns_transcript, smorf_start, smorf_end, strand, ref_sequence)
 
 
             ## 1- check introns
@@ -1236,11 +1238,16 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
 
 
         ## 2- check smorf start/end within transcript
-
+        if smorf_start < t_start: ## smorf start
+            new_row = {'transcript_id': t_id, 'flag': 'wrong_sequence', 'type': 'start_off_transcript', 'length': '-' }
+            unmatching_trancripts = unmatching_trancripts.append(new_row, ignore_index=True)
+        elif smorf_end > t_end: ## smorf end
+            new_row = {'transcript_id': t_id, 'flag': 'wrong_sequence', 'type': 'end_off_transcript', 'length': '-' }
+            unmatching_trancripts = unmatching_trancripts.append(new_row, ignore_index=True)
 
         ## 3- check 3nt periodicity
-        if new_len % 3 != 0: 
-            new_row = {'transcript_id': t_id, 'flag': 'wrong_sequence', 'type': 'not_multiple_of_3', 'length': new_len }
+        elif smorf_len % 3 != 0: 
+            new_row = {'transcript_id': t_id, 'flag': 'wrong_sequence', 'type': 'not_multiple_of_3', 'length': smorf_len }
             unmatching_trancripts = unmatching_trancripts.append(new_row, ignore_index=True)
 
         ## 4- Last trio is not a stop
