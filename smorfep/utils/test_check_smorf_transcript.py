@@ -95,8 +95,8 @@ def test_check_smorf_transcript(ref_path, transcripts_filename, introns_filename
 
                     ## print arguments
                     ##print(reference_genome[each_chrom])
-                    print(transcripts_small)
-                    print(introns_transcript)
+                    #print(transcripts_small)
+                    ##print(introns_transcript)
                     print(smorf_start)
                     print(smorf_end)
                     print(smorf_strand)
@@ -106,8 +106,8 @@ def test_check_smorf_transcript(ref_path, transcripts_filename, introns_filename
 
                     print(unmatching_t)
 
-                    print(map_gen2transc)
-                    print(map_transc2gen)
+                    #print(map_gen2transc)
+                    #print(map_transc2gen)
                 
 
 def main(): 
