@@ -5,16 +5,9 @@
 ## Script to test check_smorf_transcript function 
 ## Apr 2023
 
-import sys
-import os
+
 import time
-
 import pandas as pd
-import argparse 
-
-from os.path import exists
-from datetime import date
-from numpy import require
 
 from smorfep.utils.functions import *
 
@@ -116,4 +109,11 @@ def main():
     print(unmatching_t) 
 
 if __name__ == '__main__':
+
+    start_time = time.time()
+
     main()
+
+    print('DONE!')
+    end_time = (time.time() - start_time)#/ 60.0
+    print(end_time, 'seconds.')
