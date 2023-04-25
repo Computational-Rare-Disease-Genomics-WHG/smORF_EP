@@ -77,7 +77,7 @@ def test_check_smorf_transcript(ref_path, transcripts_filename, introns_filename
 
                 if not transcripts_small.empty:
                     
-                    matching_t, unmatching_t, map_gen2transc, map_transc2gen = compatibility_smorf_transcript(reference_genome[each_chrom], transcripts_small, introns_small, smorf_start, smorf_end, smorf_strand)
+                    matching_t, unmatching_t, map_gen2transc, map_transc2gen = compatibility_smorf_transcript(reference_genome[each_chrom], transcripts_small, introns_small,smorf_id, smorf_start, smorf_end, smorf_strand)
                     ## this function runs for all transcripts within which the smorf falls within
                 
                 
@@ -100,7 +100,7 @@ def main():
     transcripts_path = "/Users/mariaf/Desktop/GitHub/smORF_EP/transcripts/gencode.v41.annotation.gff3_transcriptCoord_2023-04-14.tsv"
     introns_path = "/Users/mariaf/Desktop/GitHub/smORF_EP/transcripts/gencode.v41.annotation.gff3_introns_2023-04-14.tsv" 
     inputname = "/Users/mariaf/Desktop/GitHub/smORF_EP/smorfep/test/test14_Final_test.tsv"
-    ##inputname = "/Users/mariaf/Desktop/GitHub/smORF_EP/smorfep/test/test14_first.tsv"
+    ##inputname = "/Users/mariaf/Desktop/GitHub/smORF_EP/smorfep/test/test16_Final_test_introns.tsv"
 
     ## R file
     ##inputname = "/Users/mariaf/Desktop/GitHub/smORF_EP/smorfep/test/test_long_smorfinput.tsv"
