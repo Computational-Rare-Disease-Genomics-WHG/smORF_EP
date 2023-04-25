@@ -3,7 +3,7 @@
 smORF-EP: predicting the effect of variants in small open reading frames.
 
 
-- [Background/citation](#background/citation)
+- [How to cite](#how-to-cite)
 - [Requirements](#requirements)
 - [Install smORF-EP](#install-smorf-ep)
 - [Download Reference and transcripts](#donwload-reference-and-transcripts)
@@ -15,7 +15,7 @@ smORF-EP: predicting the effect of variants in small open reading frames.
 
 
 
-# Background/citation
+# How to cite
 
 <!-- 
 'smORF-EP: predicting the effect of variants in small open reading frames'
