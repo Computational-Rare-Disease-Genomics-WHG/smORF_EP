@@ -5,6 +5,8 @@
 ## Script to test check_smorf_transcript function 
 ## Apr 2023
 
+## transcripts file is assumed to do not have duplicates.
+
 
 import time
 import pandas as pd
@@ -17,9 +19,6 @@ def test_check_smorf_transcript(ref_path, transcripts_filename, introns_filename
 
     ## 1- reads the input file
     variants_df = read_variants_file(filename, '\t', 0)
-
-    ## creates new empty dataframe for the consequences
-    vars_cons_df = pd.DataFrame(data=None, columns=variants_df.columns)
 
     ## checks which cromosomes are in it
     all_chromosomes = variants_df.chrm.unique()
@@ -61,33 +60,30 @@ def test_check_smorf_transcript(ref_path, transcripts_filename, introns_filename
         list_smorfs = small_df['smorf_id'].unique() ## list of unique smorf ID in the chromosome
 
         ## per variant
-        for index, row in small_df.iterrows(): ## iterates per line 
+        for index, row in small_df.iterrows(): ## iterates per smorf
             
             ##4.1 - find transcripts the region falls in:
-            variant_position = small_df.loc[index]['var_pos']
-            smorf_start = small_df.loc[index]['start']
-            smorf_end = small_df.loc[index]['end']
-            smorf_strand = small_df.loc[index]['strand']
-            variant_id = small_df.loc[index]['var_id']
+            variant_position = row.var_pos
+            smorf_id = row.smorf_id
+            smorf_start = row.start
+            smorf_end = row.end
+            smorf_strand = row.strand
+            variant_id = row.var_id
 
 
             transcripts_small = transcripts_chr.loc[(transcripts_chr.start <= smorf_start) & (transcripts_chr.end >= smorf_end) & (transcripts_chr.strand == smorf_strand)]
             ## transcript needs to cover the full sequence region
             ## transcript in the same strand
+            ## check 1 
 
-            ## Unique IDs from transcripts_small
-            t_unique_ids = transcripts_small['transcript_id'].unique()
+            # ## Unique IDs from transcripts_small
+            # t_unique_ids = transcripts_small['transcript_id'].unique()
 
             if not transcripts_small.empty:
                 
-                ##4.2 - iterare per transcript
-                for index_t, row_t in transcripts_small.iterrows():
-
-                    ## introns per transcript
-                    introns_transcript = introns_small.loc[introns_small['transcript_id'] == row_t.transcript_id]
-
-                    matching_t, unmatching_t, map_gen2transc, map_transc2gen = compatibility_smorf_transcript(reference_genome[each_chrom], transcripts_small, introns_transcript, smorf_start, smorf_end, smorf_strand)
-    
+                matching_t, unmatching_t, map_gen2transc, map_transc2gen = compatibility_smorf_transcript(reference_genome[each_chrom], transcripts_small, introns_transcript, smorf_start, smorf_end, smorf_strand)
+                ## this function runs for all transcripts within which the smorf falls within
+                print()
     return matching_t, unmatching_t, map_gen2transc, map_transc2gen
                 
 
