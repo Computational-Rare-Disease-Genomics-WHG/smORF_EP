@@ -1179,12 +1179,12 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
     for index, row in transcript_info.iterrows(): ## transcript coordinates, each line assumed to be a different transcript
 
         t_id = row.transcript_id
-        print(t_id)
+        ##print(t_id)
 
         ## introns for the transcript
         introns_transcript = introns_df.loc[introns_df['transcript_id']== t_id]
         ## from this point on we use introns_transcript to filter to work on the transcript introns only
-        print(introns_transcript)
+        ##print(introns_transcript)
 
         ## smorf without introns
         if introns_transcript.empty:
@@ -1227,15 +1227,6 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
                 start_intron = introns_transcript[(introns_transcript['start']<= smorf_start) & (introns_transcript['end']>= smorf_start)]
                 ## check if end is within an intron
                 end_intron = introns_transcript[(introns_transcript['start']<= smorf_end) & (introns_transcript['end']>= smorf_end)]
-
-                # print('check start')
-                # print(smorf_start, smorf_end)
-                # print(start_intron)
-
-                # print('check end')
-                # print(smorf_start, smorf_end)
-                # print(end_intron)
-
 
                 if not start_intron.empty:
                     new_row = pd.DataFrame({
@@ -1314,8 +1305,6 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
             continue
         
         ## transcript matches 
-        print(t_id)
-        print('matching')
         matching_transcripts.append(t_id)
 
 
