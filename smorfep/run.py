@@ -90,10 +90,13 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
         ## TODO: OPTIMIZE --> allow cache freeing after each chromosome -- remove chromosome from the ref_genome dictionary
 
         ## per smORF
-        ## 1- Collect hte list of smORFs
+        ## 1 - Collect the list of smORFs
         ## 2 - iterate per smORFs
-        ## 3- collect the transcript info per smORF -- check_smorf_transcript
-        ## 4- Check each variant in the smORF -- 4.1 check trancript info first and exclude the unmatching transcripts first; 4.2 run the tool for the matching transcripts
+        ## 3 - collect the transcript info per smORF 
+        ## 4 - check_smorf_transcript
+        ##      4.1 check trancript info first and exclude the unmatching transcripts first; 
+        ##      4.2 run the tool for the matching transcripts only
+        ## 5 - Check each variant in the smORF -- effect per transcript
 
         list_smorfs = small_df['smorf_id'].unique() ## list
 
