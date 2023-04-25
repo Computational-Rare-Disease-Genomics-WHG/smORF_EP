@@ -30,6 +30,8 @@ requirements.txt file provides the dependencies for smORF-EP.
 - sys
 - time -->
 
+<br><hr>
+[:arrow_up: Back to top](#smorf-ep)
 
 
 # Install smORF-EP
@@ -58,6 +60,8 @@ pip3 install .
 python setup.py install
 ```
 
+<br><hr>
+[:arrow_up: Back to top](#smorf-ep)
 
 <!--
 ```
@@ -101,6 +105,9 @@ Example (download GENCODE v41):
 smorfinit --transcripts --transc_link https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/gencode.v41.annotation.gff3.gz
 ```
 
+<br><hr>
+[:arrow_up: Back to top](#smorf-ep)
+
 
 # Generate input
 
@@ -116,6 +123,9 @@ Example for both input files with header:
 ```
 smorfinput -b <BED file> --bedheader -v <VCF file> --vcfheader -o <outputname>
 ```
+
+<br><hr>
+[:arrow_up: Back to top](#smorf-ep)
 
 
 # Run smORF-EP
@@ -133,6 +143,9 @@ smorfep -r <path_to_ref_genome/>ref_genome/ -t <path_to_transcriptCoord_file/tra
 Note: 
 Add path before input and output filename for scpecific locations.
 
+<br><hr>
+[:arrow_up: Back to top](#smorf-ep)
+
 
 # Input and output
 
@@ -140,7 +153,8 @@ Add path before input and output filename for scpecific locations.
 
 ## Output
 
-
+<br><hr>
+[:arrow_up: Back to top](#smorf-ep)
 
 
 # Annotations description
