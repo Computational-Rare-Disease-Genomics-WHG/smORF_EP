@@ -61,6 +61,7 @@ def test_check_smorf_transcript(ref_path, transcripts_filename, introns_filename
 
         for each_smorf in list_smorfs: 
             smorf_df = small_df.loc[small_df['smorf_id'] == each_smorf]
+            print(smorf_df)
 
             for index, row in smorf_df.iterrows():
 
@@ -76,15 +77,17 @@ def test_check_smorf_transcript(ref_path, transcripts_filename, introns_filename
 
                 if not transcripts_small.empty:
                     
-                    matching_t, unmatching_t, map_gen2transc, map_transc2gen = compatibility_smorf_transcript(reference_genome[each_chrom], transcripts_small, introns_df, smorf_start, smorf_end, smorf_strand)
+                    matching_t, unmatching_t, map_gen2transc, map_transc2gen = compatibility_smorf_transcript(reference_genome[each_chrom], transcripts_small, introns_small, smorf_start, smorf_end, smorf_strand)
                     ## this function runs for all transcripts within which the smorf falls within
-                    print(smorf_id)
-                    print(matching_t)
-                    print(unmatching_t.head)
-                    print(map_gen2transc)
-                    print(map_transc2gen)
+                
+                
+            print(smorf_id)
+            print(matching_t)
+            print(unmatching_t.head)
+            # print(map_gen2transc)
+            # print(map_transc2gen)
 
-                    sys.exit(1)
+            ##sys.exit(1)
                 
 
 def main(): 
@@ -96,8 +99,9 @@ def main():
     ref_path = "/Users/mariaf/Desktop/GitHub/smORF_EP/ref_genome/"
     transcripts_path = "/Users/mariaf/Desktop/GitHub/smORF_EP/transcripts/gencode.v41.annotation.gff3_transcriptCoord_2023-04-14.tsv"
     introns_path = "/Users/mariaf/Desktop/GitHub/smORF_EP/transcripts/gencode.v41.annotation.gff3_introns_2023-04-14.tsv" 
-    ##inputname = "/Users/mariaf/Desktop/GitHub/smORF_EP/smorfep/test/test14_Final_test.tsv"
-    inputname = "/Users/mariaf/Desktop/GitHub/smORF_EP/smorfep/test/test_long_smorfinput.tsv"
+    inputname = "/Users/mariaf/Desktop/GitHub/smORF_EP/smorfep/test/test14_Final_test.tsv"
+    ## Ruby's file
+    ##inputname = "/Users/mariaf/Desktop/GitHub/smORF_EP/smorfep/test/test_long_smorfinput.tsv"
 
     test_check_smorf_transcript(ref_path, transcripts_path, introns_path, inputname)
 
