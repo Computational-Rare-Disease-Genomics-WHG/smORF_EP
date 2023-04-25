@@ -77,7 +77,7 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
 
         ## variants/smorfs per chromosome
         small_df = variants_df.loc[variants_df['chrm'] == each_chrom]
-        ## TODO: OPTIMIZe --> After each smORF, we can also remove the smORF from the analysis table -- Write outputfile before
+        ## TODO: OPTIMIZE --> After each smORF, we can also remove the smORF from the analysis table -- Write outputfile before
 
         ## transcripts and introns in the chromosome
         transcripts_chr = transcripts_df.loc[transcripts_df['chr'] == 'chr'+str(each_chrom)]
@@ -90,7 +90,30 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
         ## 3- collect the transcript info per smORF -- check_smorf_transcript
         ## 4- Check each variant in the smORF -- 4.1 check trancript info first and exclude the unmatching transcripts first; 4.2 run the tool for the matching transcripts
 
-        list_smorfs = small_df['smorf_id'].unique() ## TODO: check if this is a list or needs to be converted
+        list_smorfs = small_df['smorf_id'].unique() ## list
+
+        ## itarete per smorf ID
+        for smorf_id in list_smorfs:
+            smorf_vars_df = small_df[small_df['smorf_id'] == smorf_id]
+
+            smorf_start = smorf_vars_df.at[0, 'start']
+            smorf_end = smorf_vars_df.at[0, 'end']
+            smorf_strand = smorf_vars_df.at[0, 'strand']
+            print(smorf_id, smorf_start, smorf_end, smorf_strand)
+
+
+
+            
+
+            
+
+            transcripts_smorf = transcripts_chr.loc[(transcripts_chr.start <= smorf_start) & (transcripts_chr.end >= smorf_end) & (transcripts_chr.strand == smorf_strand)]
+            ## transcript needs to cover the full sequence region
+            ## transcript in the same strand
+            
+
+            matching_t, unmatching_t, map_gen2transc, map_transc2gen = compatibility_smorf_transcript(reference_genome[each_chrom], transcripts_smorf, introns_small, smorf_id, smorf_start, smorf_end, smorf_strand)
+
 
         ## per variant
         for index, row in small_df.iterrows(): ## iterates per line 
@@ -103,17 +126,15 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
             variant_id = small_df.loc[index]['var_id']
 
 
-            transcripts_small = transcripts_chr.loc[(transcripts_chr.start <= seq_start) & (transcripts_chr.end >= seq_end) & (transcripts_chr.strand == seq_strand)]
-            ## transcript needs to cover the full sequence region
-            ## transcript in the same strand
+
 
             ## check if the variant is within the region of interest, only run the tool if it is within
             if variant_position >= seq_start and variant_position <= seq_end: 
 
-                if not transcripts_small.empty:
+                if not transcripts_smorf.empty:
                     
                     ##4.2 - check the consequence per transcript
-                    for index_t, row_t in transcripts_small.iterrows():
+                    for index_t, row_t in transcripts_smorf.iterrows():
 
                         ## introns per transcript
                         introns_transcript = introns_small.loc[introns_small['transcript_id'] == row_t.transcript_id]
