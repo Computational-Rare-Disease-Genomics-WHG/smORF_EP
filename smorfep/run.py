@@ -81,7 +81,7 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
 
         ## transcripts and introns in the chromosome
         transcripts_chr = transcripts_df.loc[transcripts_df['chr'] == 'chr'+str(each_chrom)]
-        introns_small = introns_df.loc[introns_df['chr'] == 'chr'+str(each_chrom)]
+        introns_chr = introns_df.loc[introns_df['chr'] == 'chr'+str(each_chrom)]
         ## TODO: OPTIMIZE --> allow cache freeing after each chromosome -- remove chromosome from the ref_genome dictionary
 
         ## per smORF
@@ -101,18 +101,24 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
             smorf_strand = smorf_vars_df.at[0, 'strand']
             print(smorf_id, smorf_start, smorf_end, smorf_strand)
 
-
-
-            
-
-            
-
             transcripts_smorf = transcripts_chr.loc[(transcripts_chr.start <= smorf_start) & (transcripts_chr.end >= smorf_end) & (transcripts_chr.strand == smorf_strand)]
             ## transcript needs to cover the full sequence region
             ## transcript in the same strand
-            
+            transcripts_to_check_smorf = transcripts_smorf['transcript_id'].unique()
+            print(transcripts_to_check_smorf)
 
-            matching_t, unmatching_t, map_gen2transc, map_transc2gen = compatibility_smorf_transcript(reference_genome[each_chrom], transcripts_smorf, introns_small, smorf_id, smorf_start, smorf_end, smorf_strand)
+            ## collect the introns to the transcripts found for this smorf
+            introns_smorf = introns_chr[introns_chr['transcript_id'].apply(lambda x: any(val in x for val in transcripts_to_check_smorf))]
+            ## NOTE: might be possible to improve this step
+            
+            print(introns_smorf)
+            
+            sys.exit(1)
+
+            
+            ## XXX HERE!!!!!! XXX 
+            
+            matching_t, unmatching_t, map_gen2transc, map_transc2gen = compatibility_smorf_transcript(reference_genome[each_chrom], transcripts_smorf, introns_smorf, smorf_id, smorf_start, smorf_end, smorf_strand)
 
 
         ## per variant
@@ -137,7 +143,7 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
                     for index_t, row_t in transcripts_smorf.iterrows():
 
                         ## introns per transcript
-                        introns_transcript = introns_small.loc[introns_small['transcript_id'] == row_t.transcript_id]
+                        introns_transcript = introns_chr.loc[introns_chr['transcript_id'] == row_t.transcript_id]
 
                         ## row_t is the info about the transctipt
                         consequence, change, prot_cons, prot_change = tool(
