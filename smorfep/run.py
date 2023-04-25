@@ -104,6 +104,7 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
         for smorf_id in list_smorfs:
             smorf_vars_df = small_df[small_df['smorf_id'] == smorf_id]
 
+            ## smorf info
             smorf_start = smorf_vars_df.at[0, 'start']
             smorf_end = smorf_vars_df.at[0, 'end']
             smorf_strand = smorf_vars_df.at[0, 'strand']
@@ -124,7 +125,7 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
             matching_t, unmatching_t, map_gen2transc, map_transc2gen = compatibility_smorf_transcript(reference_genome[each_chrom], transcripts_smorf, introns_smorf, smorf_id, smorf_start, smorf_end, smorf_strand)
             print(smorf_id)
             print(matching_t)
-            print(unmatching_t)
+            ##print(unmatching_t)
 
             if excluded_blank: 
                 unmatching_t.to_csv(excluded_transc_filename, sep='\t', lineterminator='\n', index=False, header=True)
@@ -134,23 +135,26 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
                 unmatching_t.to_csv(excluded_transc_filename, sep='\t', lineterminator='\n', index=False, mode='a', header=False)
 
             
-            sys.exit(1)
+            ## XXX HERE!!!!!! XXX 
 
             
-            ## XXX HERE!!!!!! XXX 
+            if matching_t == []: ## if there are no transcripts for the smorf -- report
+                ## TODO: XXX
+                pass 
+
+            ## per variant
+            for index, row in smorf_vars_df.iterrows():
+                variant_position = smorf_vars_df.loc[index]['var_pos']
+                variant_id = smorf_vars_df.loc[index]['var_id']
+            
+            sys.exit(1)
+
+
             
 
         ## per variant
         for index, row in small_df.iterrows(): ## iterates per line 
             
-            ##4.1 - find transcripts the region falls in:
-            variant_position = small_df.loc[index]['var_pos']
-            seq_start = small_df.loc[index]['start']
-            seq_end = small_df.loc[index]['end']
-            seq_strand = small_df.loc[index]['strand']
-            variant_id = small_df.loc[index]['var_id']
-
-
 
 
             ## check if the variant is within the region of interest, only run the tool if it is within
