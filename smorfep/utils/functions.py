@@ -1179,8 +1179,6 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
     for index, row in transcript_info.iterrows(): ## transcript coordinates, each line assumed to be a different transcript
 
         t_id = row.transcript_id
-        t_start = row.start
-        t_end = row.end
 
         ## introns for the transcript
         introns_transcript = introns_df.loc[introns_df['transcript_id']== t_id]
@@ -1204,17 +1202,19 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
                     new_row = pd.DataFrame({
                         'transcript_id': [t_id], 
                         'flag': ['wrong_sequence'], 
-                        'type': ['start within intron'], 
+                        'type': ['start_within_intron'], 
                         'length': ['-']})
                     unmatching_trancripts = pd.concat([unmatching_trancripts, new_row], ignore_index=True)
+                    continue
 
                 elif not end_intron.empty:
                     new_row = pd.DataFrame({
                         'transcript_id': [t_id], 
                         'flag': ['wrong_sequence'], 
-                        'type': ['end within intron'], 
+                        'type': ['end_within_intron'], 
                         'length': ['-']})
                     unmatching_trancripts = pd.concat([unmatching_trancripts, new_row], ignore_index=True)
+                    continue
 
             elif strand == '-': 
                 ## check if start is within an intron
@@ -1226,17 +1226,19 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
                     new_row = pd.DataFrame({
                         'transcript_id': [t_id], 
                         'flag': ['wrong_sequence'], 
-                        'type':['start within intron'], 
+                        'type':['start_within_intron'], 
                         'length': ['-']})
                     unmatching_trancripts = pd.concat([unmatching_trancripts, new_row], ignore_index=True)
+                    continue
                 
                 elif not end_intron.empty:
                     new_row = pd.DataFrame({
                         'transcript_id': [t_id], 
                         'flag': ['wrong_sequence'], 
-                        'type': ['end within intron'], 
+                        'type': ['end_within_intron'], 
                         'length': ['-']})
                     unmatching_trancripts = pd.concat([unmatching_trancripts, new_row], ignore_index=True)
+                    continue
         
 
         ## compute coordinates map 
@@ -1283,6 +1285,9 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
         
         ## transcript matches 
         else:
+            ## 
+            print(t_id)
+            print('matching')
             matching_transcripts.append(t_id)
 
 
