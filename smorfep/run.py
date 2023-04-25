@@ -232,32 +232,33 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
                     vars_cons_df = pd.concat([vars_cons_df, consequence_computed])
                     
             
+            ## NOTE: Removed as we remove the non-matching transcripts from analysis
+            ## they are in a separate file
+            # else: ## var outside the region of interest
+            #     consequence, change, prot_cons, prot_change = 'variant out of region', '-', '-', '-'
 
-            else: ## var outside the region of interest
-                consequence, change, prot_cons, prot_change = 'variant out of region', '-', '-', '-'
+            #     r_index = variants_df.index[variants_df['var_id'] == row.var_id].tolist()
 
-                r_index = variants_df.index[variants_df['var_id'] == row.var_id].tolist()
+            #     consequence_computed = pd.DataFrame(
+            #         {
+            #         'chrm': variants_df.iloc[r_index]['chrm'],
+            #         'var_pos' : variants_df.iloc[r_index]['var_pos'],
+            #         'ref' : variants_df.iloc[r_index]['ref'],
+            #         'alt' : variants_df.iloc[r_index]['alt'],
+            #         'start' : variants_df.iloc[r_index]['start'],
+            #         'end' : variants_df.iloc[r_index]['end'],
+            #         'strand' : variants_df.iloc[r_index]['strand'],
+            #         'var_id' : variants_df.iloc[r_index]['var_id'],
+            #         'transcript_id' : '-', 
+            #         'transcript_type' : '-',
+            #         'DNA_consequence' : consequence,
+            #         'DNA_seq' : change,
+            #         'prot_consequence' : prot_cons,
+            #         'prot_seq' : prot_change
+            #         }
 
-                consequence_computed = pd.DataFrame(
-                    {
-                    'chrm': variants_df.iloc[r_index]['chrm'],
-                    'var_pos' : variants_df.iloc[r_index]['var_pos'],
-                    'ref' : variants_df.iloc[r_index]['ref'],
-                    'alt' : variants_df.iloc[r_index]['alt'],
-                    'start' : variants_df.iloc[r_index]['start'],
-                    'end' : variants_df.iloc[r_index]['end'],
-                    'strand' : variants_df.iloc[r_index]['strand'],
-                    'var_id' : variants_df.iloc[r_index]['var_id'],
-                    'transcript_id' : '-', 
-                    'transcript_type' : '-',
-                    'DNA_consequence' : consequence,
-                    'DNA_seq' : change,
-                    'prot_consequence' : prot_cons,
-                    'prot_seq' : prot_change
-                    }
-
-                )
-                vars_cons_df = pd.concat([vars_cons_df, consequence_computed])
+            #     )
+            #     vars_cons_df = pd.concat([vars_cons_df, consequence_computed])
 
     ## write_the output
     vars_cons_df.to_csv(outputname, sep='\t', lineterminator='\n', index=False)
