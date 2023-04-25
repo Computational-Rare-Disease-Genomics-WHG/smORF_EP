@@ -97,7 +97,7 @@ def main():
     """ 
 
     ref_path = "/Users/mariaf/Desktop/GitHub/smORF_EP/ref_genome/"
-    transcripts_path = "/Users/mariaf/Desktop/GitHub/smORF_EP/transcripts/gencode.v41.annotation.gff3_transcriptCoord_2023-04-14.tsv"
+    transcripts_path = "/Users/mariaf/Desktop/GitHub/smORF_EP/transcripts/gencode.v41.annotation_transcriptCoord_2023-04-25.tsv"
     introns_path = "/Users/mariaf/Desktop/GitHub/smORF_EP/transcripts/gencode.v41.annotation.gff3_introns_2023-04-14.tsv" 
     inputname = "/Users/mariaf/Desktop/GitHub/smORF_EP/smorfep/test/test14_Final_test.tsv"
     ##inputname = "/Users/mariaf/Desktop/GitHub/smORF_EP/smorfep/test/test16_Final_test_introns.tsv"

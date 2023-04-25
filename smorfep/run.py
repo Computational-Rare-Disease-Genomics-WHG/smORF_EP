@@ -19,6 +19,7 @@
 ## stop lost (genomic)
 
 
+from email import header
 import sys
 import os
 import time
@@ -36,7 +37,7 @@ from smorfep.utils.tool_script import *
 
 
 
-def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, filename, outputname):
+def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, filename, outputname, excluded_transc_filename):
 
     ## 1- reads the input file
     variants_df = read_variants_file(filename, '\t', 0)
@@ -70,6 +71,10 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
     print('introns ready')
     print('')
 
+    ## excluded transcripts and flags file 
+    ## First time we write in this file we add the header
+    excluded_blank = True 
+
 
     ## 4- Check variant effect per transcript
     for each_chrom in all_chromosomes: ## runs per chromosome
@@ -77,46 +82,91 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
 
         ## variants/smorfs per chromosome
         small_df = variants_df.loc[variants_df['chrm'] == each_chrom]
-        ## TODO: OPTIMIZe --> After each smORF, we can also remove the smORF from the analysis table -- Write outputfile before
+        ## TODO: OPTIMIZE --> After each smORF, we can also remove the smORF from the analysis table -- Write outputfile before
 
         ## transcripts and introns in the chromosome
         transcripts_chr = transcripts_df.loc[transcripts_df['chr'] == 'chr'+str(each_chrom)]
-        introns_small = introns_df.loc[introns_df['chr'] == 'chr'+str(each_chrom)]
+        introns_chr = introns_df.loc[introns_df['chr'] == 'chr'+str(each_chrom)]
         ## TODO: OPTIMIZE --> allow cache freeing after each chromosome -- remove chromosome from the ref_genome dictionary
 
         ## per smORF
-        ## 1- Collect hte list of smORFs
+        ## 1 - Collect the list of smORFs
         ## 2 - iterate per smORFs
-        ## 3- collect the transcript info per smORF -- check_smorf_transcript
-        ## 4- Check each variant in the smORF -- 4.1 check trancript info first and exclude the unmatching transcripts first; 4.2 run the tool for the matching transcripts
+        ## 3 - collect the transcript info per smORF 
+        ## 4 - check_smorf_transcript
+        ##      4.1 check trancript info first and exclude the unmatching transcripts first; 
+        ##      4.2 run the tool for the matching transcripts only
+        ## 5 - Check each variant in the smORF -- effect per transcript
 
-        list_smorfs = small_df['smorf_id'].unique() ## TODO: check if this is a list or needs to be converted
+        list_smorfs = small_df['smorf_id'].unique() ## list
+
+        ## itarete per smorf ID
+        for smorf_id in list_smorfs:
+            smorf_vars_df = small_df[small_df['smorf_id'] == smorf_id]
+
+            ## smorf info
+            smorf_start = smorf_vars_df.at[0, 'start']
+            smorf_end = smorf_vars_df.at[0, 'end']
+            smorf_strand = smorf_vars_df.at[0, 'strand']
+            ##print(smorf_id, smorf_start, smorf_end, smorf_strand)
+
+            transcripts_smorf = transcripts_chr.loc[(transcripts_chr.start <= smorf_start) & (transcripts_chr.end >= smorf_end) & (transcripts_chr.strand == smorf_strand)]
+            ## transcript needs to cover the full sequence region
+            ## transcript in the same strand
+            transcripts_to_check_smorf = transcripts_smorf['transcript_id'].unique()
+            ##print(transcripts_to_check_smorf)
+
+            ## collect the introns to the transcripts found for this smorf
+            introns_smorf = introns_chr[introns_chr['transcript_id'].apply(lambda x: any(val in x for val in transcripts_to_check_smorf))]
+            ## NOTE: might be possible to improve this step
+            ##print(introns_smorf)
+            
+            ## compute compatible smorf-transcripts
+            matching_t, unmatching_t, map_gen2transc, map_transc2gen = compatibility_smorf_transcript(reference_genome[each_chrom], transcripts_smorf, introns_smorf, smorf_id, smorf_start, smorf_end, smorf_strand)
+            print(smorf_id)
+            print(matching_t)
+            ##print(unmatching_t)
+
+            if excluded_blank: 
+                unmatching_t.to_csv(excluded_transc_filename, sep='\t', lineterminator='\n', index=False, header=True)
+
+                excluded_blank = False
+            else: 
+                unmatching_t.to_csv(excluded_transc_filename, sep='\t', lineterminator='\n', index=False, mode='a', header=False)
+
+            
+            ## XXX HERE!!!!!! XXX 
+
+            
+            if matching_t == []: ## if there are no transcripts for the smorf -- report
+                ## TODO: XXX
+                pass 
+
+            ## per variant
+            for index, row in smorf_vars_df.iterrows():
+                variant_position = smorf_vars_df.loc[index]['var_pos']
+                variant_id = smorf_vars_df.loc[index]['var_id']
+            
+            sys.exit(1)
+
+
+            
 
         ## per variant
         for index, row in small_df.iterrows(): ## iterates per line 
             
-            ##4.1 - find transcripts the region falls in:
-            variant_position = small_df.loc[index]['var_pos']
-            seq_start = small_df.loc[index]['start']
-            seq_end = small_df.loc[index]['end']
-            seq_strand = small_df.loc[index]['strand']
-            variant_id = small_df.loc[index]['var_id']
 
-
-            transcripts_small = transcripts_chr.loc[(transcripts_chr.start <= seq_start) & (transcripts_chr.end >= seq_end) & (transcripts_chr.strand == seq_strand)]
-            ## transcript needs to cover the full sequence region
-            ## transcript in the same strand
 
             ## check if the variant is within the region of interest, only run the tool if it is within
             if variant_position >= seq_start and variant_position <= seq_end: 
 
-                if not transcripts_small.empty:
+                if not transcripts_smorf.empty:
                     
                     ##4.2 - check the consequence per transcript
-                    for index_t, row_t in transcripts_small.iterrows():
+                    for index_t, row_t in transcripts_smorf.iterrows():
 
                         ## introns per transcript
-                        introns_transcript = introns_small.loc[introns_small['transcript_id'] == row_t.transcript_id]
+                        introns_transcript = introns_chr.loc[introns_chr['transcript_id'] == row_t.transcript_id]
 
                         ## row_t is the info about the transctipt
                         consequence, change, prot_cons, prot_change = tool(
@@ -186,32 +236,33 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
                     vars_cons_df = pd.concat([vars_cons_df, consequence_computed])
                     
             
+            ## NOTE: Removed as we remove the non-matching transcripts from analysis
+            ## they are in a separate file
+            # else: ## var outside the region of interest
+            #     consequence, change, prot_cons, prot_change = 'variant out of region', '-', '-', '-'
 
-            else: ## var outside the region of interest
-                consequence, change, prot_cons, prot_change = 'variant out of region', '-', '-', '-'
+            #     r_index = variants_df.index[variants_df['var_id'] == row.var_id].tolist()
 
-                r_index = variants_df.index[variants_df['var_id'] == row.var_id].tolist()
+            #     consequence_computed = pd.DataFrame(
+            #         {
+            #         'chrm': variants_df.iloc[r_index]['chrm'],
+            #         'var_pos' : variants_df.iloc[r_index]['var_pos'],
+            #         'ref' : variants_df.iloc[r_index]['ref'],
+            #         'alt' : variants_df.iloc[r_index]['alt'],
+            #         'start' : variants_df.iloc[r_index]['start'],
+            #         'end' : variants_df.iloc[r_index]['end'],
+            #         'strand' : variants_df.iloc[r_index]['strand'],
+            #         'var_id' : variants_df.iloc[r_index]['var_id'],
+            #         'transcript_id' : '-', 
+            #         'transcript_type' : '-',
+            #         'DNA_consequence' : consequence,
+            #         'DNA_seq' : change,
+            #         'prot_consequence' : prot_cons,
+            #         'prot_seq' : prot_change
+            #         }
 
-                consequence_computed = pd.DataFrame(
-                    {
-                    'chrm': variants_df.iloc[r_index]['chrm'],
-                    'var_pos' : variants_df.iloc[r_index]['var_pos'],
-                    'ref' : variants_df.iloc[r_index]['ref'],
-                    'alt' : variants_df.iloc[r_index]['alt'],
-                    'start' : variants_df.iloc[r_index]['start'],
-                    'end' : variants_df.iloc[r_index]['end'],
-                    'strand' : variants_df.iloc[r_index]['strand'],
-                    'var_id' : variants_df.iloc[r_index]['var_id'],
-                    'transcript_id' : '-', 
-                    'transcript_type' : '-',
-                    'DNA_consequence' : consequence,
-                    'DNA_seq' : change,
-                    'prot_consequence' : prot_cons,
-                    'prot_seq' : prot_change
-                    }
-
-                )
-                vars_cons_df = pd.concat([vars_cons_df, consequence_computed])
+            #     )
+            #     vars_cons_df = pd.concat([vars_cons_df, consequence_computed])
 
     ## write_the output
     vars_cons_df.to_csv(outputname, sep='\t', lineterminator='\n', index=False)
@@ -221,6 +272,8 @@ def main():
     ## day date
     today = date.today()
     default_outputname = 'output_'+today.strftime("%Y-%m-%d")+'.tsv'
+    default_excluded_filename = 'excluded_'+today.strftime("%Y-%m-%d")+'.tsv'
+
     ##print(default_outputname)
 
     parser = argparse.ArgumentParser(description='Script to annotate variants within small open reading frames (smORFs)')
@@ -232,6 +285,7 @@ def main():
     parser.add_argument('-s', '--splice_site', metavar='\b', type=int, default=8, help='splice-site size, default = 8 (as VEP)')
     parser.add_argument('-f', '--variants_filename',metavar='\b', required=True, type=str, help='file with the variants and the regions of interest info')
     parser.add_argument('-o', '--output', metavar='\b', type=str, default=default_outputname, help='outputname')
+    parser.add_argument('-e', '--excluded', metavar='\b', type=str, default=default_excluded_filename, help='file reporting the transcripts excluded from analysis and respective flag')
 
     args = parser.parse_args()
 
@@ -273,9 +327,13 @@ def main():
         sys.exit(1)
 
     ## run code
-    run_smorfep(args.reference_path, args.transcripts_filename,
-                args.introns_filename, args.splice_site, 
-                args.variants_filename, args.output)
+    run_smorfep(args.reference_path, 
+                args.transcripts_filename,
+                args.introns_filename, 
+                args.splice_site, 
+                args.variants_filename, 
+                args.output,
+                args.excluded)
 
     print('DONE!')
 
