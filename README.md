@@ -40,6 +40,11 @@ requirements.txt file provides the dependencies for smORF-EP.
 ```
 git clone https://github.com/Computational-Rare-Disease-Genomics-WHG/smORF-EP/
 ```
+or
+
+Through zip dowlnoad: 
+![alt text](https://github.com/Computational-Rare-Disease-Genomics-WHG/smORF_EP/blob/main/support/download_git_repo.png?raw=true)
+
 
 2. Move inside smORF-EP repository
 ```
