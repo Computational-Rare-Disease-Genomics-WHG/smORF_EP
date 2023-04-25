@@ -100,7 +100,9 @@ def main():
     transcripts_path = "/Users/mariaf/Desktop/GitHub/smORF_EP/transcripts/gencode.v41.annotation.gff3_transcriptCoord_2023-04-14.tsv"
     introns_path = "/Users/mariaf/Desktop/GitHub/smORF_EP/transcripts/gencode.v41.annotation.gff3_introns_2023-04-14.tsv" 
     inputname = "/Users/mariaf/Desktop/GitHub/smORF_EP/smorfep/test/test14_Final_test.tsv"
-    ## Ruby's file
+    ##inputname = "/Users/mariaf/Desktop/GitHub/smORF_EP/smorfep/test/test14_first.tsv"
+
+    ## R file
     ##inputname = "/Users/mariaf/Desktop/GitHub/smORF_EP/smorfep/test/test_long_smorfinput.tsv"
 
     test_check_smorf_transcript(ref_path, transcripts_path, introns_path, inputname)
