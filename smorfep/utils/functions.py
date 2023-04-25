@@ -1179,24 +1179,63 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
     for index, row in transcript_info.iterrows(): ## transcript coordinates, each line assumed to be a different transcript
 
         t_id = row.transcript_id
+        print(t_id)
 
         ## introns for the transcript
         introns_transcript = introns_df.loc[introns_df['transcript_id']== t_id]
+        ## from this point on we use introns_transcript to filter to work on the transcript introns only
+        print(introns_transcript)
 
+        ## smorf without introns
         if introns_transcript.empty:
             smorf_seq = get_sequence(smorf_start, smorf_end, strand, ref_sequence)
             smorf_len = len(smorf_seq)
 
+            ## compute coordinates map 
+            if strand == '+':
+                map_gen2transc, map_transc2gen = genome2transcript_coords(smorf_start, row.end, strand, introns_transcript)
+            elif strand == '-':
+                map_gen2transc, map_transc2gen = genome2transcript_coords(row.start, smorf_end, strand, introns_transcript)
+
+
+            ## Checks the number of stop codons in the sequence
+            if strand == '+':
+                s, s_index = find_stop_inframe(smorf_seq[:len(smorf_seq)-3], map_transc2gen) ## removes last codon and searches for stop codons inframe
+            elif strand == '-':
+                s, s_index = find_stop_inframe(smorf_seq[:len(smorf_seq)-3], map_transc2gen)
+
+        ## smorf with introns
         elif not introns_transcript.empty:
             smorf_seq, smorf_len = remove_introns(introns_transcript, smorf_start, smorf_end, strand, ref_sequence)
 
+            ## compute coordinates map 
+            if strand == '+':
+                map_gen2transc, map_transc2gen = genome2transcript_coords(smorf_start, row.end, strand, introns_transcript)
+            elif strand == '-':
+                map_gen2transc, map_transc2gen = genome2transcript_coords(row.start, smorf_end, strand, introns_transcript)
+
+
+            ## Checks the number of stop codons in the sequence
+            if strand == '+':
+                s, s_index = find_stop_inframe(smorf_seq[:len(smorf_seq)-3], map_transc2gen) ## removes last codon and searches for stop codons inframe
+            elif strand == '-':
+                s, s_index = find_stop_inframe(smorf_seq[:len(smorf_seq)-3], map_transc2gen)
 
             ## 1- check introns
             if strand == '+':
                 ## check if start is within an intron
-                start_intron = introns_df[(introns_df['start']<= smorf_start) & (introns_df['end']>= smorf_start)]
+                start_intron = introns_transcript[(introns_transcript['start']<= smorf_start) & (introns_transcript['end']>= smorf_start)]
                 ## check if end is within an intron
-                end_intron = introns_df[(introns_df['start']<= smorf_end) & (introns_df['end']>= smorf_end)]
+                end_intron = introns_transcript[(introns_transcript['start']<= smorf_end) & (introns_transcript['end']>= smorf_end)]
+
+                # print('check start')
+                # print(smorf_start, smorf_end)
+                # print(start_intron)
+
+                # print('check end')
+                # print(smorf_start, smorf_end)
+                # print(end_intron)
+
 
                 if not start_intron.empty:
                     new_row = pd.DataFrame({
@@ -1218,9 +1257,9 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
 
             elif strand == '-': 
                 ## check if start is within an intron
-                start_intron = introns_df[(introns_df['start']<= smorf_end) & (introns_df['end']>= smorf_end)]
+                start_intron = introns_transcript[(introns_transcript['start']<= smorf_end) & (introns_transcript['end']>= smorf_end)]
                 ## check if end is within an intron
-                end_intron = introns_df[(introns_df['start']<= smorf_start) & (introns_df['end']>= smorf_start)]
+                end_intron = introns_transcript[(introns_transcript['start']<= smorf_start) & (introns_transcript['end']>= smorf_start)]
                 
                 if not start_intron.empty:
                     new_row = pd.DataFrame({
@@ -1241,19 +1280,6 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
                     continue
         
 
-        ## compute coordinates map 
-        if strand == '+':
-            map_gen2transc, map_transc2gen = genome2transcript_coords(smorf_start, row.end, strand, introns_transcript)
-        elif strand == '-':
-            map_gen2transc, map_transc2gen = genome2transcript_coords(row.start, smorf_end, strand, introns_transcript)
-
-
-        ## Checks the number of stop codons in the sequence
-        if strand == '+':
-            s, s_index = find_stop_inframe(smorf_seq[:len(smorf_seq)-3], map_transc2gen) ## removes last codon and searches for stop codons inframe
-        elif strand == '-':
-            s, s_index = find_stop_inframe(smorf_seq[:len(smorf_seq)-3], map_transc2gen)
-
         ## 2- check 3nt periodicity
         elif smorf_len % 3 != 0: 
             new_row = pd.DataFrame({
@@ -1262,6 +1288,8 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
                 'type': ['not_multiple_of_3'], 
                 'length': [smorf_len]})
             unmatching_trancripts = pd.concat([unmatching_trancripts, new_row], ignore_index=True)
+            continue
+
 
         ## 3- Last trio is not a stop
         elif smorf_seq[len(smorf_seq)-3:len(smorf_seq)+1] not in stop_codons:
@@ -1272,9 +1300,10 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
                 'type': ['last_trio_not_a_stop'], 
                 'length': [last_codon]})
             unmatching_trancripts = pd.concat([unmatching_trancripts, new_row], ignore_index=True)
+            continue
+
         
         ## 4- check multiple stop codons
-
         elif s != None: ## Multiple stop codons in the sequence 
             new_row = pd.DataFrame({
                 'transcript_id': [t_id], 
@@ -1282,13 +1311,12 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
                 'type': ['more_than_one_stop'], 
                 'length': ['-'] })
             unmatching_trancripts = pd.concat([unmatching_trancripts, new_row], ignore_index=True)
+            continue
         
         ## transcript matches 
-        else:
-            ## 
-            print(t_id)
-            print('matching')
-            matching_transcripts.append(t_id)
+        print(t_id)
+        print('matching')
+        matching_transcripts.append(t_id)
 
 
     return matching_transcripts, unmatching_trancripts, map_gen2transc, map_transc2gen
