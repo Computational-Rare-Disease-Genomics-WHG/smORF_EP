@@ -7,7 +7,7 @@
 
 ## transcripts file is assumed to do not have duplicates.
 
-
+import sys
 import time
 import pandas as pd
 
@@ -59,32 +59,32 @@ def test_check_smorf_transcript(ref_path, transcripts_filename, introns_filename
         ## per smORF
         list_smorfs = small_df['smorf_id'].unique() ## list of unique smorf ID in the chromosome
 
-        ## per variant
-        for index, row in small_df.iterrows(): ## iterates per smorf
-            
-            ##4.1 - find transcripts the region falls in:
-            variant_position = row.var_pos
-            smorf_id = row.smorf_id
-            smorf_start = row.start
-            smorf_end = row.end
-            smorf_strand = row.strand
-            variant_id = row.var_id
+        for each_smorf in list_smorfs: 
+            smorf_df = small_df.loc[small_df['smorf_id'] == each_smorf]
 
+            for index, row in smorf_df.iterrows():
 
-            transcripts_small = transcripts_chr.loc[(transcripts_chr.start <= smorf_start) & (transcripts_chr.end >= smorf_end) & (transcripts_chr.strand == smorf_strand)]
-            ## transcript needs to cover the full sequence region
-            ## transcript in the same strand
-            ## check 1 
+                smorf_id = row.smorf_id
+                smorf_start = row.start
+                smorf_end = row.end
+                smorf_strand = row.strand
 
-            # ## Unique IDs from transcripts_small
-            # t_unique_ids = transcripts_small['transcript_id'].unique()
+                ## check 1 -- find the transcriptds that cover the full smorf region
+                transcripts_small = transcripts_chr.loc[(transcripts_chr.start <= smorf_start) & (transcripts_chr.end >= smorf_end) & (transcripts_chr.strand == smorf_strand)]
+                ## transcript needs to cover the full sequence region
+                ## transcript in the same strand
 
-            if not transcripts_small.empty:
-                
-                matching_t, unmatching_t, map_gen2transc, map_transc2gen = compatibility_smorf_transcript(reference_genome[each_chrom], transcripts_small, introns_transcript, smorf_start, smorf_end, smorf_strand)
-                ## this function runs for all transcripts within which the smorf falls within
-                print()
-    return matching_t, unmatching_t, map_gen2transc, map_transc2gen
+                if not transcripts_small.empty:
+                    
+                    matching_t, unmatching_t, map_gen2transc, map_transc2gen = compatibility_smorf_transcript(reference_genome[each_chrom], transcripts_small, introns_df, smorf_start, smorf_end, smorf_strand)
+                    ## this function runs for all transcripts within which the smorf falls within
+                    print(smorf_id)
+                    print(matching_t)
+                    print(unmatching_t.head)
+                    print(map_gen2transc)
+                    print(map_transc2gen)
+
+                    sys.exit(1)
                 
 
 def main(): 
@@ -99,10 +99,8 @@ def main():
     ##inputname = "/Users/mariaf/Desktop/GitHub/smORF_EP/smorfep/test/test14_Final_test.tsv"
     inputname = "/Users/mariaf/Desktop/GitHub/smORF_EP/smorfep/test/test_long_smorfinput.tsv"
 
-    matching_t, unmatching_t, map_gen2transc, map_transc2gen = test_check_smorf_transcript(ref_path, transcripts_path, introns_path, inputname)
-    print(matching_t)
+    test_check_smorf_transcript(ref_path, transcripts_path, introns_path, inputname)
 
-    print(unmatching_t) 
 
 if __name__ == '__main__':
 
