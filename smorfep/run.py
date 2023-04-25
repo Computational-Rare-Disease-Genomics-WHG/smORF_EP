@@ -36,7 +36,7 @@ from smorfep.utils.tool_script import *
 
 
 
-def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, filename, outputname):
+def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, filename, outputname, mismatch_smorf_transc_filename):
 
     ## 1- reads the input file
     variants_df = read_variants_file(filename, '\t', 0)
@@ -71,6 +71,10 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
     print('')
 
 
+    ## Create a file where the incompatible transcripts are reported
+    ## take the prefix of the input file and 
+
+
     ## 4- Check variant effect per transcript
     for each_chrom in all_chromosomes: ## runs per chromosome
         ## TODO: OPTIMIZE --> allow cache freeing after each chromosome -- remove chromosome from the ref_genome dictionary
@@ -99,27 +103,31 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
             smorf_start = smorf_vars_df.at[0, 'start']
             smorf_end = smorf_vars_df.at[0, 'end']
             smorf_strand = smorf_vars_df.at[0, 'strand']
-            print(smorf_id, smorf_start, smorf_end, smorf_strand)
+            ##print(smorf_id, smorf_start, smorf_end, smorf_strand)
 
             transcripts_smorf = transcripts_chr.loc[(transcripts_chr.start <= smorf_start) & (transcripts_chr.end >= smorf_end) & (transcripts_chr.strand == smorf_strand)]
             ## transcript needs to cover the full sequence region
             ## transcript in the same strand
             transcripts_to_check_smorf = transcripts_smorf['transcript_id'].unique()
-            print(transcripts_to_check_smorf)
+            ##print(transcripts_to_check_smorf)
 
             ## collect the introns to the transcripts found for this smorf
             introns_smorf = introns_chr[introns_chr['transcript_id'].apply(lambda x: any(val in x for val in transcripts_to_check_smorf))]
             ## NOTE: might be possible to improve this step
+            ##print(introns_smorf)
             
-            print(introns_smorf)
+            ## compute compatible smorf-transcripts
+            matching_t, unmatching_t, map_gen2transc, map_transc2gen = compatibility_smorf_transcript(reference_genome[each_chrom], transcripts_smorf, introns_smorf, smorf_id, smorf_start, smorf_end, smorf_strand)
+            print(smorf_id)
+            print(matching_t)
+            print(unmatching_t)
+
             
             sys.exit(1)
 
             
             ## XXX HERE!!!!!! XXX 
             
-            matching_t, unmatching_t, map_gen2transc, map_transc2gen = compatibility_smorf_transcript(reference_genome[each_chrom], transcripts_smorf, introns_smorf, smorf_id, smorf_start, smorf_end, smorf_strand)
-
 
         ## per variant
         for index, row in small_df.iterrows(): ## iterates per line 
@@ -248,6 +256,8 @@ def main():
     ## day date
     today = date.today()
     default_outputname = 'output_'+today.strftime("%Y-%m-%d")+'.tsv'
+    default_excluded_filename = 'excluded_'+today.strftime("%Y-%m-%d")+'.tsv'
+
     ##print(default_outputname)
 
     parser = argparse.ArgumentParser(description='Script to annotate variants within small open reading frames (smORFs)')
@@ -259,6 +269,7 @@ def main():
     parser.add_argument('-s', '--splice_site', metavar='\b', type=int, default=8, help='splice-site size, default = 8 (as VEP)')
     parser.add_argument('-f', '--variants_filename',metavar='\b', required=True, type=str, help='file with the variants and the regions of interest info')
     parser.add_argument('-o', '--output', metavar='\b', type=str, default=default_outputname, help='outputname')
+    parser.add_argument('-e', '--excluded', metavar='\b', type=str, default=default_excluded_filename, help='file reporting the transcripts excluded from analysis and respective flag')
 
     args = parser.parse_args()
 
@@ -300,9 +311,13 @@ def main():
         sys.exit(1)
 
     ## run code
-    run_smorfep(args.reference_path, args.transcripts_filename,
-                args.introns_filename, args.splice_site, 
-                args.variants_filename, args.output)
+    run_smorfep(args.reference_path, 
+                args.transcripts_filename,
+                args.introns_filename, 
+                args.splice_site, 
+                args.variants_filename, 
+                args.output,
+                args.excluded)
 
     print('DONE!')
 
