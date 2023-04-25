@@ -1164,8 +1164,8 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
     - ref_sequence:  reference sequence for the chromosome in analysis
     - transcript_info: dataframe structure line with the information about the transcript (start, end, id, etc)
     - introns_df: intronic regions dataframe for the chromosome in analysis
-    - start: start of the region of interest
-    - end: end of the region of interest
+    - smorf_start
+    - smorfs_end
     - strand 
 
     returns a list of matching transcripts, a dataframe with unmatching transcript and the respective reason for exclusion
@@ -1252,24 +1252,7 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
         elif strand == '-':
             s, s_index = find_stop_inframe(smorf_seq[:len(smorf_seq)-3], map_transc2gen)
 
-
-        ## 2- check smorf start/end within transcript
-        if smorf_start < t_start: ## smorf start
-            new_row = pd.DataFrame({
-                'transcript_id': [t_id], 
-                'flag': ['wrong_sequence'], 
-                'type': ['start_off_transcript'], 
-                'length': ['-']})
-            unmatching_trancripts = pd.concat([unmatching_trancripts, new_row], ignore_index=True)
-        elif smorf_end > t_end: ## smorf end
-            new_row = pd.DataFrame({
-                'transcript_id': [t_id], 
-                'flag': ['wrong_sequence'], 
-                'type': ['end_off_transcript'], 
-                'length': ['-']})
-            unmatching_trancripts = pd.concat([unmatching_trancripts, new_row], ignore_index=True)
-
-        ## 3- check 3nt periodicity
+        ## 2- check 3nt periodicity
         elif smorf_len % 3 != 0: 
             new_row = pd.DataFrame({
                 'transcript_id':[t_id], 
@@ -1278,7 +1261,7 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
                 'length': [smorf_len]})
             unmatching_trancripts = pd.concat([unmatching_trancripts, new_row], ignore_index=True)
 
-        ## 4- Last trio is not a stop
+        ## 3- Last trio is not a stop
         elif smorf_seq[len(smorf_seq)-3:len(smorf_seq)+1] not in stop_codons:
             last_codon = smorf_seq[len(smorf_seq)-3:len(smorf_seq)+1]
             new_row = pd.DataFrame({
@@ -1288,7 +1271,7 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
                 'length': [last_codon]})
             unmatching_trancripts = pd.concat([unmatching_trancripts, new_row], ignore_index=True)
         
-        ## 5- check multiple stop codons
+        ## 4- check multiple stop codons
 
         elif s != None: ## Multiple stop codons in the sequence 
             new_row = pd.DataFrame({
