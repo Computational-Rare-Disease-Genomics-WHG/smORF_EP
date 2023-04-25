@@ -19,6 +19,7 @@
 ## stop lost (genomic)
 
 
+from email import header
 import sys
 import os
 import time
@@ -36,7 +37,7 @@ from smorfep.utils.tool_script import *
 
 
 
-def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, filename, outputname, mismatch_smorf_transc_filename):
+def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, filename, outputname, excluded_transc_filename):
 
     ## 1- reads the input file
     variants_df = read_variants_file(filename, '\t', 0)
@@ -70,9 +71,9 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
     print('introns ready')
     print('')
 
-
-    ## Create a file where the incompatible transcripts are reported
-    ## take the prefix of the input file and 
+    ## excluded transcripts and flags file 
+    ## First time we write in this file we add the header
+    excluded_blank = True 
 
 
     ## 4- Check variant effect per transcript
@@ -121,6 +122,13 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
             print(smorf_id)
             print(matching_t)
             print(unmatching_t)
+
+            if excluded_blank: 
+                unmatching_t.to_csv(excluded_transc_filename, sep='\t', lineterminator='\n', index=False, header=True)
+
+                excluded_blank = False
+            else: 
+                unmatching_t.to_csv(excluded_transc_filename, sep='\t', lineterminator='\n', index=False, mode='a', header=False)
 
             
             sys.exit(1)
