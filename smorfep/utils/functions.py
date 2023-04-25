@@ -1154,7 +1154,7 @@ def check_stop_transcript(seq, new_sequence, start, end, variant_pos, strand, ma
     return None, '-', '-', '-'
         
 
-def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, smorf_start, smorf_end, strand):
+def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, smorf_id, smorf_start, smorf_end, strand):
     """
     Function to check the compatibility of smORF and transcript coordinates. 
 
@@ -1164,6 +1164,7 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
     - ref_sequence:  reference sequence for the chromosome in analysis
     - transcript_info: dataframe structure line with the information about the transcript (start, end, id, etc)
     - introns_df: intronic regions dataframe for the chromosome in analysis
+    - smorf_id (for final output format)
     - smorf_start
     - smorfs_end
     - strand 
@@ -1172,7 +1173,7 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
     """
 
     matching_transcripts = []
-    unmatching_trancripts = pd.DataFrame(columns=['transcript_id','flag', 'type', 'length'])
+    unmatching_trancripts = pd.DataFrame(columns=['smorf_id','transcript_id','flag', 'type', 'length'])
 
     stop_codons = ['TAG', 'TAA', 'TGA']
 
@@ -1230,6 +1231,7 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
 
                 if not start_intron.empty:
                     new_row = pd.DataFrame({
+                        'smorf_id':[smorf_id],
                         'transcript_id': [t_id], 
                         'flag': ['wrong_sequence'], 
                         'type': ['start_within_intron'], 
@@ -1239,6 +1241,7 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
 
                 elif not end_intron.empty:
                     new_row = pd.DataFrame({
+                        'smorf_id':[smorf_id],
                         'transcript_id': [t_id], 
                         'flag': ['wrong_sequence'], 
                         'type': ['end_within_intron'], 
@@ -1254,6 +1257,7 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
                 
                 if not start_intron.empty:
                     new_row = pd.DataFrame({
+                        'smorf_id':[smorf_id],
                         'transcript_id': [t_id], 
                         'flag': ['wrong_sequence'], 
                         'type':['start_within_intron'], 
@@ -1263,6 +1267,7 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
                 
                 elif not end_intron.empty:
                     new_row = pd.DataFrame({
+                        'smorf_id':[smorf_id],
                         'transcript_id': [t_id], 
                         'flag': ['wrong_sequence'], 
                         'type': ['end_within_intron'], 
@@ -1274,6 +1279,7 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
         ## 2- check 3nt periodicity
         elif smorf_len % 3 != 0: 
             new_row = pd.DataFrame({
+                'smorf_id':[smorf_id],
                 'transcript_id':[t_id], 
                 'flag': ['wrong_sequence'], 
                 'type': ['not_multiple_of_3'], 
@@ -1286,6 +1292,7 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
         elif smorf_seq[len(smorf_seq)-3:len(smorf_seq)+1] not in stop_codons:
             last_codon = smorf_seq[len(smorf_seq)-3:len(smorf_seq)+1]
             new_row = pd.DataFrame({
+                'smorf_id':[smorf_id],
                 'transcript_id':[t_id], 
                 'flag': ['wrong_sequence'], 
                 'type': ['last_trio_not_a_stop'], 
@@ -1297,6 +1304,7 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
         ## 4- check multiple stop codons
         elif s != None: ## Multiple stop codons in the sequence 
             new_row = pd.DataFrame({
+                'smorf_id':[smorf_id],
                 'transcript_id': [t_id], 
                 'flag': ['wrong_sequence'], 
                 'type': ['more_than_one_stop'], 
