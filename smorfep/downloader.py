@@ -89,7 +89,7 @@ def download_gencode(transc_link):
 
     # 4- Precomputations on genecode file
     # Pre-process gff3 file - single header  
-    prefix = outputname_unconpress.replace('.'+ extension, '')
+    prefix = outputname_unconpress.replace(extension, '')
 
     ##print(outputname, outputname_unconpress, prefix)
     os.system('preprocess_gff.py transcripts/'+outputname_unconpress+ ' transcripts/'+prefix+'_columnNames'+extension)
