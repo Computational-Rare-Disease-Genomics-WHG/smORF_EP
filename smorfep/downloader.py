@@ -89,7 +89,7 @@ def download_gencode(transc_link):
 
     # 4- Precomputations on genecode file
     # Pre-process gff3 file - single header  
-    prefix = outputname_unconpress.replace('.'+ extension, '')
+    prefix = outputname_unconpress.replace(extension, '')
 
     ##print(outputname, outputname_unconpress, prefix)
     os.system('preprocess_gff.py transcripts/'+outputname_unconpress+ ' transcripts/'+prefix+'_columnNames'+extension)
@@ -97,11 +97,11 @@ def download_gencode(transc_link):
 
     # transcript coordinates (15.seconds M1 ship)
     os.system('compute_transcripts_gencode.py transcripts/'+prefix+'_columnNames'+extension+ ' transcripts/'+prefix+'_transcriptCoord_'+now+'.tsv')
-    ##print('compute_transcripts_gencode.py transcripts/'+prefix+'_columnNames'+extension+ ' transcripts/'+prefix+'_transcriptCoord_{now}.tsv')
+    ##print('compute_transcripts_gencode.py transcripts/'+prefix+'_columnNames'+extension+ ' transcripts/'+prefix+'_transcriptCoord_'+now+'.tsv')
 
     # intron coordinates
     os.system('compute_introns_gencode_per_transc.py transcripts/'+prefix+'_columnNames'+extension+ ' transcripts/'+prefix+'_introns_'+now+'.tsv')
-    ##print('compute_introns_gencode_per_transc.py transcripts/'+prefix+'_columnNames'+extension+ ' transcripts/'+prefix+'_introns_{now}.tsv')
+    ##print('compute_introns_gencode_per_transc.py transcripts/'+prefix+'_columnNames'+extension+ ' transcripts/'+prefix+'_introns_'+now+'.tsv')
 
     print("Done")
 
