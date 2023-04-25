@@ -83,7 +83,7 @@ def test_check_smorf_transcript(ref_path, transcripts_filename, introns_filename
                 
             print(smorf_id)
             print(matching_t)
-            print(unmatching_t.head)
+            print(unmatching_t)
             # print(map_gen2transc)
             # print(map_transc2gen)
 
