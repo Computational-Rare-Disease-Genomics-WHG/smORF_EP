@@ -37,7 +37,7 @@ from smorfep.utils.tool_script import *
 
 
 
-def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, filename, outputname, excluded_transc_filename):
+def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, filename, outputname, excluded_transc_filename, smorf_no_t_filename):
 
     ## 1- reads the input file
     variants_df = read_variants_file(filename, '\t', 0)
@@ -74,7 +74,13 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
     ## excluded transcripts and flags file 
     ## First time we write in this file we add the header
     excluded_blank = True 
+    
+    ## open file to write smorfs without a single transcript 
+    nts_file = open(smorf_no_t_filename, 'w')
 
+    ## stats variables 
+    smorf_no_transcript = 0
+    variants_no_annotation = 0
 
     ## 4- Check variant effect per transcript
     for each_chrom in all_chromosomes: ## runs per chromosome
@@ -103,6 +109,7 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
         ## itarete per smorf ID
         for smorf_id in list_smorfs:
             smorf_vars_df = small_df[small_df['smorf_id'] == smorf_id]
+            ##print(smorf_vars_df)
 
             ## smorf info
             smorf_start = smorf_vars_df.at[0, 'start']
@@ -127,30 +134,37 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
             print(matching_t)
             ##print(unmatching_t)
 
+            ## update transcripts to run for the smorf - OK
+            transcripts_smorf = transcripts_smorf[transcripts_smorf['transcript_id'].apply(lambda x: any(t_id in x for t_id in matching_t))]
+
+
             if excluded_blank: 
                 unmatching_t.to_csv(excluded_transc_filename, sep='\t', lineterminator='\n', index=False, header=True)
 
                 excluded_blank = False
             else: 
                 unmatching_t.to_csv(excluded_transc_filename, sep='\t', lineterminator='\n', index=False, mode='a', header=False)
-
             
-            ## XXX HERE!!!!!! XXX 
-
             
             if matching_t == []: ## if there are no transcripts for the smorf -- report
-                ## TODO: XXX
-                pass 
+                nts_file.write(smorf_id + '\n')
+                smorf_no_transcript += 1
+                variants_no_annotation += smorf_vars_df.shape[0] ## number of lines in the smorf_variants dataframe
+                continue ## moves to next smorf
+                
+                ## XXX HERE!!!!!! XXX 
 
-            ## per variant
-            for index, row in smorf_vars_df.iterrows():
-                variant_position = smorf_vars_df.loc[index]['var_pos']
-                variant_id = smorf_vars_df.loc[index]['var_id']
-            
+            else: 
+                print(smorf_vars_df)
+                ## per variant
+                for index, row in smorf_vars_df.iterrows():
+                    variant_position = smorf_vars_df.loc[index]['var_pos']
+                    variant_id = smorf_vars_df.loc[index]['var_id']
+                
             sys.exit(1)
 
 
-            
+        sys.exit(1)    
 
         ## per variant
         for index, row in small_df.iterrows(): ## iterates per line 
@@ -273,6 +287,7 @@ def main():
     today = date.today()
     default_outputname = 'output_'+today.strftime("%Y-%m-%d")+'.tsv'
     default_excluded_filename = 'excluded_'+today.strftime("%Y-%m-%d")+'.tsv'
+    default_smorf_no_t_filename = 'smorf_no_t_'+today.strftime("%Y-%m-%d")+'.tsv'
 
     ##print(default_outputname)
 
@@ -285,7 +300,9 @@ def main():
     parser.add_argument('-s', '--splice_site', metavar='\b', type=int, default=8, help='splice-site size, default = 8 (as VEP)')
     parser.add_argument('-f', '--variants_filename',metavar='\b', required=True, type=str, help='file with the variants and the regions of interest info')
     parser.add_argument('-o', '--output', metavar='\b', type=str, default=default_outputname, help='outputname')
-    parser.add_argument('-e', '--excluded', metavar='\b', type=str, default=default_excluded_filename, help='file reporting the transcripts excluded from analysis and respective flag')
+    parser.add_argument('-e', '--excluded_transcript', metavar='\b', type=str, default=default_excluded_filename, help='file reporting the transcripts excluded from analysis and respective flag')
+    parser.add_argument('-n', '--no_transcript', metavar='\b', type=str, default=default_smorf_no_t_filename, help='file with the smORF IDs which do not match any transcript on the database used')
+
 
     args = parser.parse_args()
 
@@ -333,7 +350,8 @@ def main():
                 args.splice_site, 
                 args.variants_filename, 
                 args.output,
-                args.excluded)
+                args.excluded_transcript,
+                args.no_transcript)
 
     ## TODO: Add stats on how many smorfs skipped and how many variants successfully annotated (out of XXX)
 
