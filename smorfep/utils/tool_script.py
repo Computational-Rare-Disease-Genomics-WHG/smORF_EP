@@ -43,15 +43,15 @@ def tool(ref_sequence, transcript_info, introns_df, start, end, strand, ref, alt
     ## introns on the extension -- pre-compute
     if strand == '+':
         ## check if start is within an intron
-        start_intron = introns_df[(introns_df['start']<= start) & (introns_df['end']>= start)]
+        # start_intron = introns_df[(introns_df['start']<= start) & (introns_df['end']>= start)]
 
-        if not start_intron.empty:
-            return 'wrong_sequence', 'start within intron', transcript_info.transcript_id, '-'
+        # if not start_intron.empty:
+        #     return 'wrong_sequence', 'start within intron', transcript_info.transcript_id, '-'
 
-        ## check if end is within an intron
-        end_intron = introns_df[(introns_df['start']<= end) & (introns_df['end']>= end)]
-        if not end_intron.empty:
-            return 'wrong_sequence', 'end within intron', transcript_info.transcript_id, '-'
+        # ## check if end is within an intron
+        # end_intron = introns_df[(introns_df['start']<= end) & (introns_df['end']>= end)]
+        # if not end_intron.empty:
+        #     return 'wrong_sequence', 'end within intron', transcript_info.transcript_id, '-'
 
         ## smorf start until transcript end
         introns_df = introns_df[(introns_df['start']>= start) & (introns_df['end']<= transcript_info.end)]
@@ -60,14 +60,14 @@ def tool(ref_sequence, transcript_info, introns_df, start, end, strand, ref, alt
 
     elif strand == '-':
         ## check if start is within an intron
-        start_intron = introns_df[(introns_df['start']<= end) & (introns_df['end']>= end)]
-        if not start_intron.empty:
-            return 'wrong_sequence', 'start within intron', transcript_info.transcript_id, '-'
+        # start_intron = introns_df[(introns_df['start']<= end) & (introns_df['end']>= end)]
+        # if not start_intron.empty:
+        #     return 'wrong_sequence', 'start within intron', transcript_info.transcript_id, '-'
         
         ## check if end is within an intron
-        end_intron = introns_df[(introns_df['start']<= start) & (introns_df['end']>= start)]
-        if not end_intron.empty:
-            return 'wrong_sequence', 'end within intron', transcript_info.transcript_id, '-'
+        # end_intron = introns_df[(introns_df['start']<= start) & (introns_df['end']>= start)]
+        # if not end_intron.empty:
+        #     return 'wrong_sequence', 'end within intron', transcript_info.transcript_id, '-'
 
         ## transcript start until smORF end
         introns_df =  introns_df[(introns_df['start']>= transcript_info.start) & (introns_df['end']<= end)]
@@ -110,25 +110,25 @@ def tool(ref_sequence, transcript_info, introns_df, start, end, strand, ref, alt
         ## region sequence without introns
 
         ## 2.2- Check 3nt periodicity - if not multiple of 3: Wrong sequence
-        if new_len % 3 != 0: 
-            return 'wrong_sequence', 'not_multiple_of_3', new_len, '-'
+        # if new_len % 3 != 0: 
+        #     return 'wrong_sequence', 'not_multiple_of_3', new_len, '-'
         
-        ## check last 3 nts are a stop codon
-        elif seq[len(seq)-3:len(seq)+1] not in stop_codons:
-            return 'wrong_sequence', 'last_trio_not_a_stop', seq[len(seq)-3:len(seq)+1], '-'
+        # ## check last 3 nts are a stop codon
+        # elif seq[len(seq)-3:len(seq)+1] not in stop_codons:
+        #     return 'wrong_sequence', 'last_trio_not_a_stop', seq[len(seq)-3:len(seq)+1], '-'
             
         
         ## 2.3- Check if there are multiple stop codons -- Wrong sequence
         ## checks if the sequence is correct and there is not more than one stop codon
         else: 
-            ## seq is updated with introns removal above -- function remove_introns
-            if strand == '+':
-                s, s_index = find_stop_inframe(seq[:len(seq)-3], map_transc2gen) ## removes last codon and searches for stop codons inframe
-            elif strand == '-':
-                s, s_index = find_stop_inframe(seq[:len(seq)-3], map_transc2gen)
+            # ## seq is updated with introns removal above -- function remove_introns
+            # if strand == '+':
+            #     s, s_index = find_stop_inframe(seq[:len(seq)-3], map_transc2gen) ## removes last codon and searches for stop codons inframe
+            # elif strand == '-':
+            #     s, s_index = find_stop_inframe(seq[:len(seq)-3], map_transc2gen)
 
-            if s != None: ## Multiple stop codons in the sequence 
-                return 'wrong_sequence', 'More_than_one_stop', '-', '-'
+            # if s != None: ## Multiple stop codons in the sequence 
+            #     return 'wrong_sequence', 'More_than_one_stop', '-', '-'
 
 
         ## 2.4 - Check if variant falls into an intron region     
@@ -150,9 +150,9 @@ def tool(ref_sequence, transcript_info, introns_df, start, end, strand, ref, alt
             ## 2.5.1- introduce the variant 
             new_sequence, ref_original, ref_inFile = add_variant_transcriptSeq(seq, start, end, ref, alt, variant_pos, map_gen2transc)
 
-            ## 2.5.2- Check if allele in the file and in the sequence match
-            if new_sequence == None:
-                return 'wrong_sequence', 'ref_allele_wrong', ref_original, ref_inFile 
+            # ## 2.5.2- Check if allele in the file and in the sequence match
+            # if new_sequence == None:
+            #     return 'wrong_sequence', 'ref_allele_wrong', ref_original, ref_inFile 
 
             if len(ref) > len(alt): ## deletion
                 new_sequence = new_sequence.replace('-','') # we need to take the dash out for seq processing 
@@ -268,30 +268,30 @@ def tool(ref_sequence, transcript_info, introns_df, start, end, strand, ref, alt
 
     else: ## no introns in the smORF -- if extension are needed we still need to check introns on the extension
 
-        ## 3.1 - check 3nt periodicity 
-        if len(seq) % 3 != 0:
-            return 'wrong_sequence', 'not_multiple_of_3', len(seq), '-'
+        # ## 3.1 - check 3nt periodicity 
+        # if len(seq) % 3 != 0:
+        #     return 'wrong_sequence', 'not_multiple_of_3', len(seq), '-'
 
-        ## check last 3 nts are a stop codon
-        elif seq[len(seq)-3:len(seq)+1] not in stop_codons:
-            return 'wrong_sequence', 'last_trio_not_a_stop', seq[len(seq)-3:len(seq)+1], '-'
+        # ## check last 3 nts are a stop codon
+        # elif seq[len(seq)-3:len(seq)+1] not in stop_codons:
+        #     return 'wrong_sequence', 'last_trio_not_a_stop', seq[len(seq)-3:len(seq)+1], '-'
             
         
-        ## 3.2 - check multiple stop codons
-        else:     ## checks if the sequence is correct and there is not more than one stop codon
-            if strand == '+':
-                s, s_index = find_stop_inframe(seq[:len(seq)-3], map_transc2gen) ## removes last codon and searches for stop codons inframe
-            elif strand == '-':
-                s, s_index = find_stop_inframe(seq[:len(seq)-3], map_transc2gen)
+        # ## 3.2 - check multiple stop codons
+        # else:     ## checks if the sequence is correct and there is not more than one stop codon
+        #     if strand == '+':
+        #         s, s_index = find_stop_inframe(seq[:len(seq)-3], map_transc2gen) ## removes last codon and searches for stop codons inframe
+        #     elif strand == '-':
+        #         s, s_index = find_stop_inframe(seq[:len(seq)-3], map_transc2gen)
 
-            if s != None: ## Multiple stop codons in the sequence 
-                return 'wrong_sequence', 'More_than_one_stop', '-', '-'
+        #     if s != None: ## Multiple stop codons in the sequence 
+        #         return 'wrong_sequence', 'More_than_one_stop', '-', '-'
 
 
-        ## 3.3 - Introduce the variant
-        new_sequence, ref_original, ref_inFile = add_variant(seq, start, end, ref, alt, variant_pos, strand)
-        if new_sequence == None:
-            return 'wrong sequence', 'ref_allele_wrong', ref_original, ref_inFile 
+        # ## 3.3 - Introduce the variant
+        # new_sequence, ref_original, ref_inFile = add_variant(seq, start, end, ref, alt, variant_pos, strand)
+        # if new_sequence == None:
+        #     return 'wrong sequence', 'ref_allele_wrong', ref_original, ref_inFile 
 
         if len(ref) > len(alt): ## deletion
             new_sequence = new_sequence.replace('-','') # we need to take the dash out for seq processing 
