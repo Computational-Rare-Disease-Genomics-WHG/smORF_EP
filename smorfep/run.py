@@ -112,9 +112,9 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
             ##print(smorf_vars_df)
 
             ## smorf info
-            smorf_start = smorf_vars_df.at[0, 'start']
-            smorf_end = smorf_vars_df.at[0, 'end']
-            smorf_strand = smorf_vars_df.at[0, 'strand']
+            smorf_start = smorf_vars_df.iloc[0]['start']
+            smorf_end = smorf_vars_df.iloc[0]['end']
+            smorf_strand = smorf_vars_df.iloc[0]['strand']
             ##print(smorf_id, smorf_start, smorf_end, smorf_strand)
 
             transcripts_smorf = transcripts_chr.loc[(transcripts_chr.start <= smorf_start) & (transcripts_chr.end >= smorf_end) & (transcripts_chr.strand == smorf_strand)]
@@ -186,7 +186,7 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
 
                         r_index = smorf_vars_df.index[smorf_vars_df['var_id'] == row.var_id].item()
                         ## variant IDs are unique - so we only get one index out of this
-
+                        print(r_index)
 
                         ## XXX HERE!!!!!! XXX   
                         
@@ -208,12 +208,12 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
                             'DNA_seq' : change,
                             'prot_consequence' : prot_cons,
                             'prot_seq' : prot_change
-                            }
+                            }, index=[r_index]
                         )
 
-                        print(consequence_computed)
-
                         vars_cons_df = pd.concat([vars_cons_df, consequence_computed])
+
+                        print('here')
 
                         # ## adds to the dataframe the protein consequences
                         # consequence_computed = pd.DataFrame(
@@ -245,7 +245,7 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
                         ## they are in a separate file
 
 
-          
+    print(vars_cons_df)
             
     ## write_the output
     vars_cons_df.to_csv(outputname, sep='\t', lineterminator='\n', index=False)
