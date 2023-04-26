@@ -159,8 +159,6 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
                 ## per variant - line
                 for index, row in smorf_vars_df.iterrows():
 
-                    print(row)
-
                     ## run tool per transcript
                     for each_t in matching_t:
                         ## transcript info
@@ -189,12 +187,8 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
                         r_index = smorf_vars_df.index[smorf_vars_df['var_id'] == row.var_id].item()
                         ## variant IDs are unique - so we only get one index out of this
 
-                        print(r_index)
-                        print(consequence, change, prot_cons, prot_change)
 
-                        print(smorf_vars_df.iloc[r_index]['chrm'])
-                        print(this_transcript.iloc[0].transcript_type)
-                        print(each_t)
+                        ## XXX HERE!!!!!! XXX   
                         
                         ## adds to the dataframe the protein consequences
                         consequence_computed = pd.DataFrame(
@@ -216,6 +210,10 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
                             'prot_seq' : prot_change
                             }
                         )
+
+                        print(consequence_computed)
+
+                        vars_cons_df = pd.concat([vars_cons_df, consequence_computed])
 
                         # ## adds to the dataframe the protein consequences
                         # consequence_computed = pd.DataFrame(
@@ -239,14 +237,14 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
 
                         # )
 
-                        vars_cons_df = pd.concat([vars_cons_df, consequence_computed])
+
 
                         ## NOTE 1: Removed no transcript -- we report the smORF IDS for smORFs without transcript but don't run the analysis for those
 
                         ## NOTE 2: Removed var outside smorf region -- as we remove the non-matching transcripts from analysis
                         ## they are in a separate file
 
-        ## XXX HERE!!!!!! XXX   
+
           
             
     ## write_the output
@@ -307,6 +305,8 @@ def main():
 
     ## list of files in the reference dir
     ref_dir_files = os.listdir(args.reference_path)
+
+    ## NOTE: hard coded -- suffix used by smorfinit step
     chrom_list = ['chr1','chr1','chr2','chr3','chr4','chr5','chr6','chr7','chr8',\
                 'chr9','chr10','chr11','chr12','chr13','chr14','chr15','chr16',\
                 'chr17','chr18','chr19','chr20','chr21','chr22','chrX','chrY']
