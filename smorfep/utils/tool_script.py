@@ -294,7 +294,7 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
 
 
         # ## 3.3 - Introduce the variant
-        # new_sequence, ref_original, ref_inFile = add_variant(seq, start, end, ref, alt, variant_pos, strand)
+        new_sequence, ref_original, ref_inFile = add_variant(seq, start, end, ref, alt, variant_pos, strand)
         # if new_sequence == None:
         #     return 'wrong sequence', 'ref_allele_wrong', ref_original, ref_inFile 
 
