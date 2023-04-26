@@ -156,8 +156,6 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
             else: 
                 print(smorf_vars_df)
 
-                print(transcripts_smorf)
-
                 ## per variant - line
                 for index, row in smorf_vars_df.iterrows():
                     print(index)
@@ -197,15 +195,15 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
                         ## adds to the dataframe the protein consequences
                         consequence_computed = pd.DataFrame(
                             {
-                            'chrm': smorf_vars_df.iloc[index]['chrm'],
-                            'var_pos' : smorf_vars_df.iloc[index]['var_pos'],
-                            'ref' : smorf_vars_df.iloc[index]['ref'],
-                            'alt' : smorf_vars_df.iloc[index]['alt'],
-                            'start' : smorf_vars_df.iloc[index]['start'],
-                            'end' : smorf_vars_df.iloc[index]['end'],
-                            'strand' : smorf_vars_df.iloc[index]['strand'],
-                            'var_id' : smorf_vars_df.iloc[index]['var_id'],
-                            'smorf_id': smorf_vars_df.iloc[index]['smorf_id'], 
+                            'chrm': variants_df.iloc[index]['chrm'],
+                            'var_pos' : variants_df.iloc[index]['var_pos'],
+                            'ref' : variants_df.iloc[index]['ref'],
+                            'alt' : variants_df.iloc[index]['alt'],
+                            'start' : variants_df.iloc[index]['start'],
+                            'end' : variants_df.iloc[index]['end'],
+                            'strand' : variants_df.iloc[index]['strand'],
+                            'var_id' : variants_df.iloc[index]['var_id'],
+                            'smorf_id': variants_df.iloc[index]['smorf_id'], 
                             'transcript_id' : each_t, 
                             'transcript_type' : this_transcript.iloc[0].transcript_type,
                             'DNA_consequence' : consequence,
