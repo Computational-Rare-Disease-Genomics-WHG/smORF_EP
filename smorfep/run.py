@@ -156,6 +156,8 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
             else: 
                 print(smorf_vars_df)
 
+                print(transcripts_smorf)
+
                 ## per variant - line
                 for index, row in smorf_vars_df.iterrows():
 
@@ -163,8 +165,9 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
                     for each_t in matching_t:
                         ## transcript info
                         this_transcript = transcripts_smorf[transcripts_smorf['transcript_id'] == each_t]
-                        ##print(this_transcript)
-                        ##print(this_transcript.iloc[0].transcript_type)
+                        t_index = this_transcript.index
+                        print(this_transcript)
+                        print(this_transcript.iloc[0].transcript_type)
 
                         ## introns per transcript
                         introns_transcript = introns_chr.loc[introns_chr['transcript_id'] == each_t]
@@ -184,31 +187,32 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
                             map_transc2gen, 
                             splice_site)
 
-                        r_index = smorf_vars_df.index[smorf_vars_df['var_id'] == row.var_id].item()
+                        ##r_index = smorf_vars_df.index[smorf_vars_df['var_id'] == row.var_id].item()
                         ## variant IDs are unique - so we only get one index out of this
-                        print(r_index)
+                        ##print(r_index)
+                        ##print( smorf_vars_df.index)
 
                         ## XXX HERE!!!!!! XXX   
                         
                         ## adds to the dataframe the protein consequences
                         consequence_computed = pd.DataFrame(
                             {
-                            'chrm': smorf_vars_df.iloc[r_index]['chrm'],
-                            'var_pos' : smorf_vars_df.iloc[r_index]['var_pos'],
-                            'ref' : smorf_vars_df.iloc[r_index]['ref'],
-                            'alt' : smorf_vars_df.iloc[r_index]['alt'],
-                            'start' : smorf_vars_df.iloc[r_index]['start'],
-                            'end' : smorf_vars_df.iloc[r_index]['end'],
-                            'strand' : smorf_vars_df.iloc[r_index]['strand'],
-                            'var_id' : smorf_vars_df.iloc[r_index]['var_id'],
-                            'smorf_id': smorf_vars_df.iloc[r_index]['smorf_id'], 
+                            'chrm': smorf_vars_df.iloc[index]['chrm'],
+                            'var_pos' : smorf_vars_df.iloc[index]['var_pos'],
+                            'ref' : smorf_vars_df.iloc[index]['ref'],
+                            'alt' : smorf_vars_df.iloc[index]['alt'],
+                            'start' : smorf_vars_df.iloc[index]['start'],
+                            'end' : smorf_vars_df.iloc[index]['end'],
+                            'strand' : smorf_vars_df.iloc[index]['strand'],
+                            'var_id' : smorf_vars_df.iloc[index]['var_id'],
+                            'smorf_id': smorf_vars_df.iloc[index]['smorf_id'], 
                             'transcript_id' : each_t, 
                             'transcript_type' : this_transcript.iloc[0].transcript_type,
                             'DNA_consequence' : consequence,
                             'DNA_seq' : change,
                             'prot_consequence' : prot_cons,
                             'prot_seq' : prot_change
-                            }, index=[r_index]
+                            }, index=[index]
                         )
 
                         vars_cons_df = pd.concat([vars_cons_df, consequence_computed])
