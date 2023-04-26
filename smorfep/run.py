@@ -159,6 +159,8 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
                 ## per variant - line
                 for index, row in smorf_vars_df.iterrows():
 
+                    print(row)
+
                     ## run tool per transcript
                     for each_t in matching_t:
                         ## transcript info
@@ -186,19 +188,25 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
 
                         r_index = variants_df.index[variants_df['var_id'] == row.var_id].tolist()
                         ## variant IDs are unique - so we only get one index out of this
+
+                        print(consequence, change, prot_cons, prot_change)
+
+                        print(variants_df.iloc[r_index])
+                        print(this_transcript.iloc[0].transcript_type)
+                        print(each_t)
                         
                         ## adds to the dataframe the protein consequences
                         consequence_computed = pd.DataFrame(
                             {
-                            'chrm': row.chrm,
-                            'var_pos' : row.var_pos,
-                            'ref' : row.ref,
-                            'alt' : row.alt,
-                            'start' : row.start,
-                            'end' : row.end,
-                            'strand' : row.strand,
-                            'var_id' : row.var_id,
-                            'smorf_id': row.smorf_id, 
+                            'chrm': variants_df.iloc[r_index]['chrm'],
+                            'var_pos' : variants_df.iloc[r_index]['var_pos'],
+                            'ref' : variants_df.iloc[r_index]['ref'],
+                            'alt' : variants_df.iloc[r_index]['alt'],
+                            'start' : variants_df.iloc[r_index]['start'],
+                            'end' : variants_df.iloc[r_index]['end'],
+                            'strand' : variants_df.iloc[r_index]['strand'],
+                            'var_id' : variants_df.iloc[r_index]['var_id'],
+                            'smorf_id': variants_df.iloc[r_index]['smorf_id'], 
                             'transcript_id' : each_t, 
                             'transcript_type' : this_transcript.iloc[0].transcript_type,
                             'DNA_consequence' : consequence,
@@ -230,7 +238,7 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
 
                         # )
 
-                        vars_cons_df = pd.concat([vars_cons_df, consequence_computed])
+                        vars_cons_df = pd.concat([vars_cons_df, consequence_computed], ignore_index=True)
 
                         ## NOTE 1: Removed no transcript -- we report the smORF IDS for smORFs without transcript but don't run the analysis for those
 
