@@ -67,7 +67,7 @@ cd smORF-EP
 ```
 pip3 install .
 
-python setup.py install
+python3 setup.py install
 ```
 
 <br><hr>
@@ -103,7 +103,7 @@ smorfinit --all --ref_link https://ftp.ncbi.nlm.nih.gov/genomes/refseq/vertebrat
 Example (download reference version GCF_000001405.39_GRCh38.p13): 
 
 ```
-smorfinit -reference -ref_link https://ftp.ncbi.nlm.nih.gov/genomes/refseq/vertebrate_mammalian/Homo_sapiens/annotation_releases/109.20211119/GCF_000001405.39_GRCh38.p13/GCF_000001405.39_GRCh38.p13_genomic.fna.gz
+smorfinit --reference --ref_link https://ftp.ncbi.nlm.nih.gov/genomes/refseq/vertebrate_mammalian/Homo_sapiens/annotation_releases/109.20211119/GCF_000001405.39_GRCh38.p13/GCF_000001405.39_GRCh38.p13_genomic.fna.gz
 ```
 
 
