@@ -158,7 +158,6 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
 
                 ## per variant - line
                 for index, row in smorf_vars_df.iterrows():
-                    variant_id = row.var_id
 
                     ## run tool per transcript
                     for each_t in matching_t:
