@@ -164,7 +164,8 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
                     for each_t in matching_t:
                         ## transcript info
                         this_transcript = transcripts_smorf[transcripts_smorf['transcript_id'] == each_t]
-                        print(this_transcript)
+                        ##print(this_transcript)
+                        ##print(this_transcript.iloc[0].transcript_type)
 
                         ## introns per transcript
                         introns_transcript = introns_chr.loc[introns_chr['transcript_id'] == each_t]
@@ -198,14 +199,35 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
                             'var_id' : variants_df.iloc[r_index]['var_id'],
                             'smorf_id': variants_df.iloc[r_index]['smorf_id'], 
                             'transcript_id' : each_t, 
-                            'transcript_type' : row_t.transcript_type,
+                            'transcript_type' : this_transcript.iloc[0].transcript_type,
                             'DNA_consequence' : consequence,
                             'DNA_seq' : change,
                             'prot_consequence' : prot_cons,
                             'prot_seq' : prot_change
                             }
-
                         )
+
+                        # ## adds to the dataframe the protein consequences
+                        # consequence_computed = pd.DataFrame(
+                        #     {
+                        #     'chrm': variants_df.iloc[r_index]['chrm'],
+                        #     'var_pos' : variants_df.iloc[r_index]['var_pos'],
+                        #     'ref' : variants_df.iloc[r_index]['ref'],
+                        #     'alt' : variants_df.iloc[r_index]['alt'],
+                        #     'start' : variants_df.iloc[r_index]['start'],
+                        #     'end' : variants_df.iloc[r_index]['end'],
+                        #     'strand' : variants_df.iloc[r_index]['strand'],
+                        #     'var_id' : variants_df.iloc[r_index]['var_id'],
+                        #     'smorf_id': variants_df.iloc[r_index]['smorf_id'], 
+                        #     'transcript_id' : each_t, 
+                        #     'transcript_type' : this_transcript.iloc[0].transcript_type,
+                        #     'DNA_consequence' : consequence,
+                        #     'DNA_seq' : change,
+                        #     'prot_consequence' : prot_cons,
+                        #     'prot_seq' : prot_change
+                        #     }
+
+                        # )
 
                         vars_cons_df = pd.concat([vars_cons_df, consequence_computed])
 
