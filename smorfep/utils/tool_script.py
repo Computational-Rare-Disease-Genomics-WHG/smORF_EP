@@ -8,7 +8,7 @@
 from smorfep.utils.functions import *
 
 
-def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, strand, ref, alt, variant_pos, splice_site=8, map_gen2transc, map_transc2gen):
+def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, strand, ref, alt, variant_pos, map_gen2transc, map_transc2gen, splice_site=8):
 
     """
         Function that runs the variant consequence check.
@@ -29,9 +29,14 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
 
         returns the variant consequence
     """
-    
 
     stop_codons = ['TAG', 'TAA', 'TGA']
+
+    ## transcript information - from input 1 line dataframe transcript_info
+    t_id = transcript_info.iloc[0].transcript_id
+    t_start = transcript_info.iloc[0].start
+    t_end = transcript_info.iloc[0].end
+    t_strand = transcript_info.iloc[0].strand 
 
 
     ## 1 - Get sequence from Ref genome
@@ -54,8 +59,8 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
         #     return 'wrong_sequence', 'end within intron', transcript_info.transcript_id, '-'
 
         ## smorf start until transcript end
-        transcript_introns_df = transcript_introns_df[(transcript_introns_df['start']>= start) & (transcript_introns_df['end']<= transcript_info.end)]
-        transcript_introns_df_extension = transcript_introns_df[(transcript_introns_df['start']>= end+1) & (transcript_introns_df['end']<=transcript_info.end)]
+        transcript_introns_df = transcript_introns_df[(transcript_introns_df['start']>= start) & (transcript_introns_df['end']<= t_end)]
+        transcript_introns_df_extension = transcript_introns_df[(transcript_introns_df['start']>= end+1) & (transcript_introns_df['end']<=t_end)]
     
 
     elif strand == '-':
@@ -70,8 +75,8 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
         #     return 'wrong_sequence', 'end within intron', transcript_info.transcript_id, '-'
 
         ## transcript start until smORF end
-        transcript_introns_df =  transcript_introns_df[(transcript_introns_df['start']>= transcript_info.start) & (transcript_introns_df['end']<= end)]
-        transcript_introns_df_extension = transcript_introns_df[(transcript_introns_df['start']>= transcript_info.start) & (transcript_introns_df['end']<=start-1)]
+        transcript_introns_df =  transcript_introns_df[(transcript_introns_df['start']>= t_start) & (transcript_introns_df['end']<= end)]
+        transcript_introns_df_extension = transcript_introns_df[(transcript_introns_df['start']>= t_start) & (transcript_introns_df['end']<=start-1)]
 
     ## introns of the smorf region
     introns_smorf = transcript_introns_df[(transcript_introns_df['start']>= start) & (transcript_introns_df['end']<=end)]
@@ -82,23 +87,23 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
     # Collect also the extension, from end of region until end of transcript
     ## considers two cases, with and without introns
     if strand == '+':
-        map_gen2transc, map_transc2gen = genome2transcript_coords(start, transcript_info.end, strand, transcript_introns_df)
+        map_gen2transc, map_transc2gen = genome2transcript_coords(start, t_end, strand, transcript_introns_df)
         
         if not transcript_introns_df_extension.empty:
-            extension_seq, ext_len = remove_introns(transcript_introns_df_extension, end+1, transcript_info.end, strand, ref_sequence)
+            extension_seq, ext_len = remove_introns(transcript_introns_df_extension, end+1, t_end, strand, ref_sequence)
 
         else: 
-            extension_seq = get_sequence(end+1, transcript_info.end, strand, ref_sequence)
+            extension_seq = get_sequence(end+1, t_end, strand, ref_sequence)
             ext_len = len(extension_seq)
     
     elif strand == '-':
-        map_gen2transc, map_transc2gen = genome2transcript_coords(transcript_info.start, end, strand, transcript_introns_df)
+        map_gen2transc, map_transc2gen = genome2transcript_coords(t_start, end, strand, transcript_introns_df)
 
         if not transcript_introns_df_extension.empty:
-            extension_seq, ext_len = remove_introns(transcript_introns_df_extension, transcript_info.start, start-1, strand, ref_sequence)
+            extension_seq, ext_len = remove_introns(transcript_introns_df_extension, t_start, start-1, strand, ref_sequence)
 
         else: 
-            extension_seq = get_sequence(transcript_info.start, start-1, strand, ref_sequence)
+            extension_seq = get_sequence(t_start, start-1, strand, ref_sequence)
             ext_len = len(extension_seq)
 
 
