@@ -136,7 +136,10 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
 
             ## update transcripts to run for the smorf - OK
             transcripts_smorf = transcripts_smorf[transcripts_smorf['transcript_id'].apply(lambda x: any(t_id in x for t_id in matching_t))]
-
+            ## same for the introns 
+            print(introns_smorf)
+            introns_smorf = introns_smorf[introns_smorf['transcript_id'].apply(lambda x: any(t_id in x for t_id in matching_t))]
+            print(introns_smorf)
 
             if excluded_blank: 
                 unmatching_t.to_csv(excluded_transc_filename, sep='\t', lineterminator='\n', index=False, header=True)
@@ -155,10 +158,16 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
                 ## XXX HERE!!!!!! XXX 
 
             else: 
-                ## per variant
+                ## per variant - line
                 for index, row in smorf_vars_df.iterrows():
                     variant_position = smorf_vars_df.loc[index]['var_pos']
                     variant_id = smorf_vars_df.loc[index]['var_id']
+
+                    ## run tool per transcript
+                    for each_t in matching_t:
+
+                        introns_transcript = introns_chr.loc[introns_chr['transcript_id'] == row_t.transcript_id]
+
                 
             sys.exit(1)
 
@@ -168,14 +177,7 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
         ## per variant
         for index, row in small_df.iterrows(): ## iterates per line 
             
-
-
-
-                if not transcripts_smorf.empty:
                     
-                    ##4.2 - check the consequence per transcript
-                    for index_t, row_t in transcripts_smorf.iterrows():
-
                         ## introns per transcript
                         introns_transcript = introns_chr.loc[introns_chr['transcript_id'] == row_t.transcript_id]
 
