@@ -190,7 +190,7 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
                         ## adds to the dataframe the protein consequences
                         consequence_computed = pd.DataFrame(
                             {
-                            'chrm': row.chrom,
+                            'chrm': row.chrm,
                             'var_pos' : row.var_pos,
                             'ref' : row.ref,
                             'alt' : row.alt,
