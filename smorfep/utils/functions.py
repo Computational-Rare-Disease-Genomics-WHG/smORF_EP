@@ -1039,7 +1039,7 @@ def check_stop(seq, new_sequence, start, end, variant_pos, strand, transcript_in
         if variant_pos <= end and variant_pos >= end -2: 
             ## new_sequence is the sequence with the variant
             ## new end is not a stop codon
-            seq2transcEnd = get_sequence(end+1, transcript_info.end, transcript_info.strand, ref_sequence)
+            seq2transcEnd = get_sequence(end+1, transcript_info.iloc[0].end, transcript_info.iloc[0].strand, ref_sequence)
 
             new_seq, new_stop = stop_transcript_search(new_sequence, seq2transcEnd, map_coordinates)
             
@@ -1061,11 +1061,11 @@ def check_stop(seq, new_sequence, start, end, variant_pos, strand, transcript_in
 
         return None, '-', '-', '-'
         
-
+ ## TODO: iloc[0]. Add this to each command in this script that used transcript_info df !!!!! XXX
     if strand == '-':
 
         if variant_pos >= start and variant_pos <= start +2: 
-            seq2transcEnd = get_sequence(transcript_info.start, start, transcript_info.strand, ref_sequence)
+            seq2transcEnd = get_sequence(transcript_info.iloc[0].start, start, transcript_info.iloc[0].strand, ref_sequence)
 
             new_seq, new_stop = stop_transcript_search(new_sequence, seq2transcEnd, map_coordinates)
             
