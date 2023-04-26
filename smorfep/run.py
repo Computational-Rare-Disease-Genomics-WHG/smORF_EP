@@ -180,7 +180,9 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
                             row.ref, 
                             row.alt, 
                             row.var_pos, 
-                            splice_site)
+                            splice_site,
+                            map_gen2transc, 
+                            map_transc2gen)
 
                         r_index = variants_df.index[variants_df['var_id'] == row.var_id].tolist()
                         ## variant IDs are unique - so we only get one index out of this
