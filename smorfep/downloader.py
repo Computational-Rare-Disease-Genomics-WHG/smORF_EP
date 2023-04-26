@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 """
 Downloader script for smORF_EP
 This script downloads the reference genome and the transcriptome from NCBI and Gencode respectively

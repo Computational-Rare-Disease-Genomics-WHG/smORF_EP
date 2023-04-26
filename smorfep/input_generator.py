@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 """
 Input generator script for smORF_EP
 This script generates the formated file for smORF_EP tool. 
