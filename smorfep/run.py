@@ -335,6 +335,8 @@ def main():
                 args.output,
                 args.excluded)
 
+    ## TODO: Add stats on how many smorfs skipped and how many variants successfully annotated (out of XXX)
+
     print('DONE!')
 
     end_time = (time.time() - start_time)#/ 60.0
