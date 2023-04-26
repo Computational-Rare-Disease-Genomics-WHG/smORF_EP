@@ -1,7 +1,5 @@
 #!/usr/bin/python3
 
-## Author: M Fernandes
-
 ## functions used by main script smORF-EP
 
 

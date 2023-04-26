@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-## Author: M Fernandes
+## Contact: M Fernandes
 
 ## Script to check variant consequence with relation to smORF regions.
 

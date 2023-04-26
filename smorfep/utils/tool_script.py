@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-## Author: M Fernandes
+## Contact: M Fernandes
 
 ## main tool function 
 ## Performs the variants annotation 
