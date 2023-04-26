@@ -54,6 +54,13 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
 
     ## check files prefix and suffix 
     files_prefix, files_suffix = check_prefix_sufix_ref_files(ref_path)
+
+    ## excluded transcripts and flags file 
+    ## First time we write in this file we add the header
+    excluded_blank = True 
+    
+    ## open file to write smorfs without a single transcript 
+    nts_file = open(smorf_no_t_filename, 'w')
     
     for chrom_ref in all_chromosomes: 
         r = read_single_fasta(str(chrom_ref), ref_path, files_prefix, files_suffix)
@@ -70,13 +77,6 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
     introns_df = read_file(introns_filename, '\t', 0) ## computed at the begining of the script
     print('introns ready')
     print('')
-
-    ## excluded transcripts and flags file 
-    ## First time we write in this file we add the header
-    excluded_blank = True 
-    
-    ## open file to write smorfs without a single transcript 
-    nts_file = open(smorf_no_t_filename, 'w')
 
     ## stats variables 
     smorf_no_transcript = 0
@@ -281,6 +281,8 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
     ## write_the output
     vars_cons_df.to_csv(outputname, sep='\t', lineterminator='\n', index=False)
 
+    ## close no transcript smorfs file 
+    nts_file.close()
 
 def main():
     ## day date
