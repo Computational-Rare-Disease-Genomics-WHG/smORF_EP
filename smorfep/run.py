@@ -155,7 +155,6 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
                 ## XXX HERE!!!!!! XXX 
 
             else: 
-                print(smorf_vars_df)
                 ## per variant
                 for index, row in smorf_vars_df.iterrows():
                     variant_position = smorf_vars_df.loc[index]['var_pos']
@@ -171,8 +170,6 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
             
 
 
-            ## check if the variant is within the region of interest, only run the tool if it is within
-            if variant_position >= seq_start and variant_position <= seq_end: 
 
                 if not transcripts_smorf.empty:
                     
@@ -222,32 +219,33 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
 
                         vars_cons_df = pd.concat([vars_cons_df, consequence_computed])
 
-                else:  ## write in the output when NO transcript overlaps the region in study
-                    r_index = variants_df.index[variants_df['var_id'] == row.var_id].tolist()
+                ## NOTE: Removed -- we report the smORF IDS for smORFs without transcript but don't run the analysis for those
+                # else:  ## write in the output when NO transcript overlaps the region in study
+                #     r_index = variants_df.index[variants_df['var_id'] == row.var_id].tolist()
                         
-                    ## adds to the dataframe the protein consequences
-                    consequence_computed = pd.DataFrame(
-                        {
-                        'chrm': variants_df.iloc[r_index]['chrm'],
-                        'var_pos' : variants_df.iloc[r_index]['var_pos'],
-                        'ref' : variants_df.iloc[r_index]['ref'],
-                        'alt' : variants_df.iloc[r_index]['alt'],
-                        'start' : variants_df.iloc[r_index]['start'],
-                        'end' : variants_df.iloc[r_index]['end'],
-                        'strand' : variants_df.iloc[r_index]['strand'],
-                        'var_id' : variants_df.iloc[r_index]['var_id'],
-                        'smorf_id': variants_df.iloc[r_index]['smorf_id'],
-                        'transcript_id' : 'no_transcript_full_region', 
-                        'transcript_type' : '-',
-                        'DNA_consequence' : '-',
-                        'DNA_seq' :'-',
-                        'prot_consequence' : '-',
-                        'prot_seq' : '-'
-                        }
+                #     ## adds to the dataframe the protein consequences
+                #     consequence_computed = pd.DataFrame(
+                #         {
+                #         'chrm': variants_df.iloc[r_index]['chrm'],
+                #         'var_pos' : variants_df.iloc[r_index]['var_pos'],
+                #         'ref' : variants_df.iloc[r_index]['ref'],
+                #         'alt' : variants_df.iloc[r_index]['alt'],
+                #         'start' : variants_df.iloc[r_index]['start'],
+                #         'end' : variants_df.iloc[r_index]['end'],
+                #         'strand' : variants_df.iloc[r_index]['strand'],
+                #         'var_id' : variants_df.iloc[r_index]['var_id'],
+                #         'smorf_id': variants_df.iloc[r_index]['smorf_id'],
+                #         'transcript_id' : 'no_transcript_full_region', 
+                #         'transcript_type' : '-',
+                #         'DNA_consequence' : '-',
+                #         'DNA_seq' :'-',
+                #         'prot_consequence' : '-',
+                #         'prot_seq' : '-'
+                #         }
 
-                    )
+                #     )
 
-                    vars_cons_df = pd.concat([vars_cons_df, consequence_computed])
+                #     vars_cons_df = pd.concat([vars_cons_df, consequence_computed])
                     
             
             ## NOTE: Removed as we remove the non-matching transcripts from analysis
