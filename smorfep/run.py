@@ -160,14 +160,14 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
 
                 ## per variant - line
                 for index, row in smorf_vars_df.iterrows():
+                    print(index)
 
                     ## run tool per transcript
                     for each_t in matching_t:
                         ## transcript info
                         this_transcript = transcripts_smorf[transcripts_smorf['transcript_id'] == each_t]
-                        t_index = this_transcript.index
-                        print(this_transcript)
-                        print(this_transcript.iloc[0].transcript_type)
+                        ##print(this_transcript)
+                        ##print(this_transcript.iloc[0].transcript_type) ## OK
 
                         ## introns per transcript
                         introns_transcript = introns_chr.loc[introns_chr['transcript_id'] == each_t]
