@@ -157,11 +157,26 @@ Add path before input and output filename for scpecific locations.
 [:arrow_up: Back to top](#smorf-ep)
 
 
-# Input and output
+# Output
 
-## Input
+smorfep command generates three outputfiles:
+- **consequence file**: File with the variants annotation per transcript
+- **excluded file**: File listing the transcripts excluded per smORF and respective flag
+- **no transcript file**: contains the smORF IDs for smORFs where no transcript was found, therefore the tool doesn't run on them.
 
-## Output
+## Output examples:
+
+
+### Consequence file
+
+
+
+### Excluded file
+
+
+
+### No transcript file
+
 
 <br><hr>
 [:arrow_up: Back to top](#smorf-ep)
