@@ -137,9 +137,7 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
             ## update transcripts to run for the smorf - OK
             transcripts_smorf = transcripts_smorf[transcripts_smorf['transcript_id'].apply(lambda x: any(t_id in x for t_id in matching_t))]
             ## same for the introns 
-            print(introns_smorf)
             introns_smorf = introns_smorf[introns_smorf['transcript_id'].apply(lambda x: any(t_id in x for t_id in matching_t))]
-            print(introns_smorf)
 
             if excluded_blank: 
                 unmatching_t.to_csv(excluded_transc_filename, sep='\t', lineterminator='\n', index=False, header=True)
@@ -154,19 +152,62 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
                 smorf_no_transcript += 1
                 variants_no_annotation += smorf_vars_df.shape[0] ## number of lines in the smorf_variants dataframe
                 continue ## moves to next smorf
-                
-                ## XXX HERE!!!!!! XXX 
 
             else: 
                 ## per variant - line
                 for index, row in smorf_vars_df.iterrows():
-                    variant_position = smorf_vars_df.loc[index]['var_pos']
-                    variant_id = smorf_vars_df.loc[index]['var_id']
+                    variant_id = row.var_id
+
+                    ## XXX HERE!!!!!! XXX 
 
                     ## run tool per transcript
                     for each_t in matching_t:
+                        ## transcript info
+                        this_transcript = transcripts_smorf[transcripts_smorf['transcript_id'] == each_t]
+                        print(this_transcript)
 
-                        introns_transcript = introns_chr.loc[introns_chr['transcript_id'] == row_t.transcript_id]
+                        ## introns per transcript
+                        introns_transcript = introns_chr.loc[introns_chr['transcript_id'] == each_t]
+
+                        ## row_t is the info about the transctipt
+                        consequence, change, prot_cons, prot_change = tool(
+                            reference_genome[each_chrom], 
+                            this_transcript, 
+                            introns_transcript, 
+                            row.start,
+                            row.end,
+                            row.strand,
+                            row.ref, 
+                            row.alt, 
+                            row.var_pos, 
+                            splice_site)
+
+                        r_index = variants_df.index[variants_df['var_id'] == row.var_id].tolist()
+                        ## variant IDs are unique - so we only get one index out of this
+                        
+                        ## adds to the dataframe the protein consequences
+                        consequence_computed = pd.DataFrame(
+                            {
+                            'chrm': variants_df.iloc[r_index]['chrm'],
+                            'var_pos' : variants_df.iloc[r_index]['var_pos'],
+                            'ref' : variants_df.iloc[r_index]['ref'],
+                            'alt' : variants_df.iloc[r_index]['alt'],
+                            'start' : variants_df.iloc[r_index]['start'],
+                            'end' : variants_df.iloc[r_index]['end'],
+                            'strand' : variants_df.iloc[r_index]['strand'],
+                            'var_id' : variants_df.iloc[r_index]['var_id'],
+                            'smorf_id': variants_df.iloc[r_index]['smorf_id'], 
+                            'transcript_id' : each_t, 
+                            'transcript_type' : row_t.transcript_type,
+                            'DNA_consequence' : consequence,
+                            'DNA_seq' : change,
+                            'prot_consequence' : prot_cons,
+                            'prot_seq' : prot_change
+                            }
+
+                        )
+
+                        vars_cons_df = pd.concat([vars_cons_df, consequence_computed])
 
                 
             sys.exit(1)
@@ -178,8 +219,6 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
         for index, row in small_df.iterrows(): ## iterates per line 
             
                     
-                        ## introns per transcript
-                        introns_transcript = introns_chr.loc[introns_chr['transcript_id'] == row_t.transcript_id]
 
                         ## row_t is the info about the transctipt
                         consequence, change, prot_cons, prot_change = tool(
