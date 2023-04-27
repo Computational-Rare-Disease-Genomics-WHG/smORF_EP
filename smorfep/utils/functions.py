@@ -1171,7 +1171,7 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
     """
 
     matching_transcripts = []
-    unmatching_trancripts = pd.DataFrame(columns=['smorf_id','transcript_id','flag', 'type', 'length'])
+    unmatching_trancripts = pd.DataFrame(columns=['smorf_id','transcript_id', 'type', 'length'])
 
     stop_codons = ['TAG', 'TAA', 'TGA']
 
@@ -1231,7 +1231,6 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
                     new_row = pd.DataFrame({
                         'smorf_id':[smorf_id],
                         'transcript_id': [t_id], 
-                        'flag': ['wrong_sequence'], 
                         'type': ['start_within_intron'], 
                         'length': ['-']})
                     unmatching_trancripts = pd.concat([unmatching_trancripts, new_row], ignore_index=True)
@@ -1241,7 +1240,6 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
                     new_row = pd.DataFrame({
                         'smorf_id':[smorf_id],
                         'transcript_id': [t_id], 
-                        'flag': ['wrong_sequence'], 
                         'type': ['end_within_intron'], 
                         'length': ['-']})
                     unmatching_trancripts = pd.concat([unmatching_trancripts, new_row], ignore_index=True)
@@ -1257,7 +1255,6 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
                     new_row = pd.DataFrame({
                         'smorf_id':[smorf_id],
                         'transcript_id': [t_id], 
-                        'flag': ['wrong_sequence'], 
                         'type':['start_within_intron'], 
                         'length': ['-']})
                     unmatching_trancripts = pd.concat([unmatching_trancripts, new_row], ignore_index=True)
@@ -1267,7 +1264,6 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
                     new_row = pd.DataFrame({
                         'smorf_id':[smorf_id],
                         'transcript_id': [t_id], 
-                        'flag': ['wrong_sequence'], 
                         'type': ['end_within_intron'], 
                         'length': ['-']})
                     unmatching_trancripts = pd.concat([unmatching_trancripts, new_row], ignore_index=True)
@@ -1279,7 +1275,6 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
             new_row = pd.DataFrame({
                 'smorf_id':[smorf_id],
                 'transcript_id':[t_id], 
-                'flag': ['wrong_sequence'], 
                 'type': ['not_multiple_of_3'], 
                 'length': [smorf_len]})
             unmatching_trancripts = pd.concat([unmatching_trancripts, new_row], ignore_index=True)
@@ -1292,7 +1287,6 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
             new_row = pd.DataFrame({
                 'smorf_id':[smorf_id],
                 'transcript_id':[t_id], 
-                'flag': ['wrong_sequence'], 
                 'type': ['last_trio_not_a_stop'], 
                 'length': [last_codon]})
             unmatching_trancripts = pd.concat([unmatching_trancripts, new_row], ignore_index=True)
@@ -1304,7 +1298,6 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
             new_row = pd.DataFrame({
                 'smorf_id':[smorf_id],
                 'transcript_id': [t_id], 
-                'flag': ['wrong_sequence'], 
                 'type': ['more_than_one_stop'], 
                 'length': ['-'] })
             unmatching_trancripts = pd.concat([unmatching_trancripts, new_row], ignore_index=True)
