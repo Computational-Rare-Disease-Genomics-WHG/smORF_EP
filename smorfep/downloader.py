@@ -44,12 +44,12 @@ def download_ref_genome(ref_link):
     os.remove('ref_genome/' + outputname)
 
     # 4. Split reference per chromosome
-    os.system('ref_per_chr.py ref_genome/ ' + outputname_unconpress + ' _GRCh38.p13_genomic.'+ extension)
+    os.system('ref_per_chr.py ref_genome/ ' + outputname_unconpress + ' _GRCh38.p13_genomic'+ extension)
     # Excludes 'scaffold', 'patch', 'mitochondrion' sequences 
     # If others to exclude add condition to line 24 
     # outputname format: chr<num>_<suffix_user_given> (line above: chr<num>_GRCh38.p13_genomic.fna)
 
-    print('ref_per_chr.py ref_genome/ ' + outputname_unconpress + ' _GRCh38.p13_genomic.'+ extension)
+    print('ref_per_chr.py ref_genome/ ' + outputname_unconpress + ' _GRCh38.p13_genomic'+ extension)
 
     print("Done")
 
