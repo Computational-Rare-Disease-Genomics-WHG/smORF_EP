@@ -175,8 +175,6 @@ smorfep command generates three outputfiles:
 
 The file maps per transcript ID the transcripts that are excluded from analysis and the respective exclusion criteria (type). Additionally, the last column reports the length of the sequence, used in case of exclusion by non-3nt periodicity. 
 
-XXX TO update -- remove flag
-
 ![alt text](https://github.com/Computational-Rare-Disease-Genomics-WHG/smORF_EP/blob/main/support/excluded_file_example.png?raw=true)
 
 ### No transcript file
