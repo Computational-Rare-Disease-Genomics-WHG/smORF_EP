@@ -173,7 +173,7 @@ smorfep command generates three outputfiles:
 
 ### Excluded file
 
-
+![alt text](https://github.com/Computational-Rare-Disease-Genomics-WHG/smORF_EP/blob/main/support/excluded_file_example.png?raw=true)
 
 ### No transcript file
 
