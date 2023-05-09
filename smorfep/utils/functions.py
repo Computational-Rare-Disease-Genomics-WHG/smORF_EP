@@ -105,8 +105,9 @@ def read_single_fasta(chromosome, path, files_prefix, files_suffix):
             seq += line
 
     ## as each file has one chromosome, then at the end saves it in the dictionary
-    fasta = seq
-
+    fasta = seq.upper()
+    ## upper required as the sequence has capital and lower letters 
+    
     f.close()
 
     return fasta
