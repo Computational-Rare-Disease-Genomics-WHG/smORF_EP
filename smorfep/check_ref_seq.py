@@ -9,20 +9,25 @@ Usage: checkseq [OPTIONS]
 """
 
 import sys
-import smorfep.utils.functions import get_sequence, read_single_fasta
+from smorfep.utils.functions import get_sequence, read_single_fasta
 
 
 def main():
 
-    ref_path = sys.argv[1]
-    chrom = sys.argv[2]
-    start = int(sys.argv[3])
-    end = int(sys.argv[4])
-    strand = sys.argv[5]
+    parser = argparse.ArgumentParser(description='Script to convert BED and VCF into smorfep input file')
 
-    ref = read_single_fasta(chrom, ref_path).upper() ## upper required as the sequence has capital and lower letters 
+    parser.add_argument('-r','--refpath', required=True, type=str, help='Path to the reference genome')
+    parser.add_argument('-c', '--chromosome', required=True, type=str, help='chromosome')
+    parser.add_argument('-s', '--start', required=True, type=str, help='start coordinate')
+    parser.add_argument('-e', '--end', required=True, type=str, help='end coordinate')
+    parser.add_argument('-p', '--strand', required=True, type=str, help='strand')
 
-    seq = get_sequence(start, end, strand, ref)
+    args = parser.parse_args()
+
+
+    ref = read_single_fasta(args.chromosome, args.refpath).upper() ## upper required as the sequence has capital and lower letters 
+
+    seq = get_sequence(args.start, args.end, args.strand, ref)
 
     print(seq)
 
