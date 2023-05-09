@@ -7,7 +7,7 @@ assignees: FernandesMaria
 
 ---
 
-# Report bug or unexpected behavior
+# Report bug or unexpected behaviour
 
 ### System: 
 - Mac
