@@ -189,8 +189,6 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
                         ## variant IDs are unique - so we only get one index out of this
                         ##print(r_index)
                         ##print( smorf_vars_df.index)
-
-                        ## XXX HERE!!!!!! XXX   
                         
                         ## adds to the dataframe the output 
                         consequence_computed = pd.DataFrame(
