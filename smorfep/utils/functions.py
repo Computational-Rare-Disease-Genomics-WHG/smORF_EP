@@ -3,6 +3,7 @@
 ## functions used by main script smORF-EP
 
 
+from telnetlib import STATUS
 from smorfep.utils.genetic_code import * 
 from typing import List, Optional, Dict, Union
 import pandas as pd
@@ -1311,9 +1312,35 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
 
 
 
+def check_var_type(var_pos, ref, alt):
+    """
+        Function to check if the variant is an indel.
+
+        Considers non-anchor VCF format
+
+        Input: 
+        - var_pos: variant position
+        - ref: reference allele
+        - alt: alternative allele
+
+        Output: 
+        var_type: indel, del, ins
+
+    """
+    
+
+    
+
+
+
+    return var_type
+
+
+
 def check_exon_intron_vars(var_pos, ref, alt, map_gen2transc):
     """ 
         Function to check if a variant crosses exon-intron boundaries.
+        # Special case of variants, only required for indels
 
         Input: 
         - var_pos: variant position
@@ -1326,5 +1353,11 @@ def check_exon_intron_vars(var_pos, ref, alt, map_gen2transc):
         Note2: Only these cases require multiple annotations at the DNA consequence.
 
         Output: 
+        Consequnce(s) of the variant
 
     """
+
+
+
+    return ''
+
