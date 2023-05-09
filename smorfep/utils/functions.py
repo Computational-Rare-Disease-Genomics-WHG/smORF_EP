@@ -1312,41 +1312,45 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
 
 
 
-def check_var_type(var_pos, ref, alt):
+def check_var_type(ref, alt):
     """
         Function to check if the variant is an indel.
 
-        Considers non-anchor VCF format
+        Considers checks also the VCF format (anchor/no_anchor nt)
+        Note: nomenclature is different, also variant position changes in one case or other
 
         Input: 
-        - var_pos: variant position
         - ref: reference allele
         - alt: alternative allele
 
         Output: 
         var_type: snv (single nucleotide variant), indel (insertion-deletion), del (deletion), ins (insetion)
-
+        vcf_format: anchor or no_anchor 
+ 
     """
 
     if len(ref) == len(alt) and ref not in ['','.'] and alt not in ['','.']: ## single nt var
         var_type = 'snv'
+        vcf_format = 'anchor' ## same as anchor, var_posiiton is exact
     elif ref in ['','.'] and alt not in ['','.']: ## ins without anchor nt
         var_type = 'ins'
+        vcf_format = 'no_anchor'
     elif len(ref) < len(alt) and ref not in ['','.'] and alt not in ['','.']: ## ins with anchor nt
         var_type = 'ins'
+        vcf_format = 'anchor'
     elif alt in ['','.'] and ref not in ['','.']: ## del without anchor nt
         var_type = 'del'
+        vcf_format = 'no_anchor'
     elif len(ref) > len(alt) and ref not in ['','.'] and alt not in ['','.']: ## del with anchor nt
         var_type = 'del'
+        vcf_format = 'anchor'
     else: 
         ## TODO: doublecheck this XXX
         var_type = 'indel'
+        vcf_format = 'anchor' ## same as anchor, var_posiiton is exact
 
-    
+    return var_type, vcf_format
 
-
-
-    return var_type
 
 
 
