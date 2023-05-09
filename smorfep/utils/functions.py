@@ -163,6 +163,7 @@ def get_sequence(start, end, strand, ref):
         - strand: for + strand it pulls the reference, for - strand it reverse complement the sequence
 
         Output: 
+        genomci sequence for the given start, end and strand
 
     """
 
