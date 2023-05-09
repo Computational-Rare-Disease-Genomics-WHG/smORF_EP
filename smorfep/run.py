@@ -215,32 +215,6 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
 
                         vars_cons_df = pd.concat([vars_cons_df, consequence_computed])
 
-                        print('here')
-
-                        # ## adds to the dataframe the protein consequences
-                        # consequence_computed = pd.DataFrame(
-                        #     {
-                        #     'chrm': variants_df.iloc[r_index]['chrm'],
-                        #     'var_pos' : variants_df.iloc[r_index]['var_pos'],
-                        #     'ref' : variants_df.iloc[r_index]['ref'],
-                        #     'alt' : variants_df.iloc[r_index]['alt'],
-                        #     'start' : variants_df.iloc[r_index]['start'],
-                        #     'end' : variants_df.iloc[r_index]['end'],
-                        #     'strand' : variants_df.iloc[r_index]['strand'],
-                        #     'var_id' : variants_df.iloc[r_index]['var_id'],
-                        #     'smorf_id': variants_df.iloc[r_index]['smorf_id'], 
-                        #     'transcript_id' : each_t, 
-                        #     'transcript_type' : this_transcript.iloc[0].transcript_type,
-                        #     'DNA_consequence' : consequence,
-                        #     'DNA_seq' : change,
-                        #     'prot_consequence' : prot_cons,
-                        #     'prot_seq' : prot_change
-                        #     }
-
-                        # )
-
-
-
                         ## NOTE 1: Removed no transcript -- we report the smORF IDS for smORFs without transcript but don't run the analysis for those
 
                         ## NOTE 2: Removed var outside smorf region -- as we remove the non-matching transcripts from analysis
