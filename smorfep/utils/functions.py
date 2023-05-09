@@ -1324,10 +1324,23 @@ def check_var_type(var_pos, ref, alt):
         - alt: alternative allele
 
         Output: 
-        var_type: indel, del, ins
+        var_type: snv (single nucleotide variant), indel (insertion-deletion), del (deletion), ins (insetion)
 
     """
-    
+
+    if len(ref) == len(alt) and ref not in ['','.'] and alt not in ['','.']: ## single nt var
+        var_type = 'snv'
+    elif ref in ['','.'] and alt not in ['','.']: ## ins without anchor nt
+        var_type = 'ins'
+    elif len(ref) < len(alt) and ref not in ['','.'] and alt not in ['','.']: ## ins with anchor nt
+        var_type = 'ins'
+    elif alt in ['','.'] and ref not in ['','.']: ## del without anchor nt
+        var_type = 'del'
+    elif len(ref) > len(alt) and ref not in ['','.'] and alt not in ['','.']: ## del with anchor nt
+        var_type = 'del'
+    else: 
+        ## TODO: doublecheck this XXX
+        var_type = 'indel'
 
     
 
