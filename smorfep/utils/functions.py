@@ -1308,3 +1308,23 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
 
 
     return matching_transcripts, unmatching_trancripts, map_gen2transc, map_transc2gen
+
+
+
+def check_exon_intron_vars(var_pos, ref, alt, map_gen2transc):
+    """ 
+        Function to check if a variant crosses exon-intron boundaries.
+
+        Input: 
+        - var_pos: variant position
+        - ref: reference allele
+        - alt: alternative allele
+        - map_gen2transc: mapping between genomic and transcript coordinates (used to obtain the exon and intron coordinates)
+        
+        Note1: Intron coordinates are not included in the mapping, as introns are not present in the transcript sequence
+
+        Note2: Only these cases require multiple annotations at the DNA consequence.
+
+        Output: 
+
+    """
