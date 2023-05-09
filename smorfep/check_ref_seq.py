@@ -8,8 +8,8 @@ Usage: checkseq [OPTIONS]
 
 """
 
-import sys
-from smorfep.utils.functions import get_sequence, read_single_fasta
+import argparse 
+from smorfep.utils.functions import get_sequence, read_single_fasta, check_prefix_sufix_ref_files
 
 
 def main():
@@ -24,10 +24,11 @@ def main():
 
     args = parser.parse_args()
 
+    file_prefix, file_suffix = check_prefix_sufix_ref_files(args.refpath)
 
-    ref = read_single_fasta(args.chromosome, args.refpath).upper() ## upper required as the sequence has capital and lower letters 
+    ref = read_single_fasta(args.chromosome, args.refpath, file_prefix, file_suffix)
 
-    seq = get_sequence(args.start, args.end, args.strand, ref)
+    seq = get_sequence(int(args.start), int(args.end), args.strand, ref)
 
     print(seq)
 
