@@ -1334,7 +1334,7 @@ def check_var_type(ref, alt):
     prefix_ins = alt.startswith(ref)
     prefix_del = ref.startswith(alt)
 
-    if len(ref) == len(alt) and ref not in ['','.'] and alt not in ['','.']: ## single nt var
+    if len(ref) == 1 and len(alt) == 1 and ref not in ['','.'] and alt not in ['','.']: ## single nt var
         var_type = 'snv'
         vcf_format = 'anchor' ## same as anchor, var_posiiton is exact
     elif ref in ['','.'] and alt not in ['','.'] and prefix_ins == False: ## ins without anchor nt
