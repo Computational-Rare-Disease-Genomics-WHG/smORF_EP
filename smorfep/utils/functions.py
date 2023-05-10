@@ -1350,7 +1350,6 @@ def check_var_type(ref, alt):
         var_type = 'del'
         vcf_format = 'anchor'
     else: 
-        ## TODO: doublecheck this XXX -- Not working yet
         var_type = 'delin'
         vcf_format = 'anchor' ## same as anchor, var_posiiton is exact
         ## despite the ref doen't match the begining of alt allele
