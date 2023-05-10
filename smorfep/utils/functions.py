@@ -1331,25 +1331,29 @@ def check_var_type(ref, alt):
  
     """
 
+    prefix_ins = alt.startswith(ref)
+    prefix_del = ref.startswith(alt)
+
     if len(ref) == len(alt) and ref not in ['','.'] and alt not in ['','.']: ## single nt var
         var_type = 'snv'
         vcf_format = 'anchor' ## same as anchor, var_posiiton is exact
-    elif ref in ['','.'] and alt not in ['','.']: ## ins without anchor nt
+    elif ref in ['','.'] and alt not in ['','.'] and prefix_ins == False: ## ins without anchor nt
         var_type = 'ins'
         vcf_format = 'no_anchor'
-    elif len(ref) < len(alt) and ref not in ['','.'] and alt not in ['','.']: ## ins with anchor nt
+    elif len(ref) < len(alt) and ref not in ['','.'] and alt not in ['','.'] and prefix_ins == True: ## ins with anchor nt
         var_type = 'ins'
         vcf_format = 'anchor'
-    elif alt in ['','.'] and ref not in ['','.']: ## del without anchor nt
+    elif alt in ['','.'] and ref not in ['','.'] and prefix_del == False: ## del without anchor nt
         var_type = 'del'
         vcf_format = 'no_anchor'
-    elif len(ref) > len(alt) and ref not in ['','.'] and alt not in ['','.']: ## del with anchor nt
+    elif len(ref) > len(alt) and ref not in ['','.'] and alt not in ['','.'] and prefix_del == True: ## del with anchor nt
         var_type = 'del'
         vcf_format = 'anchor'
     else: 
         ## TODO: doublecheck this XXX -- Not working yet
         var_type = 'delin'
         vcf_format = 'anchor' ## same as anchor, var_posiiton is exact
+        ## despite the ref doen't match the begining of alt allele
 
     return var_type, vcf_format
 
