@@ -58,7 +58,6 @@ with open("requirements.txt", encoding='utf-8') as f:
             'License :: OSI Approved :: MIT License',
             'Natural Language :: English',
             'Operating System :: MacOS :: MacOS X',
-            'Operating System :: POSIX',
             'Operating System :: Unix',
             'Programming Language :: Python',
             'Topic :: Scientific/Engineering',

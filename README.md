@@ -122,7 +122,7 @@ smorfinit --transcripts --transc_link https://ftp.ebi.ac.uk/pub/databases/gencod
 # Generate input
 
 ```
-smorfinput -b <BED file> -v <VCF file> -o <outputname>
+smorfinput -r <path_to_ref_genome/>ref_genome/ -b <BED file> -v <VCF file> -o <outputname>
 ```
 
 Add --bedheader if the first line in the BED file is the file header. 
