@@ -1334,19 +1334,19 @@ def check_var_type(ref, alt):
     prefix_ins = alt.startswith(ref)
     prefix_del = ref.startswith(alt)
 
-    if len(ref) == 1 and len(alt) == 1 and ref not in ['','.'] and alt not in ['','.']: ## single nt var
+    if len(ref) == 1 and len(alt) == 1 and ref not in ['','.', '*'] and alt not in ['', '.', '*']: ## single nt var
         var_type = 'snv'
         vcf_format = 'anchor' ## same as anchor, var_posiiton is exact
-    elif ref in ['','.'] and alt not in ['','.'] and prefix_ins == False: ## ins without anchor nt
+    elif ref in ['','.', '*'] and alt not in ['','.', '*'] and prefix_ins == False: ## ins without anchor nt
         var_type = 'ins'
         vcf_format = 'no_anchor'
-    elif len(ref) < len(alt) and ref not in ['','.'] and alt not in ['','.'] and prefix_ins == True: ## ins with anchor nt
+    elif len(ref) < len(alt) and ref not in ['','.', '*'] and alt not in ['','.'] and prefix_ins == True: ## ins with anchor nt
         var_type = 'ins'
         vcf_format = 'anchor'
-    elif alt in ['','.'] and ref not in ['','.'] and prefix_del == False: ## del without anchor nt
+    elif alt in ['','.', '*'] and ref not in ['','.', '*'] and prefix_del == False: ## del without anchor nt
         var_type = 'del'
         vcf_format = 'no_anchor'
-    elif len(ref) > len(alt) and ref not in ['','.'] and alt not in ['','.'] and prefix_del == True: ## del with anchor nt
+    elif len(ref) > len(alt) and ref not in ['','.', '*'] and alt not in ['','.'] and prefix_del == True: ## del with anchor nt
         var_type = 'del'
         vcf_format = 'anchor'
     else: 
