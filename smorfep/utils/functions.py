@@ -1388,6 +1388,7 @@ def find_position(dct, position):
     else: 
         return False
 
+
 def check_exon_intron_vars(var_pos, ref, alt, map_gen2transc):
     """ 
         Function to check if a variant crosses exon-intron boundaries.
@@ -1399,12 +1400,12 @@ def check_exon_intron_vars(var_pos, ref, alt, map_gen2transc):
         - alt: alternative allele
         - map_gen2transc: mapping between genomic and transcript coordinates (used to obtain the exon and intron coordinates)
         
-        Note1: Intron coordinates are not included in the mapping, as introns are not present in the transcript sequence
+        Note1: Intron coordinates are not included in the mapping, as introns are not present in the transcript sequence.
 
         Note2: Only these cases require multiple annotations at the DNA consequence.
 
         Output: 
-        Consequnce(s) of the variant
+        Consequnce(s) of the variant for this case.
 
     """
 
