@@ -1389,7 +1389,7 @@ def find_position(dct, position):
         return False
 
 
-def check_exon_intron_vars(var_pos, ref, alt, map_gen2transc):
+def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc):
     """ 
         Function to check if a variant crosses exon-intron boundaries.
         # Special case of variants, only required for indels
@@ -1398,6 +1398,7 @@ def check_exon_intron_vars(var_pos, ref, alt, map_gen2transc):
         - var_pos: variant position
         - ref: reference allele
         - alt: alternative allele
+        - strand: strand is required to set in which direction we need to search
         - map_gen2transc: mapping between genomic and transcript coordinates (used to obtain the exon and intron coordinates)
         
         Note1: Intron coordinates are not included in the mapping, as introns are not present in the transcript sequence.
@@ -1409,8 +1410,26 @@ def check_exon_intron_vars(var_pos, ref, alt, map_gen2transc):
 
     """
 
-    ## list of all exonic positions
+    ## find if var position is in a exon
+    var_pos_check = find_position(map_gen2transc, var_pos)
 
+    if strand == '+':
+        ## if del -- Check ref allele len
+        ref_end_pos = var_pos + len(ref) ## To check ?????
+        ref_end_check = find_position(map_gen2transc, ref_end_pos)
+
+        ## if ins -- Check alt allele len 
+        alt_end_pos = var_pos + len(alt)## To check ?????
+        alt_end_check = find_position(map_gen2transc, alt_end_pos)
+
+    elif strand == '-':
+        ## if del -- Check ref allele len
+        ref_end_pos = var_pos - len(ref)## To check ?????
+        ref_end_check = find_position(map_gen2transc, ref_end_pos)
+
+        ## if ins -- Check alt allele len 
+        alt_end_pos = var_pos - len(alt)## To check ?????
+        alt_end_check = find_position(map_gen2transc, alt_end_pos)
 
     return ''
 
