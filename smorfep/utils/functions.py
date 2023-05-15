@@ -1364,9 +1364,10 @@ def add_anchor_nt(var_pos, ref, alt, ref_genome):
         Note: smorfep functions were designed to process anchor-based variants. 
     """
 
-    if len() == len()
+    ## TODO
+        
 
-    return new_var_pos, new_ref, new_alt 
+    ##return new_var_pos, new_ref, new_alt 
 
 
 
