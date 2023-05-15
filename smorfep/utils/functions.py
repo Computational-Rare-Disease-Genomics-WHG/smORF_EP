@@ -1370,28 +1370,101 @@ def add_anchor_nt(var_pos, ref, alt, ref_genome):
     ##return new_var_pos, new_ref, new_alt 
 
 
+def add_anchor_nt(var_pos, ref, alt, ref_genome):
+    """
+        Function to add the anchor nt to no-anchor format. 
+        
+        Note: smorfep functions were designed to process anchor-based variants. 
+    """
 
-def check_exon_intron_vars(var_pos, ref, alt, map_gen2transc):
+    ## TODO
+        
+
+    ##return new_var_pos, new_ref, new_alt 
+
+
+def find_position(dct, position):
+    """
+        Function to quickly check is a position is in the dicionary of mapped positions.
+        Iterated on the keys.
+
+        Input:
+        - dct: dictionary of position to search 
+        - position: position of interest
+
+        Returns a boolean result
+    """
+
+    if position in dct.keys():
+        return True
+    else: 
+        return False
+
+
+def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc):
     """ 
         Function to check if a variant crosses exon-intron boundaries.
         # Special case of variants, only required for indels
+
+        Assumes ref and alt in with-anchor-nt format.
 
         Input: 
         - var_pos: variant position
         - ref: reference allele
         - alt: alternative allele
+        - strand: strand is required to set in which direction we need to search
         - map_gen2transc: mapping between genomic and transcript coordinates (used to obtain the exon and intron coordinates)
         
-        Note1: Intron coordinates are not included in the mapping, as introns are not present in the transcript sequence
+        Note1: Intron coordinates are not included in the mapping, as introns are not present in the transcript sequence.
 
         Note2: Only these cases require multiple annotations at the DNA consequence.
 
         Output: 
-        Consequnce(s) of the variant
+        Consequnce(s) of the variant for this case.
 
     """
 
+    ## find if var position is in a exon
+    var_pos_check = find_position(map_gen2transc, var_pos)
 
+    ## var starts in the exon
+    if var_pos_check == True: 
 
-    return ''
+        if strand == '+':
+            ## if del -- Check ref allele len
+            if len(ref) > len(alt): 
+                ref_end_pos = var_pos + len(ref) ## To check ?????
+                var_end_check = find_position(map_gen2transc, ref_end_pos)
+                vartype = 'del'
 
+            ## if ins -- Check alt allele len 
+            elif len(alt) > len(ref):
+                alt_end_pos = var_pos + len(alt)## To check ?????
+                var_end_check = find_position(map_gen2transc, alt_end_pos)
+                vartype = 'ins'
+
+        elif strand == '-':
+            ## if del -- Check ref allele len
+            if len(ref) > len(alt): 
+                ref_end_pos = var_pos - len(ref)## To check ?????
+                var_end_check = find_position(map_gen2transc, ref_end_pos)
+                vartype = 'del'
+
+            ## if ins -- Check alt allele len 
+            elif len(alt) > len(ref):
+                alt_end_pos = var_pos - len(alt)## To check ?????
+                var_end_check = find_position(map_gen2transc, alt_end_pos)
+                vartype = 'ins'
+
+        if var_end_check == False: ## exon-intron var
+            ## distinguish between inframe and out of frame
+
+            return dna_cons, '-', prot_cons, '-'
+            
+        else:
+            return None
+
+   
+    ## var starts in the intron
+    else:
+        print('start within intron')
