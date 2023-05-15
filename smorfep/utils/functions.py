@@ -1394,6 +1394,8 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc):
         Function to check if a variant crosses exon-intron boundaries.
         # Special case of variants, only required for indels
 
+        Assumes ref and alt in with-anchor-nt format.
+
         Input: 
         - var_pos: variant position
         - ref: reference allele
@@ -1413,23 +1415,43 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc):
     ## find if var position is in a exon
     var_pos_check = find_position(map_gen2transc, var_pos)
 
-    if strand == '+':
-        ## if del -- Check ref allele len
-        ref_end_pos = var_pos + len(ref) ## To check ?????
-        ref_end_check = find_position(map_gen2transc, ref_end_pos)
+    ## var starts in the exon
+    if var_pos_check == True: 
 
-        ## if ins -- Check alt allele len 
-        alt_end_pos = var_pos + len(alt)## To check ?????
-        alt_end_check = find_position(map_gen2transc, alt_end_pos)
+        if strand == '+':
+            ## if del -- Check ref allele len
+            if len(ref) > len(alt): 
+                ref_end_pos = var_pos + len(ref) ## To check ?????
+                var_end_check = find_position(map_gen2transc, ref_end_pos)
+                vartype = 'del'
 
-    elif strand == '-':
-        ## if del -- Check ref allele len
-        ref_end_pos = var_pos - len(ref)## To check ?????
-        ref_end_check = find_position(map_gen2transc, ref_end_pos)
+            ## if ins -- Check alt allele len 
+            elif len(alt) > len(ref):
+                alt_end_pos = var_pos + len(alt)## To check ?????
+                var_end_check = find_position(map_gen2transc, alt_end_pos)
+                vartype = 'ins'
 
-        ## if ins -- Check alt allele len 
-        alt_end_pos = var_pos - len(alt)## To check ?????
-        alt_end_check = find_position(map_gen2transc, alt_end_pos)
+        elif strand == '-':
+            ## if del -- Check ref allele len
+            if len(ref) > len(alt): 
+                ref_end_pos = var_pos - len(ref)## To check ?????
+                var_end_check = find_position(map_gen2transc, ref_end_pos)
+                vartype = 'del'
 
-    return ''
+            ## if ins -- Check alt allele len 
+            elif len(alt) > len(ref):
+                alt_end_pos = var_pos - len(alt)## To check ?????
+                var_end_check = find_position(map_gen2transc, alt_end_pos)
+                vartype = 'ins'
 
+        if var_end_check == False: ## exon-intron var
+            ## distinguish between inframe and out of frame
+
+            return dna_cons, '-', prot_cons, '-'
+            
+        else:
+            return None
+
+   
+    ## var starts in the intron
+    else:
