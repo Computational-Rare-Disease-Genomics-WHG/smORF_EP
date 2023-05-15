@@ -1357,6 +1357,7 @@ def check_var_type(ref, alt):
     return var_type, vcf_format
 
 
+
 def add_anchor_nt(var_pos, ref, alt, ref_genome):
     """
         Function to add the anchor nt to no-anchor format. 
@@ -1370,6 +1371,22 @@ def add_anchor_nt(var_pos, ref, alt, ref_genome):
     ##return new_var_pos, new_ref, new_alt 
 
 
+def find_position(dct, position):
+    """
+        Function to quickly check is a position is in the dicionary of mapped positions.
+        Iterated on the keys.
+
+        Input:
+        - dct: dictionary of position to search 
+        - position: position of interest
+
+        Returns a boolean result
+    """
+
+    if position in dct.keys():
+        return True
+    else: 
+        return False
 
 def check_exon_intron_vars(var_pos, ref, alt, map_gen2transc):
     """ 
@@ -1391,6 +1408,7 @@ def check_exon_intron_vars(var_pos, ref, alt, map_gen2transc):
 
     """
 
+    ## list of all exonic positions
 
 
     return ''
