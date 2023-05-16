@@ -3,6 +3,7 @@
 ## functions used by main script smORF-EP
 
 
+from msilib import CAB
 from telnetlib import STATUS
 from smorfep.utils.genetic_code import * 
 from typing import List, Optional, Dict, Union
@@ -1363,36 +1364,24 @@ def add_anchor_nt(var_pos, ref, alt, ref_genome):
         
         Note: smorfep functions were designed to process anchor-based variants. 
     """
-
-    ## TODO
+    chr = 1	
+    pos = 110381295
+    ref = 'A'
+    alt = '*'
         
+    new_var_pos = var_pos - 1
+    anchor_nt = get_sequence(new_var_pos, new_var_pos, '+',ref_genome)
 
-    ##return new_var_pos, new_ref, new_alt 
+    if alt == '*': ## deletion 
+        new_ref = anchor_nt + ref
+        new_alt = anchor_nt
 
-
-def add_anchor_nt(var_pos, ref, alt, ref_genome):
-    """
-        Function to add the anchor nt to no-anchor format. 
+    elif ref == '*': ## insertion
+        new_ref = anchor_nt
+        new_alt = anchor_nt + alt
         
-        Note: smorfep functions were designed to process anchor-based variants. 
-    """
+    return new_var_pos, new_ref, new_alt 
 
-    ## TODO
-        
-
-    ##return new_var_pos, new_ref, new_alt 
-
-def add_anchor_nt(var_pos, ref, alt, ref_genome):
-    """
-        Function to add the anchor nt to no-anchor format. 
-        
-        Note: smorfep functions were designed to process anchor-based variants. 
-    """
-
-    ## TODO
-        
-
-    ##return new_var_pos, new_ref, new_alt 
 
 
 def find_position(dct, position):
@@ -1436,6 +1425,7 @@ def within_exon(start, end, mapgen2transc):
             print(position)
 
     return exonnts
+
 
 
 def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc):
