@@ -145,6 +145,8 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
         ## XXX TODO: think on the starting in the intron, but extending to the exon variants !!!!! 
         ## Check exon-intron crossing variants
 
+        ## TODO XXX: Add check_exon_intron_vars() here!!!!!
+
         ## this works on the coordinates
         intron_status = search_introns(transcript_introns_df, variant_pos, strand, splice_site)
         ## This only checks if the var_pos is within the intron
