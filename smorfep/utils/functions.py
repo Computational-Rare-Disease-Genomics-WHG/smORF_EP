@@ -1320,6 +1320,8 @@ def check_var_type(ref, alt):
         Considers checks also the VCF format (anchor/no_anchor nt)
         Note: nomenclature is different, also variant position changes in one case or other
 
+        Insertions do not have the no-anchor format as the variant position corresponds to a position in the reference genome.
+
         Input: 
         - ref: reference allele
         - alt: alternative allele
@@ -1330,30 +1332,15 @@ def check_var_type(ref, alt):
  
     """
 
-    prefix_ins = alt.startswith(ref)
     prefix_del = ref.startswith(alt)
 
-    if len(ref) == 1 and len(alt) == 1 and ref not in ['','.', '*'] and alt not in ['', '.', '*']: ## single nt var
-        var_type = 'snv'
-        vcf_format = 'anchor' ## same as anchor, var_posiiton is exact
-    elif ref in ['','.', '*'] and alt not in ['','.', '*'] and prefix_ins == False: ## ins without anchor nt
-        var_type = 'ins'
+    if alt in ['','.', '*'] and prefix_del == False: ## del without anchor nt
         vcf_format = 'no_anchor'
-    elif len(ref) < len(alt) and ref not in ['','.', '*'] and alt not in ['','.'] and prefix_ins == True: ## ins with anchor nt
-        var_type = 'ins'
-        vcf_format = 'anchor'
-    elif alt in ['','.', '*'] and ref not in ['','.', '*'] and prefix_del == False: ## del without anchor nt
-        var_type = 'del'
-        vcf_format = 'no_anchor'
-    elif len(ref) > len(alt) and ref not in ['','.', '*'] and alt not in ['','.'] and prefix_del == True: ## del with anchor nt
-        var_type = 'del'
-        vcf_format = 'anchor'
     else: 
-        var_type = 'delin'
-        vcf_format = 'anchor' ## same as anchor, var_posiiton is exact
-        ## despite the ref doen't match the begining of alt allele
+        vcf_format = 'anchor'
 
-    return var_type, vcf_format
+    return vcf_format
+
 
 
 def add_anchor_nt(var_pos, ref, alt, ref_genome):
@@ -1369,10 +1356,6 @@ def add_anchor_nt(var_pos, ref, alt, ref_genome):
     if alt == '*': ## deletion 
         new_ref = anchor_nt + ref
         new_alt = anchor_nt
-
-    elif ref == '*': ## insertion
-        new_ref = anchor_nt
-        new_alt = anchor_nt + alt
         
     return new_var_pos, new_ref, new_alt 
 
