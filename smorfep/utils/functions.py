@@ -1391,6 +1391,7 @@ def find_position(dct, position):
         return False
 
 
+
 def within_exon(start, end, mapgen2transc):
     """
         Function to count how many nucleotides are in the exon region. 
@@ -1406,9 +1407,12 @@ def within_exon(start, end, mapgen2transc):
     """
 
     exonnts = 0 ## count the number of 
-
+    for position in range(start, end):
+        if position in mapgen2transc.keys():
+            print(position)
 
     return exonnts
+
 
 
 def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc):
