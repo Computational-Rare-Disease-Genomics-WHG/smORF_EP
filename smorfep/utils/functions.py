@@ -1320,6 +1320,8 @@ def check_var_type(ref, alt):
         Considers checks also the VCF format (anchor/no_anchor nt)
         Note: nomenclature is different, also variant position changes in one case or other
 
+        Insertions do not have the no-anchor format as the variant position corresponds to a position in the reference genome.
+
         Input: 
         - ref: reference allele
         - alt: alternative allele
@@ -1330,30 +1332,15 @@ def check_var_type(ref, alt):
  
     """
 
-    prefix_ins = alt.startswith(ref)
     prefix_del = ref.startswith(alt)
 
-    if len(ref) == 1 and len(alt) == 1 and ref not in ['','.', '*'] and alt not in ['', '.', '*']: ## single nt var
-        var_type = 'snv'
-        vcf_format = 'anchor' ## same as anchor, var_posiiton is exact
-    elif ref in ['','.', '*'] and alt not in ['','.', '*'] and prefix_ins == False: ## ins without anchor nt
-        var_type = 'ins'
+    if alt in ['','.', '*'] and prefix_del == False: ## del without anchor nt
         vcf_format = 'no_anchor'
-    elif len(ref) < len(alt) and ref not in ['','.', '*'] and alt not in ['','.'] and prefix_ins == True: ## ins with anchor nt
-        var_type = 'ins'
-        vcf_format = 'anchor'
-    elif alt in ['','.', '*'] and ref not in ['','.', '*'] and prefix_del == False: ## del without anchor nt
-        var_type = 'del'
-        vcf_format = 'no_anchor'
-    elif len(ref) > len(alt) and ref not in ['','.', '*'] and alt not in ['','.'] and prefix_del == True: ## del with anchor nt
-        var_type = 'del'
-        vcf_format = 'anchor'
     else: 
-        var_type = 'delin'
-        vcf_format = 'anchor' ## same as anchor, var_posiiton is exact
-        ## despite the ref doen't match the begining of alt allele
+        vcf_format = 'anchor'
 
-    return var_type, vcf_format
+    return vcf_format
+
 
 
 def add_anchor_nt(var_pos, ref, alt, ref_genome):
@@ -1369,10 +1356,6 @@ def add_anchor_nt(var_pos, ref, alt, ref_genome):
     if alt == '*': ## deletion 
         new_ref = anchor_nt + ref
         new_alt = anchor_nt
-
-    elif ref == '*': ## insertion
-        new_ref = anchor_nt
-        new_alt = anchor_nt + alt
         
     return new_var_pos, new_ref, new_alt 
 
@@ -1441,7 +1424,8 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc):
         Note2: Only these cases require multiple annotations at the DNA consequence.
 
         Output: 
-        Consequnce(s) of the variant for this case.
+        Consequnce(s) of the variant for this case. 
+        Or 'None' if the full length of the variant is within the exon --> run the normal analysis after.
 
     """
 
@@ -1456,13 +1440,41 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc):
             if len(ref) > len(alt): 
                 ref_end_pos = var_pos + len(ref) ## To check ?????
                 var_end_check = find_position(map_gen2transc, ref_end_pos)
-                vartype = 'del'
+
+                if var_end_check == True: ## variant fully in the exon -- Do normal analysis
+                    return None, None, None, None
+                else: 
+                    ## variant start in the exon and ends in the intron
+                    exon_nts = within_exon(var_pos, ref_end_pos, map_gen2transc)
+
+                    if exon_nts == 1: ## splice-site donor  ## there is only 1 nt in the exon and it is the anchor 
+                        dna_cons = 'splice-site-donor'
+                        prot_cons = '-'
+                    elif exon_nts-1%3 == 0:
+                        dna_cons = 'inframe_deletion, splice-site-donor'
+                        prot_cons = 'protein_truncation'
+                    else: 
+                        dna_cons = 'framseshift_deletion, splice-site-donor'
+                        prot_cons = '-'
+
 
             ## if ins -- Check alt allele len 
             elif len(alt) > len(ref):
                 alt_end_pos = var_pos + len(alt)## To check ?????
                 var_end_check = find_position(map_gen2transc, alt_end_pos)
-                vartype = 'ins'
+
+                if var_end_check == True: ## variant fully in the exon
+                    return None, None, None, None
+                else: 
+                    ## variant start in the exon and ends in the intron
+                    exon_nts = within_exon(var_pos, alt_end_pos, map_gen2transc)
+
+                    if exon_nts-1%3 == 0:
+                        dna_cons = 'inframe_insertion, splice-site-donor'
+                        prot_cons = 'protein_elongation'
+                    else: 
+                        dna_cons = 'framseshift_insertion, splice-site-donor'
+                        prot_cons = '-'
 
         elif strand == '-':
             ## if del -- Check ref allele len
@@ -1471,21 +1483,44 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc):
                 var_end_check = find_position(map_gen2transc, ref_end_pos)
                 vartype = 'del'
 
+                dna_cons = 'todo'
+                prot_cons = '-'
+                
+
             ## if ins -- Check alt allele len 
             elif len(alt) > len(ref):
                 alt_end_pos = var_pos - len(alt)## To check ?????
                 var_end_check = find_position(map_gen2transc, alt_end_pos)
                 vartype = 'ins'
 
-        if var_end_check == False: ## exon-intron var
-            ## distinguish between inframe and out of frame
+                dna_cons = 'todo'
+                prot_cons = '-'
 
-            return dna_cons, '-', prot_cons, '-'
+
+
+        return dna_cons, '-', prot_cons, '-'
             
-        else:
-            return None
-
+ 
    
     ## var starts in the intron
     else:
         print('start within intron')
+
+        if strand == '+':
+            ## if del -- Check ref allele len
+            if len(ref) > len(alt): 
+                pass 
+
+            ## if ins -- Check alt allele len 
+            elif len(alt) > len(ref):
+                pass
+
+        elif strand == '-':
+            ## if del -- Check ref allele len
+            if len(ref) > len(alt):  
+                pass
+            ## if ins -- Check alt allele len 
+            elif len(alt) > len(ref):
+                pass
+
+        return None, None, None, None

@@ -42,6 +42,14 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
     ## 1 - Get sequence from Ref genome
     seq = get_sequence(start, end, strand, ref_sequence)
 
+    ## check if the format is deletion without anchor: 
+    check_anchor_nt = check_var_type(ref, alt)
+    if check_anchor_nt == 'no_anchor':
+        print('no anchor')
+        ## convert to with-anchor-nt format
+        variant_pos, ref, alt = add_anchor_nt(variant_pos, ref, alt, ref_sequence)
+        ##TODO: Just working for + strand -- Missing the - strand !!!!!
+
     ## check sequence length without introns
     ## -collect introns coordinates that fall within a given range (start, end)
 
@@ -144,6 +152,9 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
         ## TODO: We need to check exon-intron crossing variants
         ## XXX TODO: think on the starting in the intron, but extending to the exon variants !!!!! 
         ## Check exon-intron crossing variants
+
+        dna_c, dna_seq_c, prot_c, prot_seq_c = check_exon_intron_vars(variant_pos, ref, alt, strand, map_gen2transc)
+        print(dna_c, dna_seq_c, prot_c, prot_seq_c)
 
         ## TODO XXX: Add check_exon_intron_vars() here!!!!!
 
