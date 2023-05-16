@@ -1363,19 +1363,7 @@ def add_anchor_nt(var_pos, ref, alt, ref_genome):
         
         Note: smorfep functions were designed to process anchor-based variants. 
     """
-
-    ## TODO
-        
-
-    ##return new_var_pos, new_ref, new_alt 
-
-
-def add_anchor_nt(var_pos, ref, alt, ref_genome):
-    """
-        Function to add the anchor nt to no-anchor format. 
-        
-        Note: smorfep functions were designed to process anchor-based variants. 
-    """
+    chr = 1	110381295	chr1-110381295-A-G,*	A	*	.	PASS
 
     ## TODO
         
@@ -1424,6 +1412,7 @@ def within_exon(start, end, mapgen2transc):
             print(position)
 
     return exonnts
+
 
 
 def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc):
