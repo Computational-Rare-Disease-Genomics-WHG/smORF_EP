@@ -1442,7 +1442,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc):
                 var_end_check = find_position(map_gen2transc, ref_end_pos)
 
                 if var_end_check == True: ## variant fully in the exon -- Do normal analysis
-                    return None
+                    return None, None, None, None
                 else: 
                     ## variant start in the exon and ends in the intron
                     exon_nts = within_exon(var_pos, ref_end_pos, map_gen2transc)
@@ -1464,7 +1464,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc):
                 var_end_check = find_position(map_gen2transc, alt_end_pos)
 
                 if var_end_check == True: ## variant fully in the exon
-                    return None
+                    return None, None, None, None
                 else: 
                     ## variant start in the exon and ends in the intron
                     exon_nts = within_exon(var_pos, alt_end_pos, map_gen2transc)
@@ -1483,11 +1483,18 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc):
                 var_end_check = find_position(map_gen2transc, ref_end_pos)
                 vartype = 'del'
 
+                dna_cons = 'todo'
+                prot_cons = '-'
+                
+
             ## if ins -- Check alt allele len 
             elif len(alt) > len(ref):
                 alt_end_pos = var_pos - len(alt)## To check ?????
                 var_end_check = find_position(map_gen2transc, alt_end_pos)
                 vartype = 'ins'
+
+                dna_cons = 'todo'
+                prot_cons = '-'
 
 
 
@@ -1498,3 +1505,22 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc):
     ## var starts in the intron
     else:
         print('start within intron')
+
+        if strand == '+':
+            ## if del -- Check ref allele len
+            if len(ref) > len(alt): 
+                pass 
+
+            ## if ins -- Check alt allele len 
+            elif len(alt) > len(ref):
+                pass
+
+        elif strand == '-':
+            ## if del -- Check ref allele len
+            if len(ref) > len(alt):  
+                pass
+            ## if ins -- Check alt allele len 
+            elif len(alt) > len(ref):
+                pass
+
+        return None, None, None, None

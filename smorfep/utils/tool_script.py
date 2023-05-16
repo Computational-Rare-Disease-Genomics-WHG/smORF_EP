@@ -48,6 +48,7 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
         print('no anchor')
         ## convert to with-anchor-nt format
         variant_pos, ref, alt = add_anchor_nt(variant_pos, ref, alt, ref_sequence)
+        ##TODO: Just working for + strand -- Missing the - strand !!!!!
 
     ## check sequence length without introns
     ## -collect introns coordinates that fall within a given range (start, end)
