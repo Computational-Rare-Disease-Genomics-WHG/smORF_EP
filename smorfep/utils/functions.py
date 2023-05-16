@@ -1376,6 +1376,8 @@ def find_position(dct, position):
         Function to quickly check is a position is in the dicionary of mapped positions.
         Iterated on the keys.
 
+        Single position search.
+
         Input:
         - dct: dictionary of position to search 
         - position: position of interest
@@ -1387,6 +1389,26 @@ def find_position(dct, position):
         return True
     else: 
         return False
+
+
+def within_exon(start, end, mapgen2transc):
+    """
+        Function to count how many nucleotides are in the exon region. 
+
+        Used to determine if the indel is inframe or frameshift
+
+        Input: 
+        - start position
+        - end position
+        - dictionary with the exon genomic coordinates as keys
+
+        Returns the number of nucleotides that fall wihin exonic region(s).
+    """
+
+    exonnts = 0 ## count the number of 
+
+
+    return exonnts
 
 
 def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc):
