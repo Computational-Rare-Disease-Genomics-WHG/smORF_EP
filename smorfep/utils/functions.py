@@ -1364,11 +1364,7 @@ def add_anchor_nt(var_pos, ref, alt, ref_genome):
         
         Note: smorfep functions were designed to process anchor-based variants. 
     """
-    chr = 1	
-    pos = 110381295
-    ref = 'A'
-    alt = '*'
-        
+       
     new_var_pos = var_pos - 1
     anchor_nt = get_sequence(new_var_pos, new_var_pos, '+',ref_genome)
 
