@@ -1382,18 +1382,6 @@ def add_anchor_nt(var_pos, ref, alt, ref_genome):
 
     ##return new_var_pos, new_ref, new_alt 
 
-def add_anchor_nt(var_pos, ref, alt, ref_genome):
-    """
-        Function to add the anchor nt to no-anchor format. 
-        
-        Note: smorfep functions were designed to process anchor-based variants. 
-    """
-
-    ## TODO
-        
-
-    ##return new_var_pos, new_ref, new_alt 
-
 
 def find_position(dct, position):
     """
