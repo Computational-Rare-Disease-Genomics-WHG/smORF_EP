@@ -141,11 +141,14 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
         ## - Use 8bp (VEP standard) for splice-site affecting var
         ## - for the analysis in GEL - Update AggV2; use all intron length to spot variants (also for denovo)  
         
+        ## TODO: We need to check exon-intron crossing variants
+        ## XXX TODO: think on the starting in the intron, but extending to the exon variants !!!!! 
+        ## Check exon-intron crossing variants
+        ## TODO XXX: 
+
         ## this works on the coordinates
         intron_status = search_introns(transcript_introns_df, variant_pos, strand, splice_site)
         ## This only checks if the var_pos is within the intron
-        ## TODO: We need to check exon-intron crossing variants
-        ## XXX TODO: think on the starting in the intron, but extending to the exon variants !!!!! 
 
         if intron_status != 'Not intronic':
             return intron_status, '-', '-', '-'
