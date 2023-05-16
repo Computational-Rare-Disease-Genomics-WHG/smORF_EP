@@ -42,6 +42,13 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
     ## 1 - Get sequence from Ref genome
     seq = get_sequence(start, end, strand, ref_sequence)
 
+    ## check if the format is deletion without anchor: 
+    check_anchor_nt = check_var_type(ref, alt)
+    if check_anchor_nt == 'no_anchor':
+        print('no anchor')
+        ## convert to with-anchor-nt format
+        variant_pos, ref, alt = add_anchor_nt(variant_pos, ref, alt, ref_sequence)
+
     ## check sequence length without introns
     ## -collect introns coordinates that fall within a given range (start, end)
 
