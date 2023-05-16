@@ -155,6 +155,7 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
 
         dna_c, dna_seq_c, prot_c, prot_seq_c = check_exon_intron_vars(variant_pos, ref, alt, strand, map_gen2transc)
         print(dna_c, dna_seq_c, prot_c, prot_seq_c)
+
         ## TODO XXX: Add check_exon_intron_vars() here!!!!!
 
         ## this works on the coordinates
