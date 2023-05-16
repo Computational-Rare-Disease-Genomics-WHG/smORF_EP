@@ -1424,7 +1424,8 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc):
         Note2: Only these cases require multiple annotations at the DNA consequence.
 
         Output: 
-        Consequnce(s) of the variant for this case.
+        Consequnce(s) of the variant for this case. 
+        Or 'None' if the full length of the variant is within the exon --> run the normal analysis after.
 
     """
 
@@ -1439,13 +1440,41 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc):
             if len(ref) > len(alt): 
                 ref_end_pos = var_pos + len(ref) ## To check ?????
                 var_end_check = find_position(map_gen2transc, ref_end_pos)
-                vartype = 'del'
+
+                if var_end_check == True: ## variant fully in the exon -- Do normal analysis
+                    return None
+                else: 
+                    ## variant start in the exon and ends in the intron
+                    exon_nts = within_exon(var_pos, ref_end_pos, map_gen2transc)
+
+                    if exon_nts == 1: ## splice-site donor  ## there is only 1 nt in the exon and it is the anchor 
+                        dna_cons = 'splice-site-donor'
+                        prot_cons = '-'
+                    elif exon_nts-1%3 == 0:
+                        dna_cons = 'inframe_deletion, splice-site-donor'
+                        prot_cons = 'protein_truncation'
+                    else: 
+                        dna_cons = 'framseshift_deletion, splice-site-donor'
+                        prot_cons = '-'
+
 
             ## if ins -- Check alt allele len 
             elif len(alt) > len(ref):
                 alt_end_pos = var_pos + len(alt)## To check ?????
                 var_end_check = find_position(map_gen2transc, alt_end_pos)
-                vartype = 'ins'
+
+                if var_end_check == True: ## variant fully in the exon
+                    return None
+                else: 
+                    ## variant start in the exon and ends in the intron
+                    exon_nts = within_exon(var_pos, alt_end_pos, map_gen2transc)
+
+                    if exon_nts-1%3 == 0:
+                        dna_cons = 'inframe_insertion, splice-site-donor'
+                        prot_cons = 'protein_elongation'
+                    else: 
+                        dna_cons = 'framseshift_insertion, splice-site-donor'
+                        prot_cons = '-'
 
         elif strand == '-':
             ## if del -- Check ref allele len
@@ -1460,14 +1489,11 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc):
                 var_end_check = find_position(map_gen2transc, alt_end_pos)
                 vartype = 'ins'
 
-        if var_end_check == False: ## exon-intron var
-            ## distinguish between inframe and out of frame
 
-            return dna_cons, '-', prot_cons, '-'
+
+        return dna_cons, '-', prot_cons, '-'
             
-        else:
-            return None
-
+ 
    
     ## var starts in the intron
     else:
