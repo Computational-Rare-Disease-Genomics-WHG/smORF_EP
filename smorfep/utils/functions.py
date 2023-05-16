@@ -3,8 +3,6 @@
 ## functions used by main script smORF-EP
 
 
-from msilib import CAB
-from telnetlib import STATUS
 from smorfep.utils.genetic_code import * 
 from typing import List, Optional, Dict, Union
 import pandas as pd
