@@ -1404,6 +1404,23 @@ def within_exon(start, end, mapgen2transc):
     return exonnts
 
 
+def find_within_intron(position, intron_coordinates, spice_size):
+    """
+        Function to find if a given position falls into which region of an intron: splice-site-donor, splice-site, intron_middle, splice-site-acceptor.
+
+        Input:
+        - position of interest 
+        - intron_coordinates: dictionary with the genomic positions (keys) in the intron range and respective indices(values)
+        - splice_size: size of the splice region
+        NOTE: by default the donor and acceptor are considered the first/last two nucleotides in the intron. To change this, change donor_acceptor_size variable in this function.
+    """
+
+    donor_acceptor_size = 2
+    intron_coordinates = intron_coordinates.sort()
+
+    return intron_location
+
+
 
 def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc):
     """ 
@@ -1426,7 +1443,6 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc):
         Output: 
         Consequnce(s) of the variant for this case. 
         Or 'None' if the full length of the variant is within the exon --> run the normal analysis after.
-
     """
 
     ## find if var position is in a exon
@@ -1440,6 +1456,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc):
             if len(ref) > len(alt): 
                 ref_end_pos = var_pos + len(ref) ## To check ?????
                 var_end_check = find_position(map_gen2transc, ref_end_pos)
+                print(var_pos, ref_end_pos, ref, alt)
 
                 if var_end_check == True: ## variant fully in the exon -- Do normal analysis
                     return None, None, None, None
@@ -1454,13 +1471,14 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc):
                         dna_cons = 'inframe_deletion, splice-site-donor'
                         prot_cons = 'protein_truncation'
                     else: 
-                        dna_cons = 'framseshift_deletion, splice-site-donor'
+                        dna_cons = 'frameshift_deletion, splice-site-donor'
                         prot_cons = '-'
 
 
             ## if ins -- Check alt allele len 
             elif len(alt) > len(ref):
                 alt_end_pos = var_pos + len(alt)## To check ?????
+                print(var_pos, alt_end_pos, ref, alt)
                 var_end_check = find_position(map_gen2transc, alt_end_pos)
 
                 if var_end_check == True: ## variant fully in the exon
