@@ -1458,6 +1458,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc):
                 var_end_check = find_position(map_gen2transc, ref_end_pos)
                 print(var_pos, ref_end_pos, ref, alt)
 
+
                 if var_end_check == True: ## variant fully in the exon -- Do normal analysis
                     return None, None, None, None
                 else: 
@@ -1513,8 +1514,6 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc):
 
                 dna_cons = 'todo'
                 prot_cons = '-'
-
-
 
         return dna_cons, '-', prot_cons, '-'
             
