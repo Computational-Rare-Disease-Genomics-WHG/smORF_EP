@@ -1459,11 +1459,11 @@ def map_splice_regions(introns_df, splice_size):
     splice_regions_df = pd.DataFrame(data=None, columns=['chr', 'start', 'end', 'splice_region', 'ID'])
     
     new_line_index = 0
-    for index, row in introns_df:
+    for index, row in introns_df.iterrows():
         splice_region_donor_start = row.start - into_exon_size
-        splice_region_donor_end = row.start + splice_size
-        splice_region_acceptor_start = row.end - splice_size
-        splice_region_acceptor_end = row.end + into_exon_size
+        splice_region_donor_end = row.start + splice_size - 1 ## -1 as row.start is the first position of the intron
+        splice_region_acceptor_start = row.end - splice_size + 1 ## -1 as row.end is the last position of the intron
+        splice_region_acceptor_end = row.end + into_exon_size 
 
         num = row.intron_number
         t_id = row.ID
