@@ -1366,6 +1366,8 @@ def find_position(dct, position):
         Function to quickly check is a position is in the dicionary of mapped positions.
         Iterated on the keys.
 
+        NOTE: for the smorfep if the position is in the dictionary keys list -- means the position is in an exonic region.
+
         Single position search.
 
         Input:
