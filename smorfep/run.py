@@ -168,9 +168,7 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
 
                         ## introns per transcript
                         introns_transcript = introns_chr.loc[introns_chr['transcript_id'] == each_t]
-                        print(introns_transcript.head)
-                        splice_regions_df = map_splice_regions(introns_transcript, splice_site)
-                        print(splice_regions_df.head)
+                        #$print(introns_transcript.head)
 
                         ## row_t is the info about the transctipt
                         consequence, change, prot_cons, prot_change = tool(
