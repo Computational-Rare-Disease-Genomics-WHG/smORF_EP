@@ -1466,7 +1466,7 @@ def map_splice_regions(introns_df, splice_size):
         splice_region_acceptor_end = row.end + into_exon_size 
 
         num = row.intron_number
-        t_id = row.ID
+        t_id = row.transcript_id
         c = row.chr
 
         new_line_donor = pd.DataFrame(
