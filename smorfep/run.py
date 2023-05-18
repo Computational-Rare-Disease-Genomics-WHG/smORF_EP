@@ -170,6 +170,7 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
                         introns_transcript = introns_chr.loc[introns_chr['transcript_id'] == each_t]
                         #$print(introns_transcript.head)
 
+
                         ## row_t is the info about the transctipt
                         consequence, change, prot_cons, prot_change = tool(
                             reference_genome[each_chrom], 

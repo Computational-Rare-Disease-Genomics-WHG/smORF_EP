@@ -1406,6 +1406,7 @@ def within_exon(start, end, mapgen2transc):
     return exonnts
 
 
+
 def map_splice_regions(introns_df, splice_size):
 
     """
@@ -1473,7 +1474,6 @@ def map_splice_regions(introns_df, splice_size):
         splice_regions_df = pd.concat([splice_regions_df, new_line_acceptor])
     
     return splice_regions_df
-
 
 
 def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc):
