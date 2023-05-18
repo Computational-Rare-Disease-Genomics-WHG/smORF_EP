@@ -129,8 +129,8 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
             
             ## compute compatible smorf-transcripts
             matching_t, unmatching_t, map_gen2transc, map_transc2gen = compatibility_smorf_transcript(reference_genome[each_chrom], transcripts_smorf, introns_smorf, smorf_id, smorf_start, smorf_end, smorf_strand)
-            print(smorf_id)
-            print(matching_t)
+            ##print(smorf_id)
+            ##print(matching_t)
             ##print(unmatching_t)
 
             ## update transcripts to run for the smorf - OK
@@ -157,7 +157,7 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
 
                 ## per variant - line
                 for index, row in smorf_vars_df.iterrows():
-                    print(index)
+                    ##print(index)
 
                     ## run tool per transcript
                     for each_t in matching_t:
@@ -168,6 +168,7 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
 
                         ## introns per transcript
                         introns_transcript = introns_chr.loc[introns_chr['transcript_id'] == each_t]
+                        print(introns_transcript.head)
 
                         ## row_t is the info about the transctipt
                         consequence, change, prot_cons, prot_change = tool(
