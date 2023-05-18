@@ -1366,6 +1366,8 @@ def find_position(dct, position):
         Function to quickly check is a position is in the dicionary of mapped positions.
         Iterated on the keys.
 
+        NOTE: for the smorfep if the position is in the dictionary keys list -- means the position is in an exonic region.
+
         Single position search.
 
         Input:
@@ -1404,22 +1406,97 @@ def within_exon(start, end, mapgen2transc):
     return exonnts
 
 
-def find_within_intron(position, intron_coordinates, spice_size):
+def splice_region_where():
     """
-        Function to find if a given position falls into which region of an intron: splice-site-donor, splice-site, intron_middle, splice-site-acceptor.
+        Function to create a dataframe with the splice regions considering the introns within a smORF. 
 
-        Input:
-        - position of interest 
-        - intron_coordinates: dictionary with the genomic positions (keys) in the intron range and respective indices(values)
-        - splice_size: size of the splice region
-        NOTE: by default the donor and acceptor are considered the first/last two nucleotides in the intron. To change this, change donor_acceptor_size variable in this function.
-    """
+        Input: 
+        - intron_coordinates: dataframe with the coordinates of intron regions
+        - splice_size: user defined or default (8bps as VEP) splice region size 
+
+        Returns a dataframe with the start and end coordinate of splice regions -- 2 per intron. 
+                
+        
+        NOTE 1: by default the donor and acceptor sites are considered the first/last, respectively, two nucleotides in the intron (same as VEP).
+        To change this, change donor_acceptor_size variable in this function.
+
+        NOTE 2: by default the three last nucleotides in the exon are considered part of the splice_region (same as VEP).
+        To change this, change exon_last_size variable in this function.
+
+    """ 
 
     donor_acceptor_size = 2
-    intron_coordinates = intron_coordinates.sort()
+    pass
 
-    return intron_location
 
+
+def map_splice_regions(introns_df, splice_size):
+
+    """
+        Function to create a dataframe with the splice regions considering the introns within a smORF. 
+        Maps the region as follow: 
+        (donor)
+        - splice_region_start = intron_start - into_exon_size
+        - splice_region_end = intron_start + splice-size
+        (acceptor)
+        - splice_region_start = intron_end - splice_size
+        - splice_region_end = intron_start + into_exon_size
+
+        Input: 
+        - intron_coordinates: dataframe with the coordinates of intron regions
+        - splice_size: user defined or default (8bps as VEP) splice region size 
+
+        Returns a dataframe with the start and end coordinate of splice regions -- 2 per intron. 
+                
+        NOTE: by default the three last nucleotides in the exon are considered part of the splice_region (same as VEP).
+        To change this, change into_exon_size variable in this function.
+
+    """ 
+
+    into_exon_size = 3
+
+    ## final dataframe - start empty
+    splice_regions_df = pd.DataFrame(data=None, columns=['chr', 'start', 'end', 'splice_region', 'ID'])
+    
+    new_line_index = 0
+    for index, row in introns_df:
+        splice_region_donor_start = row.start - into_exon_size
+        splice_region_donor_end = row.start + splice_size
+        splice_region_acceptor_start = row.end - splice_size
+        splice_region_acceptor_end = row.end + into_exon_size
+
+        num = row.intron_number
+        t_id = row.ID
+        c = row.chr
+
+        new_line_donor = pd.DataFrame(
+            {
+            'chr': c, 
+            'start': splice_region_donor_start, 
+            'end': splice_region_donor_end, 
+            'splice_region': 'donor_sr_intron_'+str(num), 
+            'ID': t_id
+            }, index=[new_line_index]
+        )
+
+        new_line_index += 1
+        splice_regions_df = pd.concat([splice_regions_df, new_line_donor])
+
+
+        new_line_acceptor = pd.DataFrame(
+            {
+            'chr': c, 
+            'start': splice_region_acceptor_start, 
+            'end': splice_region_acceptor_end, 
+            'splice_region': 'acceptor_sr_intron_'+str(num), 
+            'ID': t_id
+            }, index=[new_line_index]
+        )
+
+        new_line_index += 1        
+        splice_regions_df = pd.concat([splice_regions_df, new_line_acceptor])
+    
+    return splice_regions_df
 
 
 def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc):
