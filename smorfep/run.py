@@ -19,7 +19,6 @@
 ## stop lost (genomic)
 
 
-from email import header
 import sys
 import os
 import time
