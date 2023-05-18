@@ -118,6 +118,10 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
     ## 2 - Processing presence of introns in the smORF
     if not introns_smorf.empty:  ## if there are introns in the smORF range
 
+        ## map the splice regions in the smorf
+        splice_regions_df = map_splice_regions(introns_smorf, splice_site)
+        print(splice_regions_df.head)
+
         ## 2.1- Get sequence without introns
         seq, new_len = remove_introns(introns_smorf, start, end, strand, ref_sequence)
         ## region sequence without introns
