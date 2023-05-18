@@ -1406,30 +1406,6 @@ def within_exon(start, end, mapgen2transc):
     return exonnts
 
 
-def splice_region_where():
-    """
-        Function to create a dataframe with the splice regions considering the introns within a smORF. 
-
-        Input: 
-        - intron_coordinates: dataframe with the coordinates of intron regions
-        - splice_size: user defined or default (8bps as VEP) splice region size 
-
-        Returns a dataframe with the start and end coordinate of splice regions -- 2 per intron. 
-                
-        
-        NOTE 1: by default the donor and acceptor sites are considered the first/last, respectively, two nucleotides in the intron (same as VEP).
-        To change this, change donor_acceptor_size variable in this function.
-
-        NOTE 2: by default the three last nucleotides in the exon are considered part of the splice_region (same as VEP).
-        To change this, change exon_last_size variable in this function.
-
-    """ 
-
-    donor_acceptor_size = 2
-    pass
-
-
-
 def map_splice_regions(introns_df, splice_size):
 
     """
@@ -1497,6 +1473,7 @@ def map_splice_regions(introns_df, splice_size):
         splice_regions_df = pd.concat([splice_regions_df, new_line_acceptor])
     
     return splice_regions_df
+
 
 
 def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc):
