@@ -1476,7 +1476,7 @@ def map_splice_regions(introns_df, splice_size):
     return splice_regions_df
 
 
-def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc):
+def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_regions_df):
     """ 
         Function to check if a variant crosses exon-intron boundaries.
         # Special case of variants, only required for indels
@@ -1507,32 +1507,24 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc):
         if strand == '+':
             ## if del -- Check ref allele len
             if len(ref) > len(alt): 
-                ref_end_pos = var_pos + len(ref) ## To check ?????
+                ref_end_pos = var_pos + len(ref) -1 ## OK
                 var_end_check = find_position(map_gen2transc, ref_end_pos)
-                print(var_pos, ref_end_pos, ref, alt)
+                ##print(var_pos, ref_end_pos, ref, alt)
 
-
-                if var_end_check == True: ## variant fully in the exon -- Do normal analysis
+                if var_end_check == True: ## variant fully in the exon -- run exon var analysis
                     return None, None, None, None
-                else: 
-                    ## variant start in the exon and ends in the intron
-                    exon_nts = within_exon(var_pos, ref_end_pos, map_gen2transc)
 
-                    if exon_nts == 1: ## splice-site donor  ## there is only 1 nt in the exon and it is the anchor 
-                        dna_cons = 'splice-site-donor'
-                        prot_cons = '-'
-                    elif exon_nts-1%3 == 0:
-                        dna_cons = 'inframe_deletion, splice-site-donor'
-                        prot_cons = 'protein_truncation'
-                    else: 
-                        dna_cons = 'frameshift_deletion, splice-site-donor'
-                        prot_cons = '-'
+                elif ref_end_pos 
+                else: 
+                    dna_cons = 'splice_donor_variant' ##VEP only annotated with this, we follow
+                    prot_cons = '-'
+                    ## despite some nt(s) might be removed from exon, splice_donor_variant would make frameshift irrelevant
 
 
             ## if ins -- Check alt allele len 
             elif len(alt) > len(ref):
-                alt_end_pos = var_pos + len(alt)## To check ?????
-                print(var_pos, alt_end_pos, ref, alt)
+                alt_end_pos = var_pos + len(alt) -1 ## OK
+                ##print(var_pos, alt_end_pos, ref, alt)
                 var_end_check = find_position(map_gen2transc, alt_end_pos)
 
                 if var_end_check == True: ## variant fully in the exon
@@ -1540,13 +1532,18 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc):
                 else: 
                     ## variant start in the exon and ends in the intron
                     exon_nts = within_exon(var_pos, alt_end_pos, map_gen2transc)
+                    
+                    if exon_nts == 1: ## insertion right after last nt in the exon
+                        insertion_size = len(alt) -1 ## -1 to remove anchor base
+                        if insertion_size % 3 == 0:
+                            dna_cons = 'inframe_insertion, splice-site-donor'
+                            prot_cons = 'protein_elongation'
+                        else: 
+                            dna_cons = 'frameshift_insertion, splice-site-donor'
+                            prot_cons = '-'
+                
 
-                    if exon_nts-1%3 == 0:
-                        dna_cons = 'inframe_insertion, splice-site-donor'
-                        prot_cons = 'protein_elongation'
-                    else: 
-                        dna_cons = 'framseshift_insertion, splice-site-donor'
-                        prot_cons = '-'
+        ## done until here
 
         elif strand == '-':
             ## if del -- Check ref allele len
