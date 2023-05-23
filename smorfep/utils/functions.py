@@ -1524,7 +1524,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
     if var_pos_check == True: 
 
         if strand == '+':
-            ## if del -- Check ref allele len
+            ## if deletion -- Check ref allele len
             if len(ref) > len(alt): 
                 ref_end_pos = var_pos + len(ref) -1 ## OK
                 var_end_check = find_position(map_gen2transc, ref_end_pos)
@@ -1533,20 +1533,18 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                 if var_end_check == True: ## variant fully in the exon -- run exon var analysis
                     return None, None, None, None
 
-                elif ref_end_pos in introns_donoracceptor:
-                    pass ## TODO
-
-                else: 
-                    dna_cons = 'splice_donor_variant' ##VEP only annotated with this, we follow
+                elif ref_end_pos in donor_positions:
+                    dna_cons = 'splice_donor_variant'
                     prot_cons = '-'
-                    ## despite some nt(s) might be removed from exon, splice_donor_variant would make frameshift irrelevant
 
-
-            ## if ins -- Check alt allele len 
+            ## if insertion -- Check alt allele len 
             elif len(alt) > len(ref):
                 alt_end_pos = var_pos + len(alt) -1 ## OK
                 ##print(var_pos, alt_end_pos, ref, alt)
                 var_end_check = find_position(map_gen2transc, alt_end_pos)
+
+                if find_position(map_gen2transc, var_pos+1) == False:
+                    print('nt is in the intron')
 
                 if var_end_check == True: ## variant fully in the exon
                     return None, None, None, None
