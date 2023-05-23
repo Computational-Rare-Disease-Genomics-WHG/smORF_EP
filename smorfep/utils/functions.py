@@ -1505,11 +1505,26 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
     ## find if var position is in a exon
     var_pos_check = find_position(map_gen2transc, var_pos)
 
+    filtered_donor = splice_regions_df[splice_regions_df['splice_region'].str.contains('donor_sr_intron')]
+
+    filtered_acceptor = splice_regions_df[splice_regions_df['splice_region'].str.contains('acceptor_sr_intron')]
+
+    donor_positions = []
+    acceptor_positions = []
+
+    for index,row in filtered_donor.iterrows(): 
+        donor_positions.extend([i for i in range(row.da_start, row.da_end+1)])
+        ##print('donor coordinates computation')
+        ##print(donor_positions)
+        
+    for index_a, row_a in filtered_acceptor.iterrows(): 
+        acceptor_positions.extend([g for g in range(row_a.da_start, row_a.da_end+1)])
+
     ## var starts in the exon
     if var_pos_check == True: 
 
         if strand == '+':
-            ## if del -- Check ref allele len
+            ## if deletion -- Check ref allele len
             if len(ref) > len(alt): 
                 ref_end_pos = var_pos + len(ref) -1 ## OK
                 var_end_check = find_position(map_gen2transc, ref_end_pos)
@@ -1518,20 +1533,20 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                 if var_end_check == True: ## variant fully in the exon -- run exon var analysis
                     return None, None, None, None
 
-                elif ref_end_pos in introns_donoracceptor:
-                    pass ## TODO
-
-                else: 
-                    dna_cons = 'splice_donor_variant' ##VEP only annotated with this, we follow
+                elif ref_end_pos in donor_positions:
+                    dna_cons = 'splice_donor_variant'
                     prot_cons = '-'
-                    ## despite some nt(s) might be removed from exon, splice_donor_variant would make frameshift irrelevant
 
-
-            ## if ins -- Check alt allele len 
+            ## if insertion -- Check alt allele len 
             elif len(alt) > len(ref):
                 alt_end_pos = var_pos + len(alt) -1 ## OK
                 ##print(var_pos, alt_end_pos, ref, alt)
                 var_end_check = find_position(map_gen2transc, alt_end_pos)
+
+                if find_position(map_gen2transc, var_pos+1) == False: ## insertion after the last nt in the exon
+                    print('nt is in the intron')
+
+        ## done until here
 
                 if var_end_check == True: ## variant fully in the exon
                     return None, None, None, None
@@ -1549,7 +1564,6 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                             prot_cons = '-'
                 
 
-        ## done until here
 
         elif strand == '-':
             ## if del -- Check ref allele len
