@@ -1407,7 +1407,7 @@ def within_exon(start, end, mapgen2transc):
 
 
 
-def map_splice_regions(introns_df, splice_size):
+def map_splice_regions(introns_df, splice_size, intron_exon_size=3, splice_da_size=2):
 
     """
         Function to create a dataframe with the splice regions considering the introns within a smORF. 
@@ -1430,17 +1430,17 @@ def map_splice_regions(introns_df, splice_size):
 
     """ 
 
-    into_exon_size = 3
+    ##into_exon_size = 3
 
     ## final dataframe - start empty
-    splice_regions_df = pd.DataFrame(data=None, columns=['chr', 'start', 'end', 'splice_region', 'ID'])
+    splice_regions_df = pd.DataFrame(data=None, columns=['chr', 'start', 'end', 'splice_region', 'ID', 'da_start', 'da_end'])
     
     new_line_index = 0
     for index, row in introns_df.iterrows():
-        splice_region_donor_start = row.start - into_exon_size
+        splice_region_donor_start = row.start - intron_exon_size
         splice_region_donor_end = row.start + splice_size - 1 ## -1 as row.start is the first position of the intron
         splice_region_acceptor_start = row.end - splice_size + 1 ## -1 as row.end is the last position of the intron
-        splice_region_acceptor_end = row.end + into_exon_size 
+        splice_region_acceptor_end = row.end + intron_exon_size 
 
         num = row.intron_number
         t_id = row.transcript_id
@@ -1452,7 +1452,9 @@ def map_splice_regions(introns_df, splice_size):
             'start': splice_region_donor_start, 
             'end': splice_region_donor_end, 
             'splice_region': 'donor_sr_intron_'+str(num), 
-            'ID': t_id
+            'ID': t_id,
+            'da_start': row.start, 
+            'da_end': row.start + splice_da_size -1
             }, index=[new_line_index]
         )
 
@@ -1466,7 +1468,9 @@ def map_splice_regions(introns_df, splice_size):
             'start': splice_region_acceptor_start, 
             'end': splice_region_acceptor_end, 
             'splice_region': 'acceptor_sr_intron_'+str(num), 
-            'ID': t_id
+            'ID': t_id,
+            'da_start': row.end - splice_da_size +1, 
+            'da_end': row.end
             }, index=[new_line_index]
         )
 
@@ -1514,8 +1518,9 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                 if var_end_check == True: ## variant fully in the exon -- run exon var analysis
                     return None, None, None, None
 
-                elif ref_end_pos in splice_regions_df[splice_regions_df['splice_region'].str.contains('donor_sr_intron')]:
-                    print(splice_regions_df[splice_regions_df['splice_region'].str.contains('donor_sr_intron')])
+                elif ref_end_pos in introns_donoracceptor:
+                    pass ## TODO
+
                 else: 
                     dna_cons = 'splice_donor_variant' ##VEP only annotated with this, we follow
                     prot_cons = '-'
