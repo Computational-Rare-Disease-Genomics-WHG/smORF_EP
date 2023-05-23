@@ -173,7 +173,7 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
             ## check for all other variants
 
             ## 2.5.1- introduce the variant 
-            new_sequence, ref_original, ref_inFile = add_variant_transcriptSeq(seq, start, end, ref, alt, variant_pos, map_gen2transc, splice_regions_df)
+            new_sequence, ref_original, ref_inFile = add_variant_transcriptSeq(seq, start, end, ref, alt, variant_pos, map_gen2transc)
 
             # ## 2.5.2- Check if allele in the file and in the sequence match
             # if new_sequence == None:
