@@ -1505,6 +1505,21 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
     ## find if var position is in a exon
     var_pos_check = find_position(map_gen2transc, var_pos)
 
+    filtered_donor = splice_regions_df[splice_regions_df['splice_region'].str.contains('donor_sr_intron')]
+
+    filtered_acceptor = splice_regions_df[splice_regions_df['splice_region'].str.contains('acceptor_sr_intron')]
+
+    donor_positions = []
+    acceptor_positions = []
+
+    for index,row in filtered_donor.iterrows(): 
+        donor_positions.extend([i for i in range(row.da_start, row.da_end+1)])
+        ##print('donor coordinates computation')
+        ##print(donor_positions)
+        
+    for index_a, row_a in filtered_acceptor.iterrows(): 
+        acceptor_positions.extend([g for g in range(row_a.da_start, row_a.da_end+1)])
+
     ## var starts in the exon
     if var_pos_check == True: 
 
