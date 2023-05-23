@@ -157,7 +157,7 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
         ## XXX TODO: think on the starting in the intron, but extending to the exon variants !!!!! 
         ## Check exon-intron crossing variants
 
-        dna_c, dna_seq_c, prot_c, prot_seq_c = check_exon_intron_vars(variant_pos, ref, alt, strand, map_gen2transc)
+        dna_c, dna_seq_c, prot_c, prot_seq_c = check_exon_intron_vars(variant_pos, ref, alt, strand, map_gen2transc, splice_regions_df)
         print(dna_c, dna_seq_c, prot_c, prot_seq_c)
 
         ## this works on the coordinates
