@@ -1543,8 +1543,10 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                 ##print(var_pos, alt_end_pos, ref, alt)
                 var_end_check = find_position(map_gen2transc, alt_end_pos)
 
-                if find_position(map_gen2transc, var_pos+1) == False:
+                if find_position(map_gen2transc, var_pos+1) == False: ## insertion after the last nt in the exon
                     print('nt is in the intron')
+
+        ## done until here
 
                 if var_end_check == True: ## variant fully in the exon
                     return None, None, None, None
@@ -1562,7 +1564,6 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                             prot_cons = '-'
                 
 
-        ## done until here
 
         elif strand == '-':
             ## if del -- Check ref allele len
