@@ -1514,7 +1514,8 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                 if var_end_check == True: ## variant fully in the exon -- run exon var analysis
                     return None, None, None, None
 
-                elif ref_end_pos 
+                elif ref_end_pos in splice_regions_df[splice_regions_df['splice_region'].str.contains('donor_sr_intron')]:
+                    print(splice_regions_df[splice_regions_df['splice_region'].str.contains('donor_sr_intron')])
                 else: 
                     dna_cons = 'splice_donor_variant' ##VEP only annotated with this, we follow
                     prot_cons = '-'
