@@ -1545,6 +1545,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
 
                 ## variant start in the exon and ends in the intron
                 exon_nts = within_exon(var_pos, alt_end_pos, map_gen2transc)
+
                     
                 if exon_nts == 1 and find_position(map_gen2transc, var_pos+1) == False: ## insertion after the last nt in the exon
                     print('nt is in the intron')
@@ -1559,6 +1560,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                         prot_cons = '-'
                 
         ## done until here
+
 
         elif strand == '-':
             ## if del -- Check ref allele len
