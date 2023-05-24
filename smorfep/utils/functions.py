@@ -1543,27 +1543,22 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                 ##print(var_pos, alt_end_pos, ref, alt)
                 var_end_check = find_position(map_gen2transc, alt_end_pos)
 
-                if find_position(map_gen2transc, var_pos+1) == False: ## insertion after the last nt in the exon
+                ## variant start in the exon and ends in the intron
+                exon_nts = within_exon(var_pos, alt_end_pos, map_gen2transc)
+                    
+                if exon_nts == 1 and find_position(map_gen2transc, var_pos+1) == False: ## insertion after the last nt in the exon
                     print('nt is in the intron')
 
-        ## done until here
+                    insertion_size = len(alt) -1 ## -1 to remove anchor base
 
-                if var_end_check == True: ## variant fully in the exon
-                    return None, None, None, None
-                else: 
-                    ## variant start in the exon and ends in the intron
-                    exon_nts = within_exon(var_pos, alt_end_pos, map_gen2transc)
-                    
-                    if exon_nts == 1: ## insertion right after last nt in the exon
-                        insertion_size = len(alt) -1 ## -1 to remove anchor base
-                        if insertion_size % 3 == 0:
-                            dna_cons = 'inframe_insertion, splice-site-donor'
-                            prot_cons = 'protein_elongation'
-                        else: 
-                            dna_cons = 'frameshift_insertion, splice-site-donor'
-                            prot_cons = '-'
+                    if insertion_size % 3 == 0:
+                        dna_cons = 'inframe_insertion, splice-site-donor'
+                        prot_cons = 'protein_elongation'
+                    else: 
+                        dna_cons = 'frameshift_insertion, splice-site-donor'
+                        prot_cons = '-'
                 
-
+        ## done until here
 
         elif strand == '-':
             ## if del -- Check ref allele len
