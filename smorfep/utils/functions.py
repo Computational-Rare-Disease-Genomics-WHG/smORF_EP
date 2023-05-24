@@ -1553,11 +1553,15 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                     insertion_size = len(alt) -1 ## -1 to remove anchor base
 
                     if insertion_size % 3 == 0:
-                        dna_cons = 'inframe_insertion, splice-site-donor'
+                        dna_cons = 'inframe_insertion, splice_site_donor'
                         prot_cons = 'protein_elongation'
                     else: 
-                        dna_cons = 'frameshift_insertion, splice-site-donor'
+                        dna_cons = 'frameshift_insertion, splice_site_donor'
                         prot_cons = '-'
+                elif find_position(map_gen2transc, var_pos+1) == True: ## insertion still in the exon region
+                    dna_cons = 'splice_site_donor'
+                    prot_cons = ''
+
                 
         ## done until here
 
