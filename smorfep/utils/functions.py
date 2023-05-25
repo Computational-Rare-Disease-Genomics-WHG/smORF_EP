@@ -1509,18 +1509,26 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
 
     filtered_acceptor = splice_regions_df[splice_regions_df['splice_region'].str.contains('acceptor_sr_intron')]
 
+    ## save donor and acceptor positions
+    ## for all the donor and acceptor sites per transcript 
     donor_positions = []
     acceptor_positions = []
+
+    ## save splice_site regions
+    splice_site_donor = []
+    splice_site_acceptor = []
 
     for index,row in filtered_donor.iterrows(): 
         donor_positions.extend([i for i in range(row.da_start, row.da_end+1)])
         ##print('donor coordinates computation')
         ##print(donor_positions)
+        splice_site_donor.extend([m for m in range(row.start, row.end+1)])
         
     for index_a, row_a in filtered_acceptor.iterrows(): 
         acceptor_positions.extend([g for g in range(row_a.da_start, row_a.da_end+1)])
+        splice_site_acceptor.extend([t for t in range(row.start, row.end+1)])
 
-    ## var starts in the exon
+    ## 1- var starts in the exon
     if var_pos_check == True: 
 
         if strand == '+':
@@ -1531,10 +1539,15 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                 ##print(var_pos, ref_end_pos, ref, alt)
 
                 if var_end_check == True: ## variant fully in the exon -- run exon var analysis
-                    return None, None, None, None
+                    dna_cons = None
+                    prot_cons = None
 
                 elif ref_end_pos in donor_positions:
                     dna_cons = 'splice_donor_variant'
+                    prot_cons = '-'
+
+                elif ref_end_pos in splice_site_donor:
+                    dna_cons = 'splice_region_variant'
                     prot_cons = '-'
 
             ## if insertion -- Check alt allele len 
@@ -1545,19 +1558,27 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
 
                 ## variant start in the exon and ends in the intron
                 exon_nts = within_exon(var_pos, alt_end_pos, map_gen2transc)
-
+                print('exon nts: ', exon_nts)
                     
                 if exon_nts == 1 and find_position(map_gen2transc, var_pos+1) == False: ## insertion after the last nt in the exon
-                    print('nt is in the intron')
+                    print('here')
 
                     insertion_size = len(alt) -1 ## -1 to remove anchor base
 
                     if insertion_size % 3 == 0:
-                        dna_cons = 'inframe_insertion, splice-site-donor'
+                        dna_cons = 'inframe_insertion, splice_site_donor'
                         prot_cons = 'protein_elongation'
                     else: 
-                        dna_cons = 'frameshift_insertion, splice-site-donor'
+                        dna_cons = 'frameshift_insertion, splice_site_donor'
                         prot_cons = '-'
+                elif find_position(map_gen2transc, var_pos+1) == True: ## insertion still in the exon region
+                    dna_cons = 'splice_site_donor'
+                    prot_cons = ''
+                
+                else: ## variant still in the exon
+                    dna_cons = None
+                    prot_cons = None
+
                 
         ## done until here
 
@@ -1581,12 +1602,10 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
 
                 dna_cons = 'todo'
                 prot_cons = '-'
-
-        return dna_cons, '-', prot_cons, '-'
             
  
    
-    ## var starts in the intron
+    ## 2 - var starts in the intron 
     else:
         print('start within intron')
 
@@ -1609,3 +1628,4 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
 
         return None, None, None, None
 
+    return dna_cons, '-', prot_cons, '-'

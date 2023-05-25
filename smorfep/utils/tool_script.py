@@ -120,7 +120,7 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
 
         ## map the splice regions in the smorf
         splice_regions_df = map_splice_regions(introns_smorf, splice_site)
-        print(splice_regions_df.head)
+        ##print(splice_regions_df.head)
 
         ## 2.1- Get sequence without introns
         seq, new_len = remove_introns(introns_smorf, start, end, strand, ref_sequence)
