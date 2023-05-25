@@ -1558,9 +1558,10 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
 
                 ## variant start in the exon and ends in the intron
                 exon_nts = within_exon(var_pos, alt_end_pos, map_gen2transc)
+                print('exon nts: ', exon_nts)
                     
                 if exon_nts == 1 and find_position(map_gen2transc, var_pos+1) == False: ## insertion after the last nt in the exon
-
+                    print('here')
 
                     insertion_size = len(alt) -1 ## -1 to remove anchor base
 
