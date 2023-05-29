@@ -1502,8 +1502,6 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
         Or 'None' if the full length of the variant is within the exon --> run the normal analysis after.
     """
 
-    print(splice_regions_df)
-
     ## find if var position is in a exon
     var_pos_check = find_position(map_gen2transc, var_pos)
 
@@ -1539,11 +1537,11 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
             if len(ref) > len(alt): 
                 ref_end_pos = var_pos + len(ref) -1 ## OK
                 var_end_check = find_position(map_gen2transc, ref_end_pos)
-                print('ref end position', ref_end_pos)
+                ##print('ref end position', ref_end_pos)
                 ##print(var_pos, ref_end_pos, ref, alt)
 
                 exon_nts = within_exon(var_pos, ref_end_pos, map_gen2transc)
-                print('exon nts: ', exon_nts)
+                ##print('exon nts: ', exon_nts)
 
                 if ref_end_pos in donor_positions and exon_nts == 1: ## splice donor
                     ## 1st nt is anchor and deletion only on the donor region -- otehrwise frameshift+splice_region 
