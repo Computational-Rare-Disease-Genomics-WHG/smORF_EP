@@ -1542,7 +1542,11 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                 print('ref end position', ref_end_pos)
                 ##print(var_pos, ref_end_pos, ref, alt)
 
-                if ref_end_pos in donor_positions: ## splice donor 
+                exon_nts = within_exon(var_pos, ref_end_pos, map_gen2transc)
+                print('exon nts: ', exon_nts)
+
+                if ref_end_pos in donor_positions and exon_nts == 1: ## splice donor
+                    ## 1st nt is anchor and deletion only on the donor region -- otehrwise frameshift+splice_region 
                     dna_cons = 'splice_donor_variant'
                     prot_cons = '-'
 
