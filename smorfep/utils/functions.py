@@ -1502,6 +1502,8 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
         Or 'None' if the full length of the variant is within the exon --> run the normal analysis after.
     """
 
+    print(splice_regions_df)
+
     ## find if var position is in a exon
     var_pos_check = find_position(map_gen2transc, var_pos)
 
@@ -1530,25 +1532,35 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
 
     ## 1- var starts in the exon
     if var_pos_check == True: 
+        print('var_starts within the intron')
 
         if strand == '+':
             ## if deletion -- Check ref allele len
             if len(ref) > len(alt): 
                 ref_end_pos = var_pos + len(ref) -1 ## OK
                 var_end_check = find_position(map_gen2transc, ref_end_pos)
+                print('ref end position', ref_end_pos)
                 ##print(var_pos, ref_end_pos, ref, alt)
 
-                if var_end_check == True: ## variant fully in the exon -- run exon var analysis
-                    dna_cons = None
-                    prot_cons = None
-
-                elif ref_end_pos in donor_positions:
+                if ref_end_pos in donor_positions: ## splice donor 
                     dna_cons = 'splice_donor_variant'
                     prot_cons = '-'
 
-                elif ref_end_pos in splice_site_donor:
-                    dna_cons = 'splice_region_variant'
-                    prot_cons = '-'
+                elif ref_end_pos in splice_site_donor: ## splice-region
+                    deletion_size = len(ref) -1 ## -1 to remove anchor base
+
+                    if deletion_size % 3 == 0:
+                        dna_cons = 'inframe_deletion, splice_region_variant'
+                        prot_cons = 'protein_truncation'
+                    else: 
+                        dna_cons = 'frameshift_deletion, splice_region_variant'
+                        prot_cons = '-'
+
+                elif var_end_check == True: ## variant fully in the exon -- run exon var analysis
+                    print('var end in the exon')
+                    dna_cons = None
+                    prot_cons = None
+
 
             ## if insertion -- Check alt allele len 
             elif len(alt) > len(ref):
@@ -1561,7 +1573,6 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                 print('exon nts: ', exon_nts)
                     
                 if exon_nts == 1 and find_position(map_gen2transc, var_pos+1) == False: ## insertion after the last nt in the exon
-                    print('here')
 
                     insertion_size = len(alt) -1 ## -1 to remove anchor base
 
@@ -1579,7 +1590,22 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                     dna_cons = None
                     prot_cons = None
 
-                
+            elif len(ref) == len(alt):
+                if var_pos in donor_positions:         
+                    dna_cons = 'splice_donor_variant'
+                    prot_cons = '-'  
+                elif var_pos in splice_site_donor:
+                    dna_cons = 'splice_region_variant'
+                    prot_cons = '-'  
+                elif var_pos in acceptor_positions:
+                    dna_cons = 'splice_acceptor_variant'
+                    prot_cons = '-'
+                elif var_pos in splice_site_acceptor:
+                    dna_cons = 'splice_region_variant'
+                    prot_cons = '-'
+                else: 
+                    dna_cons = None
+                    prot_cons = None
         ## done until here
 
 
