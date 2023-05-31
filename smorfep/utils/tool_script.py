@@ -180,8 +180,8 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
                 new_sequence, ref_original, ref_inFile = add_variant_transcriptSeq(seq, start, end, ref, alt, variant_pos, map_gen2transc)
 
                 # ## 2.5.2- Check if allele in the file and in the sequence match
-                # if new_sequence == None:
-                #     return 'wrong_sequence', 'ref_allele_wrong', ref_original, ref_inFile 
+                if new_sequence == None:
+                    return 'wrong_sequence', 'ref_allele_wrong', ref_original, ref_inFile 
 
                 if len(ref) > len(alt): ## deletion
                     new_sequence = new_sequence.replace('-','') # we need to take the dash out for seq processing 
@@ -320,8 +320,8 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
 
         # ## 3.3 - Introduce the variant
         new_sequence, ref_original, ref_inFile = add_variant(seq, start, end, ref, alt, variant_pos, strand)
-        # if new_sequence == None:
-        #     return 'wrong sequence', 'ref_allele_wrong', ref_original, ref_inFile 
+        if new_sequence == None:
+            return 'wrong sequence', 'ref_allele_wrong', ref_original, ref_inFile 
 
         if len(ref) > len(alt): ## deletion
             new_sequence = new_sequence.replace('-','') # we need to take the dash out for seq processing 
