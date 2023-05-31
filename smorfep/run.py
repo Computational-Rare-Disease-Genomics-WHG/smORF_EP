@@ -128,7 +128,14 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
             ##print(introns_smorf)
             
             ## compute compatible smorf-transcripts
-            matching_t, unmatching_t, map_gen2transc, map_transc2gen = compatibility_smorf_transcript(reference_genome[each_chrom], transcripts_smorf, introns_smorf, smorf_id, smorf_start, smorf_end, smorf_strand)
+            # if no transcripts covering start and end of smorf - report
+            if transcripts_smorf.empty:
+                nts_file.write(smorf_id + '\n')
+                smorf_no_transcript += 1
+                variants_no_annotation += smorf_vars_df.shape[0] ## number of lines in the smorf_variants dataframe
+                continue ## moves to next smorf
+            else:                
+                matching_t, unmatching_t, map_gen2transc, map_transc2gen = compatibility_smorf_transcript(reference_genome[each_chrom], transcripts_smorf, introns_smorf, smorf_id, smorf_start, smorf_end, smorf_strand)
             ##print(smorf_id)
             ##print(matching_t)
             ##print(unmatching_t)

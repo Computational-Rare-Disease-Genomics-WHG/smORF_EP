@@ -126,26 +126,26 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
         seq, new_len = remove_introns(introns_smorf, start, end, strand, ref_sequence)
         ## region sequence without introns
 
-        ## 2.2- Check 3nt periodicity - if not multiple of 3: Wrong sequence
-        # if new_len % 3 != 0: 
-        #     return 'wrong_sequence', 'not_multiple_of_3', new_len, '-'
+        # 2.2- Check 3nt periodicity - if not multiple of 3: Wrong sequence
+        if new_len % 3 != 0: 
+            return 'wrong_sequence', 'not_multiple_of_3', new_len, '-'
         
-        # ## check last 3 nts are a stop codon
-        # elif seq[len(seq)-3:len(seq)+1] not in stop_codons:
-        #     return 'wrong_sequence', 'last_trio_not_a_stop', seq[len(seq)-3:len(seq)+1], '-'
+        ## check last 3 nts are a stop codon
+        elif seq[len(seq)-3:len(seq)+1] not in stop_codons:
+            return 'wrong_sequence', 'last_trio_not_a_stop', seq[len(seq)-3:len(seq)+1], '-'
             
         
-        ## 2.3- Check if there are multiple stop codons -- Wrong sequence
-        ## checks if the sequence is correct and there is not more than one stop codon
-        # else: 
-            # ## seq is updated with introns removal above -- function remove_introns
-            # if strand == '+':
-            #     s, s_index = find_stop_inframe(seq[:len(seq)-3], map_transc2gen) ## removes last codon and searches for stop codons inframe
-            # elif strand == '-':
-            #     s, s_index = find_stop_inframe(seq[:len(seq)-3], map_transc2gen)
+        # 2.3- Check if there are multiple stop codons -- Wrong sequence
+        # checks if the sequence is correct and there is not more than one stop codon
+        else: 
+            ## seq is updated with introns removal above -- function remove_introns
+            if strand == '+':
+                s, s_index = find_stop_inframe(seq[:len(seq)-3], map_transc2gen) ## removes last codon and searches for stop codons inframe
+            elif strand == '-':
+                s, s_index = find_stop_inframe(seq[:len(seq)-3], map_transc2gen)
 
-            # if s != None: ## Multiple stop codons in the sequence 
-            #     return 'wrong_sequence', 'More_than_one_stop', '-', '-'
+            if s != None: ## Multiple stop codons in the sequence 
+                return 'wrong_sequence', 'More_than_one_stop', '-', '-'
 
 
         ## 2.4 - Check if variant falls into an intron region     
@@ -156,9 +156,11 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
         ## TODO: We need to check exon-intron crossing variants
         ## XXX TODO: think on the starting in the intron, but extending to the exon variants !!!!! 
         ## Check exon-intron crossing variants
-
-        dna_c, dna_seq_c, prot_c, prot_seq_c = check_exon_intron_vars(variant_pos, ref, alt, strand, map_gen2transc, splice_regions_df)
-        print(dna_c, dna_seq_c, prot_c, prot_seq_c)
+        if len(ref) > 1 | len(alt) > 1:
+            dna_c, dna_seq_c, prot_c, prot_seq_c = check_exon_intron_vars(variant_pos, ref, alt, strand, map_gen2transc, splice_regions_df)
+            print(dna_c, dna_seq_c, prot_c, prot_seq_c)
+        else:
+            dna_c = 'todo'
 
         if dna_c != None: 
 
@@ -288,31 +290,32 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
                 return 'missense_variant', 0, prot_cons, change_prot
             elif prot_cons == 'synonymous_variant':
                 return 'synonymous_variant', 0, prot_cons, change_prot
-
+            else:
+                return 'uncategorised', 0, '-', '-'
         ## ------- end of sequence with introns check  -------------
 
 
 
     else: ## no introns in the smORF -- if extension are needed we still need to check introns on the extension
 
-        # ## 3.1 - check 3nt periodicity 
-        # if len(seq) % 3 != 0:
-        #     return 'wrong_sequence', 'not_multiple_of_3', len(seq), '-'
+        ## 3.1 - check 3nt periodicity 
+        if len(seq) % 3 != 0:
+            return 'wrong_sequence', 'not_multiple_of_3', len(seq), '-'
 
-        # ## check last 3 nts are a stop codon
-        # elif seq[len(seq)-3:len(seq)+1] not in stop_codons:
-        #     return 'wrong_sequence', 'last_trio_not_a_stop', seq[len(seq)-3:len(seq)+1], '-'
+        ## check last 3 nts are a stop codon
+        elif seq[len(seq)-3:len(seq)+1] not in stop_codons:
+            return 'wrong_sequence', 'last_trio_not_a_stop', seq[len(seq)-3:len(seq)+1], '-'
             
         
-        # ## 3.2 - check multiple stop codons
-        # else:     ## checks if the sequence is correct and there is not more than one stop codon
-        #     if strand == '+':
-        #         s, s_index = find_stop_inframe(seq[:len(seq)-3], map_transc2gen) ## removes last codon and searches for stop codons inframe
-        #     elif strand == '-':
-        #         s, s_index = find_stop_inframe(seq[:len(seq)-3], map_transc2gen)
+        ## 3.2 - check multiple stop codons
+        else:     ## checks if the sequence is correct and there is not more than one stop codon
+            if strand == '+':
+                s, s_index = find_stop_inframe(seq[:len(seq)-3], map_transc2gen) ## removes last codon and searches for stop codons inframe
+            elif strand == '-':
+                s, s_index = find_stop_inframe(seq[:len(seq)-3], map_transc2gen)
 
-        #     if s != None: ## Multiple stop codons in the sequence 
-        #         return 'wrong_sequence', 'More_than_one_stop', '-', '-'
+            if s != None: ## Multiple stop codons in the sequence 
+                return 'wrong_sequence', 'More_than_one_stop', '-', '-'
 
 
         # ## 3.3 - Introduce the variant
@@ -454,5 +457,7 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
             return 'missense_variant', 0, prot_cons, change_prot
         elif prot_cons == 'synonymous_variant':
             return 'synonymous_variant', 0, prot_cons, change_prot
+        else:
+            return 'uncategorised', 0, '-', '-'
 
      
