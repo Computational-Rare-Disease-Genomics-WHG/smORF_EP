@@ -151,7 +151,7 @@ smorfep -r <path_to_ref_genome/>ref_genome/ -t <path_to_transcriptCoord_file/tra
 **-o**: output file (see Output(#output)). 
 
 Note: 
-Add path before input and output filename for scpecific locations.
+Add path before input and output filename for specific locations.
 
 <br><hr>
 [:arrow_up: Back to top](#smorf-ep)

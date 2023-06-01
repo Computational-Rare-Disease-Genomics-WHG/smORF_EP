@@ -2,7 +2,7 @@
 
 """
 Input generator script for smORF_EP
-This script generates the formatted file for smORF_EP tool. 
+This script generates the formated file for smORF_EP tool. 
 Merges the information from the variants and regions of interest (smORFs) into a dataframe and writes the output.
 
 Usage: smorfinput [OPTIONS]
@@ -56,15 +56,18 @@ def bedvcf2intput(ref_path, bedfilename, vcffilename, outputname, bheader, vhead
     ## stores reference per chromosome into a dictionary
     reference_genome = {} 
 
+
     ## check files prefix and suffix 
     files_prefix, files_suffix = check_prefix_sufix_ref_files(ref_path)
-
+    
     for chrom_ref in all_chromosomes: 
         r = read_single_fasta(str(chrom_ref), ref_path, files_prefix, files_suffix)
 
         reference_genome[chrom_ref] = r
 
-    print('reference ready (new)')
+    print('reference ready')
+    
+
 
     ## 3- Process variants
     ## generate a new df to store the new formated vars
@@ -74,90 +77,112 @@ def bedvcf2intput(ref_path, bedfilename, vcffilename, outputname, bheader, vhead
     variants_df = variants_df.iloc[:, :7]
     ## name columns
     variants_df.columns = ['CHROM', 'POS', 'ID', 'REF', 'ALT', 'QUAL', 'FILTER']
+
     variants_df['CHROM'] = variants_df['CHROM'].str.strip('chr')
 
-    ## unique indices for variants, smorfs w/o variants
-    vars_id_index, smorf_index, smORFs_no_vars = [1], [1], []
-    df_chrm, df_var_pos, df_ref, df_alt, df_start, df_end, df_strand, df_varid, df_smorfid = [], [], [], [], [], [], [], [], []
+    ## unique index for variants
+    vars_id_index = 1
+
+    ## smorf index 
+    smorf_index = 1
+
+    first = True ## to print the header in the file only once
+    smORFs_no_vars = 0 ## count the number of smORFs with no variants
+
     ## iterate per smORF
-    
-    def parse_smorf(chrm, start, end, smorf_id, strand):
-        chrm_smorf = chrm
-        start_smorf = start+1 ## +1 for the exact start coordinate as bed has start-1 format
-        end_smorf = end
-        smorfid = smorf_id
-        strand_smorf = strand
+    for index, row in smorfs_df.iterrows():
+
+        chrm_smorf = row.chrm
+        start_smorf = row.start+1 ## +1 for the exact start coordinate as bed has start-1 format
+        end_smorf = row.end
+        smorfid = row.smorf_id
+        strand_smorf = row.strand
+        ##print(chrm_smorf, start_smorf, end_smorf, smorfid, strand_smorf)
+
+        ## variants in the smORF
         smorf_variants_df = variants_df[(variants_df['CHROM'] == chrm_smorf) & (variants_df['POS']>= start_smorf) & (variants_df['POS'] <= end_smorf)]
 
         if not smorf_variants_df.empty:
-            def parse_variants(POS, REF, ALT, ID, chrm_smorf, start_smorf, end_smorf, smorfid, strand_smorf):
+            for index_var, row_var in smorf_variants_df.iterrows():
+                ##print(row_var.POS, row_var.REF, row_var.ALT, row.chrm, row.start+1, row.end, row.strand)
+
                 ## take variant ID from 3rd column in the VCF, if not empty
-                var_id = ID if ID != '' else f'VAR-{len(vars_id_index)}'
+                if row_var.ID != '':
+                    var_id = row_var.ID
+                    ##print(var_id)
+
+                else: ## if no ID provided generate one
+                    var_id = 'VAR-' + str(vars_id_index)
+
 
                 if strand_smorf == '+':
                     ## gnomad variants are on the forward strand, no special edits 
-                    r = REF
-                    a = ALT
-                    new_var_pos = POS ## same position as reported
+                    r = row_var.REF
+                    a = row_var.ALT
+                    new_var_pos = row_var.POS ## same position as reported
+
                 elif strand_smorf == '-':
-                    if len(REF) == len(ALT): ##SNV
-                        r = complement_seq(REF)
-                        a = complement_seq(ALT)
-                        new_var_pos = POS ## same position as reported
-                    elif len(REF) > len(ALT): ## deletion - OK
-                        pos_diff = len(REF) - len(ALT)
-                        a = get_sequence(int(POS)+pos_diff+1, int(POS)+pos_diff+1, strand_smorf, reference_genome[chrm_smorf])
-                        ref_allele_sufix = reverse_complement_seq(REF)
+                    if len(row_var.REF) == len(row_var.ALT): ##SNV
+                        r = complement_seq(row_var.REF)
+                        a = complement_seq(row_var.ALT)
+                        new_var_pos = row_var.POS ## same position as reported
+
+                    elif len(row_var.REF) > len(row_var.ALT): ## deletion - OK
+                        pos_diff = len(row_var.REF) - len(row_var.ALT)
+
+                        a = get_sequence(int(row_var.POS)+pos_diff+1, int(row_var.POS)+pos_diff+1, strand_smorf, reference_genome[chrm_smorf])
+                        ref_allele_sufix = reverse_complement_seq(row_var.REF)
                         r = a + ref_allele_sufix[:-1] ## removes the last nt
-                        new_var_pos = int(POS)+pos_diff+1 ## var pos next position after the deletion section
-                    elif len(REF) < len(ALT): ## insertion 
-                        r = get_sequence(int(POS)+1, int(POS)+1, strand_smorf, reference_genome[chrm_smorf])
-                        alt_allele_sufix = reverse_complement_seq(ALT)
+                        new_var_pos = int(row_var.POS)+pos_diff+1 ## var pos next position after the deletion section
+                        
+
+                    elif len(row_var.REF) < len(row_var.ALT): ## insertion 
+                        r = get_sequence(int(row_var.POS)+1, int(row_var.POS)+1, strand_smorf, reference_genome[chrm_smorf])
+                        alt_allele_sufix = reverse_complement_seq(row_var.ALT)
                         a = r + alt_allele_sufix[:-1] ## removes the last nt
-                        new_var_pos = POS+1 ## same position as reported
+                        new_var_pos = row_var.POS+1 ## same position as reported
 
-                df_chrm.append(chrm_smorf)
-                df_var_pos.append(new_var_pos)
-                df_ref.append(r)
-                df_alt.append(a)
-                df_start.append(start_smorf)
-                df_end.append(end_smorf)
-                df_strand.append(strand_smorf)
-                df_varid.append(var_id)
-                df_smorfid.append(smorfid)
 
-                vars_id_index.append(1)
-            smorf_variants_df['chrm_smorf'], smorf_variants_df['start_smorf'], smorf_variants_df['end_smorf'], smorf_variants_df['smorfid'], smorf_variants_df['strand_smorf'] = chrm_smorf, start_smorf, end_smorf, smorfid, strand_smorf
-            [parse_variants(a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8]) for a in zip(smorf_variants_df['POS'], smorf_variants_df['REF'], smorf_variants_df['ALT'], smorf_variants_df['ID'], \
-                                                            smorf_variants_df['chrm_smorf'], smorf_variants_df['start_smorf'], smorf_variants_df['end_smorf'], smorf_variants_df['smorfid'], smorf_variants_df['strand_smorf'])]
-        else:
-            smORFs_no_vars.append(1)
+                new_var = pd.DataFrame(
+                    {'chrm': [chrm_smorf],
+                    'var_pos': [new_var_pos],
+                    'ref': [r],
+                    'alt': [a],
+                    'start': [start_smorf],
+                    'end': [end_smorf],
+                    'strand': [strand_smorf], 
+                    'var_id': [var_id], 
+                    'smorf_id' : [smorfid]           
+                    })
 
-        smorf_index.append(1)
-        if len(smorf_index) % 5000 == 0: 
-            print(len(smorf_index), 'smorfs processed')
+                df = pd.DataFrame(new_var) ## creates a temporary dataframe
 
-    [parse_smorf(a[0], a[1], a[2], a[3], a[4]) for a in zip(smorfs_df['chrm'], smorfs_df['start'], smorfs_df['end'], smorfs_df['smorf_id'], smorfs_df['strand'])]
+                vars_id_index += 1
 
-    parse_variants_df = pd.DataFrame(columns=['chrm', 'var_pos', 'ref', 'alt', 'start', 'end', 'strand', 'var_id', 'smorf_id'])
-    parse_variants_df['chrm'] = df_chrm
-    parse_variants_df['var_pos'] = df_var_pos
-    parse_variants_df['ref'] = df_ref
-    parse_variants_df['alt'] = df_alt
-    parse_variants_df['start'] = df_start
-    parse_variants_df['end'] = df_end
-    parse_variants_df['strand'] = df_strand
-    parse_variants_df['var_id'] = df_varid
-    parse_variants_df['smorf_id'] = df_smorfid
+                if first == True: ## in the first write, write the header line
+                    df.to_csv(outputname, sep='\t', lineterminator='\n', index=False, header=True)
+                    first = False
+                else:
+                    # append data frame to CSV file
+                    df.to_csv(outputname, mode='a', sep='\t', lineterminator='\n', index=False, header=False)
 
-    parse_variants_df.to_csv(outputname, sep='\t', lineterminator='\n', index=False, header=True)
-    print('#smORFs without vars: ', len(smORFs_no_vars))
+        else: ## print smORF ID witout variants in it
+            #print(smorfid)
+            smORFs_no_vars += 1
+        
+        smorf_index += 1
+
+        if smorf_index % 10000 == 0: 
+            print(smorf_index, 'smorfs processed')
+
+    print('#smORFs without vars: ', smORFs_no_vars) 
     print('DONE!')
 
     end_time = (time.time() - start_time)/ 60.0
     print(end_time, ' minutes.')
 
     return None
+
 
 
 def main():
@@ -179,8 +204,16 @@ def main():
 
     args = parser.parse_args()
 
-    bedheader = 0 if args.bedheader else None
-    vcfheader = 0 if args.vcfheader else None
+    if args.bedheader:
+        bedheader = 0
+    else: 
+        bedheader = None
+    if args.vcfheader: 
+        vcfheader = 0
+    else: 
+        vcfheader = None
+
+
     ## generate the input file: var-smorf pairs
     bedvcf2intput(args.refpath, args.bedfile, args.vcffile, args.outputfile, bedheader, vcfheader)
 
