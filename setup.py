@@ -34,7 +34,7 @@ with open("requirements.txt", encoding='utf-8') as f:
         install_requires=requirements,
         include_package_data=True,
         zip_safe=False,
-        # Add the installation installation script her
+        # Add the installation installation script here
         scripts=['smorfep/download/compute_transcripts_gencode.py',  
                  'smorfep/download/preprocess_gff.py',
                  'smorfep/download/compute_introns_gencode_per_transc.py',

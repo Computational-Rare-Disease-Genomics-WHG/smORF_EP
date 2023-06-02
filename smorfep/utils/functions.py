@@ -125,11 +125,9 @@ def complement_seq(seq):
     """
         Function to complement the sequence
     """
-    complement = {'A': 'T', 'C': 'G', 'G': 'C', 'T': 'A'}
+    complement = {'A': 'T', 'C': 'G', 'G': 'C', 'T': 'A', 'N': 'N'}
 
-    new_seq = ''.join([complement[base] for base in seq])
-    
-    return new_seq
+    return ''.join([complement[base] for base in seq])
 
 
 
@@ -137,11 +135,9 @@ def reverse_complement_seq(seq):
     """
         Function that applies both, reverse and complement of a DNA sequence
     """
-    complement = {'A': 'T', 'C': 'G', 'G': 'C', 'T': 'A'}
+    complement = {'A': 'T', 'C': 'G', 'G': 'C', 'T': 'A', 'N': 'N'}
 
-    new_seq = ''.join([complement[base] for base in seq[::-1]])
-    
-    return new_seq
+    return ''.join([complement[base] for base in seq[::-1]])
 
 
 def get_sequence(start, end, strand, ref):

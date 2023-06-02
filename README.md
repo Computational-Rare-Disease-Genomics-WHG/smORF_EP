@@ -131,7 +131,7 @@ Add --vcfheader if the first line in the VCF file is the file header.
 
 Example for both input files with header: 
 ```
-smorfinput -b <BED file> --bedheader -v <VCF file> --vcfheader -o <outputname>
+smorfinput -r <path_to_ref_genome/>ref_genome/ -b <BED file> --bedheader -v <VCF file> --vcfheader -o <outputname>
 ```
 
 <br><hr>

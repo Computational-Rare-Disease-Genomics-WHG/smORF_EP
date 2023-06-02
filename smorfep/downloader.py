@@ -29,19 +29,19 @@ def download_ref_genome(ref_link):
 
     # # 2. Download reference from NCBI to the ref_genome/repository -- For GRC38.p13
     # ##url = 'https://ftp.ncbi.nlm.nih.gov/genomes/refseq/vertebrate_mammalian/Homo_sapiens/annotation_releases/109.20211119/GCF_000001405.39_GRCh38.p13/GCF_000001405.39_GRCh38.p13_genomic.fna.gz'
-    
+
     # ## get the filename from path (last bit): 
-    outputname = ref_link.split('/')[-1] 
+    outputname = ref_link.split('/')[-1]
     outputname_unconpress = outputname.replace('.gz', '')
     extension = '.' + outputname_unconpress.split('.')[-1]
 
-    urllib.request.urlretrieve(ref_link, 'ref_genome/' + outputname)
+    urllib.request.urlretrieve(ref_link, f'ref_genome/{outputname}')
 
     # # 3. Uncompress reference genome and delete compressed version
-    with gzip.open('ref_genome/' + outputname, 'rb') as f_in:
+    with gzip.open(f'ref_genome/{outputname}', 'rb') as f_in:
         with open('ref_genome/'+ outputname_unconpress, 'wb') as f_out:
             f_out.write(f_in.read())
-    os.remove('ref_genome/' + outputname)
+    os.remove(f'ref_genome/{outputname}')
 
     # 4. Split reference per chromosome
     os.system('ref_per_chr.py ref_genome/ ' + outputname_unconpress + ' _GRCh38.p13_genomic'+ extension)
