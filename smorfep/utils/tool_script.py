@@ -241,7 +241,7 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
                         return 'inframe_insertion', len_change, prot_cons, prot_change
 
 
-                    ## frameshit insertion
+                    ## frameshift insertion
                     else: 
                         new_seq = frameshift(new_sequence, extension_seq, map_transc2gen)
 

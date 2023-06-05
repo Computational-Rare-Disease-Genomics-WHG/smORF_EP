@@ -795,7 +795,6 @@ def find_stop_inframe(seq, map_coordinates):
     """
 
     seq_trios = get_trios(seq)
-
     stop_trios = []
     if 'TAG' in seq_trios:
         indices = [i for i, x in enumerate(seq_trios) if x == 'TAG']
@@ -807,10 +806,10 @@ def find_stop_inframe(seq, map_coordinates):
         indices = [i for i, x in enumerate(seq_trios) if x == 'TGA']
         stop_trios.extend(indices)
     
-    if stop_trios == []: ## no stop  in frame
+    if stop_trios == []: ## no stop in frame
         return None, None
     else: 
-        ## as we work in the sequence we want alway the first stop position -> first seq_index on the stops list 
+        ## as we work in the sequence we want always the first stop position -> first seq_index on the stops list 
         stop_trios.sort()
         new_stop_index = stop_trios[0]*3 ## gives the index of the first letter on the stop codon
 
@@ -833,10 +832,13 @@ def stop_transcript_search(seq, transcript_extension, map_coordinates):
         - transcript_extension: 
         - map_coordinates:
 
-        Returns the new sequence and the new stop coordinate
+        Returns the new sequence and the ßnew stop coordinate
     """
+    #debug: add one positions into map_coordinates to account the exact end of transcript
+    map_coordinates[max(map_coordinates, key=map_coordinates.get) + 1] = max(map_coordinates.values()) + 1
 
     ## 1- first search in the corrected sequence 
+    
     new_stop, new_stop_index = find_stop_inframe(seq, map_coordinates)
 
     if new_stop != None: 
@@ -844,14 +846,13 @@ def stop_transcript_search(seq, transcript_extension, map_coordinates):
 
     
     else: 
-        ## 2 - if not in the correected sequence, search until the end of the transcript
+        ## 2 - if not in the corrected sequence, search until the end of the transcript
         extended_sequence = seq + transcript_extension
         new_stop, new_stop_index = find_stop_inframe(extended_sequence, map_coordinates)  ## genomic coordinate of the new stop (including stop codon)
 
         if new_stop == None:
             ## stop not within the transcript range
             return None, None
-
 
         else: ## stop found within the transcript
             ## get sequence index of the new stop
@@ -1025,7 +1026,7 @@ def check_stop(seq, new_sequence, start, end, variant_pos, strand, transcript_in
         - strand
         - transcript_info: used to check the transcript end coordinate
         - ref_sequence need in case the stop is lost and there is an extension
-        - map_cordinates: mapping between transcript and genomic coordinates
+        - map_coordinates: mapping between transcript and genomic coordinates
 
         Returns: stop_lost or stop_retain if the variant affects the stop codon, or None otherwise.
 
@@ -1038,7 +1039,6 @@ def check_stop(seq, new_sequence, start, end, variant_pos, strand, transcript_in
             ## new_sequence is the sequence with the variant
             ## new end is not a stop codon
             seq2transcEnd = get_sequence(end+1, transcript_info.iloc[0].end, transcript_info.iloc[0].strand, ref_sequence)
-
             new_seq, new_stop = stop_transcript_search(new_sequence, seq2transcEnd, map_coordinates)
             
             if new_seq == None: 
