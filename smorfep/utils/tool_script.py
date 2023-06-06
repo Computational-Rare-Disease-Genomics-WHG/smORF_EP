@@ -90,6 +90,7 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
     introns_smorf = transcript_introns_df[(transcript_introns_df['start']>= start) & (transcript_introns_df['end']<=end)]
     ##sort introns
     introns_smorf = introns_smorf.sort_values(by=['start'])
+    ##print(introns_smorf[['start','end']])
 
     # Collects all the coordinates from the smORF start until the transcript end
     # Collect also the extension, from end of region until end of transcript
@@ -160,7 +161,7 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
         dna_c, dna_seq_c, prot_c, prot_seq_c = check_exon_intron_vars(variant_pos, ref, alt, strand, map_gen2transc, splice_regions_df)
         print(dna_c, dna_seq_c, prot_c, prot_seq_c)
 
-        if dna_c != None: 
+        if dna_c == None: 
 
             ## this works on the coordinates
             intron_status = search_introns(transcript_introns_df, variant_pos, strand, splice_site)
@@ -289,6 +290,8 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
             elif prot_cons == 'synonymous_variant':
                 return 'synonymous_variant', 0, prot_cons, change_prot
 
+        else:
+            return dna_c, dna_seq_c, prot_c, prot_seq_c
         ## ------- end of sequence with introns check  -------------
 
 
