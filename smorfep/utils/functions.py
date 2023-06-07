@@ -296,14 +296,14 @@ def genome2transcript_coords(start, end, strand, introns_df):
     """
 
     map_genome2transcript = {} ## dictionary genCoord --> transcCoord
-    map_tranccript2genome = {} ## dictionary transcCoord  --> genCoord
+    map_transcript2genome = {} ## dictionary transcCoord  --> genCoord
 
     if introns_df.empty: ## no introns case
         if strand == '+':
             pos_transc = 0
-            for each in range(start, end): 
+            for each in range(start, end+1):  ## +1 to include the last position in the seq
                 map_genome2transcript[each] = pos_transc  
-                map_tranccript2genome[pos_transc] = each
+                map_transcript2genome[pos_transc] = each
 
                 pos_transc += 1
 
@@ -311,7 +311,7 @@ def genome2transcript_coords(start, end, strand, introns_df):
             pos_transc = 0
             for i in range(end, start, -1):
                 map_genome2transcript[i] = pos_transc
-                map_tranccript2genome[pos_transc] = i
+                map_transcript2genome[pos_transc] = i
 
                 pos_transc += 1
 
@@ -327,7 +327,7 @@ def genome2transcript_coords(start, end, strand, introns_df):
                     for val in range(start, row['start']): ## the actual position is row['start']-1 which is the postion before the intron start
                         ## we set row['start'] as range is end exclusive, so it stops at row['start']-1
                         map_genome2transcript[val] = pos_transc
-                        map_tranccript2genome[pos_transc] = val
+                        map_transcript2genome[pos_transc] = val
                         
                         pos_transc += 1
 
@@ -336,7 +336,7 @@ def genome2transcript_coords(start, end, strand, introns_df):
                 else: 
                     for v in range(next_start, row['start']):  ## Checked
                         map_genome2transcript[v] = pos_transc
-                        map_tranccript2genome[pos_transc] = v
+                        map_transcript2genome[pos_transc] = v
 
                         pos_transc += 1
 
@@ -347,7 +347,7 @@ def genome2transcript_coords(start, end, strand, introns_df):
             ## last bit
             for val_end in range(next_start, end+1): ## +1 to include the end position 
                 map_genome2transcript[val_end] = pos_transc
-                map_tranccript2genome[pos_transc] = val_end
+                map_transcript2genome[pos_transc] = val_end
                 pos_transc += 1
 
         elif strand == '-':
@@ -360,7 +360,7 @@ def genome2transcript_coords(start, end, strand, introns_df):
 
                     for val in range(end, row['end'],-1): ## genomic coord would be row['end']+1 -- python index starts at 0
                         map_genome2transcript[val] = pos_transc
-                        map_tranccript2genome[pos_transc] = val
+                        map_transcript2genome[pos_transc] = val
                         
                         pos_transc += 1
                         
@@ -369,7 +369,7 @@ def genome2transcript_coords(start, end, strand, introns_df):
                 else: 
                     for v in range(next_start, row['end'], -1):  ## TODO: XXX to check 
                         map_genome2transcript[v] = pos_transc
-                        map_tranccript2genome[pos_transc] = v
+                        map_transcript2genome[pos_transc] = v
                         
                         pos_transc += 1
 
@@ -380,11 +380,14 @@ def genome2transcript_coords(start, end, strand, introns_df):
             ## last bit
             for val_end in range(next_start, start-1, -1): 
                 map_genome2transcript[val_end] = pos_transc
-                map_tranccript2genome[pos_transc] = val_end
+                map_transcript2genome[pos_transc] = val_end
                 pos_transc += 1
 
 
-    return map_genome2transcript, map_tranccript2genome
+    print(introns_df)
+    print(map_transcript2genome)
+
+    return map_genome2transcript, map_transcript2genome
     
 
 
@@ -1041,53 +1044,81 @@ def check_stop(seq, new_sequence, start, end, variant_pos, strand, transcript_in
         if variant_pos <= end and variant_pos >= end -2: 
             ## new_sequence is the sequence with the variant
             ## new end is not a stop codon
-            seq2transcEnd = get_sequence(end+1, transcript_info.iloc[0].end, transcript_info.iloc[0].strand, ref_sequence)
 
-            new_seq, new_stop = stop_transcript_search(new_sequence, seq2transcEnd, map_coordinates)
-            
-            if new_seq == None: 
-                len_change = 'off_transcript_stop'
-                prot_cons = '-'
-                change_prot = '-'
+            if end == transcript_info.iloc[0].end: ## smorf stops in the last position of the transcript
+                if len(seq) == len(new_sequence):
+                    len_change = seq[len(seq)-3:] + '->' + new_sequence[len(new_sequence)-3:]
 
-            else: 
-                len_change = len(new_seq) - len(seq)
-
-                if len_change == 0: 
-                    len_change = seq[len(seq)-3:] + '->' + new_seq[len(new_seq)-3:]
-                    return 'stop_retained_variant', len_change, '-', '-'
+                    if new_sequence[len(new_sequence)-3:] in stop_codons:
+                        return 'stop_retained_variant', len_change, '-', '-'
                 else:
-                    prot_cons, change_prot = protein_consequence(seq, new_seq, variant_pos, start, end, strand)
-            
-            return 'stop_lost', len_change, prot_cons, change_prot
+                    return None, 'off_transcript_stop', '-', '-'
+
+            else:
+                seq2transcEnd = get_sequence(end+1, transcript_info.iloc[0].end, transcript_info.iloc[0].strand, ref_sequence)
+
+                print(map_coordinates)
+
+                print(transcript_info.iloc[0].end)
+
+                print(seq == seq2transcEnd)
+                print(seq)
+                print(seq2transcEnd)
+
+                new_seq, new_stop = stop_transcript_search(new_sequence, seq2transcEnd, map_coordinates)
+
+                if new_seq == None: 
+                    len_change = 'off_transcript_stop'
+                    prot_cons = '-'
+                    change_prot = '-'
+
+                else: 
+                    len_change = len(new_seq) - len(seq)
+
+                    if len_change == 0: 
+                        len_change = seq[len(seq)-3:] + '->' + new_seq[len(new_seq)-3:]
+                        return 'stop_retained_variant', len_change, '-', '-'
+                    else:
+                        prot_cons, change_prot = protein_consequence(seq, new_seq, variant_pos, start, end, strand)
+                
+                return 'stop_lost', len_change, prot_cons, change_prot
 
         return None, '-', '-', '-'
         
- ## TODO: iloc[0]. Add this to each command in this script that used transcript_info df !!!!! XXX
     if strand == '-':
 
         if variant_pos >= start and variant_pos <= start +2: 
-            seq2transcEnd = get_sequence(transcript_info.iloc[0].start, start, transcript_info.iloc[0].strand, ref_sequence)
 
-            new_seq, new_stop = stop_transcript_search(new_sequence, seq2transcEnd, map_coordinates)
-            
-            if new_seq == None: 
-                len_change = 'off_transcript_stop'
-                prot_cons = '-'
-                change_prot = '-'
-
-            else: 
-                len_change = len(new_seq) - len(seq)
-
-                if len_change == 0: 
-                    len_change = seq[len(seq)-3:] + '->' + new_seq[len(new_seq)-3:]
-
-                    return 'stop_retained_variant', len_change, '-', '-'
-
+            if start == transcript_info.iloc[0].start: ## smorf stops in the last position of the transcript
+                if len(seq) == len(new_sequence):
+                    len_change = seq[len(seq)-3:] + '->' + new_sequence[len(new_sequence)-3:]
+                    if new_sequence[len(new_sequence)-3:] in stop_codons:
+                        return 'stop_retained_variant', len_change, '-', '-'
                 else:
-                    prot_cons, change_prot = protein_consequence(seq, new_seq, variant_pos, start, end, strand)
+                    return None, 'off_transcript_stop', '-', '-'
+
+            else:
+                seq2transcEnd = get_sequence(transcript_info.iloc[0].start, start, transcript_info.iloc[0].strand, ref_sequence)
+
+                new_seq, new_stop = stop_transcript_search(new_sequence, seq2transcEnd, map_coordinates)
+                
+                if new_seq == None: 
+                    len_change = 'off_transcript_stop'
+                    prot_cons = '-'
+                    change_prot = '-'
+
+                else: 
+                    len_change = len(new_seq) - len(seq)
+
+                    if len_change == 0: 
+                        len_change = seq[len(seq)-3:] + '->' + new_seq[len(new_seq)-3:]
+
+                        return 'stop_retained_variant', len_change, '-', '-'
+
+                    else:
+                        prot_cons, change_prot = protein_consequence(seq, new_seq, variant_pos, start, end, strand)
             
-                return 'stop_lost', len_change, prot_cons, change_prot
+                    return 'stop_lost', len_change, prot_cons, change_prot
 
         return None, '-', '-', '-'
 
