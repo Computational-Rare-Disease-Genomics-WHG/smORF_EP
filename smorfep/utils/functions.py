@@ -1026,7 +1026,7 @@ def check_stop(seq, new_sequence, start, end, variant_pos, strand, transcript_in
         - strand
         - transcript_info: used to check the transcript end coordinate
         - ref_sequence need in case the stop is lost and there is an extension
-        - map_coordinates: mapping between transcript and genomic coordinates
+        - map_cordinates: mapping between transcript and genomic coordinates
 
         Returns: stop_lost or stop_retain if the variant affects the stop codon, or None otherwise.
 
@@ -1038,55 +1038,75 @@ def check_stop(seq, new_sequence, start, end, variant_pos, strand, transcript_in
         if variant_pos <= end and variant_pos >= end -2: 
             ## new_sequence is the sequence with the variant
             ## new end is not a stop codon
-            seq2transcEnd = get_sequence(end+1, transcript_info.iloc[0].end, transcript_info.iloc[0].strand, ref_sequence)
-            new_seq, new_stop = stop_transcript_search(new_sequence, seq2transcEnd, map_coordinates)
-            
-            if new_seq == None: 
-                len_change = 'off_transcript_stop'
-                prot_cons = '-'
-                change_prot = '-'
 
-            else: 
-                len_change = len(new_seq) - len(seq)
+            if end == transcript_info.iloc[0].end: ## smorf stops in the last position of the transcript
+                if len(seq) == len(new_sequence):
+                    len_change = seq[len(seq)-3:] + '->' + new_sequence[len(new_sequence)-3:]
 
-                if len_change == 0: 
-                    len_change = seq[len(seq)-3:] + '->' + new_seq[len(new_seq)-3:]
-                    return 'stop_retained_variant', len_change, '-', '-'
+                    if new_sequence[len(new_sequence)-3:] in stop_codons:
+                        return 'stop_retained_variant', len_change, '-', '-'
                 else:
-                    prot_cons, change_prot = protein_consequence(seq, new_seq, variant_pos, start, end, strand)
-            
-            return 'stop_lost', len_change, prot_cons, change_prot
+                    return None, 'off_transcript_stop', '-', '-'
 
-        return None, '-', '-', '-'
-        
- ## TODO: iloc[0]. Add this to each command in this script that used transcript_info df !!!!! XXX
-    if strand == '-':
+            else:
+                seq2transcEnd = get_sequence(end+1, transcript_info.iloc[0].end, transcript_info.iloc[0].strand, ref_sequence)
 
-        if variant_pos >= start and variant_pos <= start +2: 
-            seq2transcEnd = get_sequence(transcript_info.iloc[0].start, start, transcript_info.iloc[0].strand, ref_sequence)
+                new_seq, new_stop = stop_transcript_search(new_sequence, seq2transcEnd, map_coordinates)
 
-            new_seq, new_stop = stop_transcript_search(new_sequence, seq2transcEnd, map_coordinates)
-            
-            if new_seq == None: 
-                len_change = 'off_transcript_stop'
-                prot_cons = '-'
-                change_prot = '-'
+                if new_seq == None: 
+                    len_change = 'off_transcript_stop'
+                    prot_cons = '-'
+                    change_prot = '-'
 
-            else: 
-                len_change = len(new_seq) - len(seq)
+                else: 
+                    len_change = len(new_seq) - len(seq)
 
-                if len_change == 0: 
-                    len_change = seq[len(seq)-3:] + '->' + new_seq[len(new_seq)-3:]
-
-                    return 'stop_retained_variant', len_change, '-', '-'
-
-                else:
-                    prot_cons, change_prot = protein_consequence(seq, new_seq, variant_pos, start, end, strand)
-            
+                    if len_change == 0: 
+                        len_change = seq[len(seq)-3:] + '->' + new_seq[len(new_seq)-3:]
+                        return 'stop_retained_variant', len_change, '-', '-'
+                    else:
+                        prot_cons, change_prot = protein_consequence(seq, new_seq, variant_pos, start, end, strand)
+                
                 return 'stop_lost', len_change, prot_cons, change_prot
 
         return None, '-', '-', '-'
+        
+    if strand == '-':
 
+        if variant_pos >= start and variant_pos <= start +2: 
+
+            if start == transcript_info.iloc[0].start: ## smorf stops in the last position of the transcript
+                if len(seq) == len(new_sequence):
+                    len_change = seq[len(seq)-3:] + '->' + new_sequence[len(new_sequence)-3:]
+                    if new_sequence[len(new_sequence)-3:] in stop_codons:
+                        return 'stop_retained_variant', len_change, '-', '-'
+                else:
+                    return None, 'off_transcript_stop', '-', '-'
+
+            else:
+                seq2transcEnd = get_sequence(transcript_info.iloc[0].start, start, transcript_info.iloc[0].strand, ref_sequence)
+
+                new_seq, new_stop = stop_transcript_search(new_sequence, seq2transcEnd, map_coordinates)
+                
+                if new_seq == None: 
+                    len_change = 'off_transcript_stop'
+                    prot_cons = '-'
+                    change_prot = '-'
+
+                else: 
+                    len_change = len(new_seq) - len(seq)
+
+                    if len_change == 0: 
+                        len_change = seq[len(seq)-3:] + '->' + new_seq[len(new_seq)-3:]
+
+                        return 'stop_retained_variant', len_change, '-', '-'
+
+                    else:
+                        prot_cons, change_prot = protein_consequence(seq, new_seq, variant_pos, start, end, strand)
+            
+                    return 'stop_lost', len_change, prot_cons, change_prot
+
+        return None, '-', '-', '-'
 
 
 def check_stop_transcript(seq, new_sequence, start, end, variant_pos, strand, map_coordinates_g, map_coordinates_t, extension_seq):
