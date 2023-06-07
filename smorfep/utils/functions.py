@@ -1056,15 +1056,7 @@ def check_stop(seq, new_sequence, start, end, variant_pos, strand, transcript_in
 
             else:
                 seq2transcEnd = get_sequence(end+1, transcript_info.iloc[0].end, transcript_info.iloc[0].strand, ref_sequence)
-
-                print(map_coordinates)
-
-                print(transcript_info.iloc[0].end)
-
-                print(seq == seq2transcEnd)
-                print(seq)
-                print(seq2transcEnd)
-
+                
                 new_seq, new_stop = stop_transcript_search(new_sequence, seq2transcEnd, map_coordinates)
 
                 if new_seq == None: 
