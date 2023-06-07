@@ -1047,6 +1047,8 @@ def check_stop(seq, new_sequence, start, end, variant_pos, strand, transcript_in
 
             if end == transcript_info.iloc[0].end: ## smorf stops in the last position of the transcript
                 if len(seq) == len(new_sequence):
+                    len_change = seq[len(seq)-3:] + '->' + new_sequence[len(new_sequence)-3:]
+
                     if new_sequence[len(new_sequence)-3:] in stop_codons:
                         return 'stop_retained_variant', len_change, '-', '-'
                 else:
@@ -1089,6 +1091,7 @@ def check_stop(seq, new_sequence, start, end, variant_pos, strand, transcript_in
 
             if start == transcript_info.iloc[0].start: ## smorf stops in the last position of the transcript
                 if len(seq) == len(new_sequence):
+                    len_change = seq[len(seq)-3:] + '->' + new_sequence[len(new_sequence)-3:]
                     if new_sequence[len(new_sequence)-3:] in stop_codons:
                         return 'stop_retained_variant', len_change, '-', '-'
                 else:
@@ -1104,18 +1107,18 @@ def check_stop(seq, new_sequence, start, end, variant_pos, strand, transcript_in
                     prot_cons = '-'
                     change_prot = '-'
 
-            else: 
-                len_change = len(new_seq) - len(seq)
+                else: 
+                    len_change = len(new_seq) - len(seq)
 
-                if len_change == 0: 
-                    len_change = seq[len(seq)-3:] + '->' + new_seq[len(new_seq)-3:]
+                    if len_change == 0: 
+                        len_change = seq[len(seq)-3:] + '->' + new_seq[len(new_seq)-3:]
 
-                    return 'stop_retained_variant', len_change, '-', '-'
+                        return 'stop_retained_variant', len_change, '-', '-'
 
-                else:
-                    prot_cons, change_prot = protein_consequence(seq, new_seq, variant_pos, start, end, strand)
+                    else:
+                        prot_cons, change_prot = protein_consequence(seq, new_seq, variant_pos, start, end, strand)
             
-                return 'stop_lost', len_change, prot_cons, change_prot  
+                    return 'stop_lost', len_change, prot_cons, change_prot
 
         return None, '-', '-', '-'
 
