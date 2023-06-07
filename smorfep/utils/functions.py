@@ -388,10 +388,6 @@ def genome2transcript_coords(start, end, strand, introns_df):
 
 
     print(introns_df)
-    print(introns_df.start)
-    print(introns_df.end)
-    print(introns_df.transcript_id)
-    print(start, end)
     print(map_transcript2genome)
 
     return map_genome2transcript, map_transcript2genome
