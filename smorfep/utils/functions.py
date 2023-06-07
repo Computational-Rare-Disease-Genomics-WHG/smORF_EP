@@ -307,10 +307,9 @@ def genome2transcript_coords(start, end, strand, introns_df):
 
                 pos_transc += 1
 
-        elif strand == '-':
-            print('- strand, no introns')
+        elif strand == '-': ## Checked -- OK
             pos_transc = 0
-            for i in range(end, start, -1):
+            for i in range(end, start-1, -1):
                 map_genome2transcript[i] = pos_transc
                 map_transcript2genome[pos_transc] = i
 
@@ -388,6 +387,13 @@ def genome2transcript_coords(start, end, strand, introns_df):
 
 
     print(introns_df)
+<<<<<<< HEAD
+=======
+    print(introns_df.start)
+    print(introns_df.end)
+    print(introns_df.transcript_id)
+    print(start, end)
+>>>>>>> eivars
     print(map_transcript2genome)
 
     return map_genome2transcript, map_transcript2genome
@@ -1208,12 +1214,21 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
     for index, row in transcript_info.iterrows(): ## transcript coordinates, each line assumed to be a different transcript
 
         t_id = row.transcript_id
+        t_start = row.start
+        t_end = row.end
+        t_strand = row.strand 
         ##print(t_id)
 
         ## introns for the transcript
-        introns_transcript = introns_df.loc[introns_df['transcript_id']== t_id]
+        introns_transcript = introns_df[introns_df['transcript_id'] == t_id]
         ## from this point on we use introns_transcript to filter to work on the transcript introns only
         ##print(introns_transcript)
+
+        if strand == '+':
+            introns_transcript = introns_transcript[(introns_transcript['start']>= smorf_start) & (introns_transcript['end']<= t_end)]
+
+        elif strand == '-':
+            introns_transcript = introns_transcript[(introns_transcript['start']>= t_start) & (introns_transcript['end']<= smorf_end)]
 
         ## smorf without introns
         if introns_transcript.empty:
@@ -1222,9 +1237,9 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
 
             ## compute coordinates map 
             if strand == '+':
-                map_gen2transc, map_transc2gen = genome2transcript_coords(smorf_start, row.end, strand, introns_transcript)
+                map_gen2transc, map_transc2gen = genome2transcript_coords(smorf_start, t_end, strand, introns_transcript)
             elif strand == '-':
-                map_gen2transc, map_transc2gen = genome2transcript_coords(row.start, smorf_end, strand, introns_transcript)
+                map_gen2transc, map_transc2gen = genome2transcript_coords(t_start, smorf_end, strand, introns_transcript)
 
 
             ## Checks the number of stop codons in the sequence
@@ -1239,9 +1254,9 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
 
             ## compute coordinates map 
             if strand == '+':
-                map_gen2transc, map_transc2gen = genome2transcript_coords(smorf_start, row.end, strand, introns_transcript)
+                map_gen2transc, map_transc2gen = genome2transcript_coords(smorf_start, t_end, strand, introns_transcript)
             elif strand == '-':
-                map_gen2transc, map_transc2gen = genome2transcript_coords(row.start, smorf_end, strand, introns_transcript)
+                map_gen2transc, map_transc2gen = genome2transcript_coords(t_start, smorf_end, strand, introns_transcript)
 
 
             ## Checks the number of stop codons in the sequence
