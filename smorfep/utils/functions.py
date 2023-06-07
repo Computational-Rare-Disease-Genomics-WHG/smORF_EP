@@ -317,7 +317,7 @@ def genome2transcript_coords(start, end, strand, introns_df):
 
     else: ## introns
 
-        if strand == '+':
+        if strand == '+': ## checked - OK
             introns_df = introns_df.sort_values(by=['start']) ## introns in crescent order
 
             intron_num = 1
@@ -386,15 +386,12 @@ def genome2transcript_coords(start, end, strand, introns_df):
                 pos_transc += 1
 
 
-    print(introns_df)
-<<<<<<< HEAD
-=======
-    print(introns_df.start)
-    print(introns_df.end)
-    print(introns_df.transcript_id)
-    print(start, end)
->>>>>>> eivars
-    print(map_transcript2genome)
+    # print(introns_df)
+    # print(introns_df.start)
+    # print(introns_df.end)
+    # print(introns_df.transcript_id)
+    # print(start, end)
+    # print(map_transcript2genome)
 
     return map_genome2transcript, map_transcript2genome
     
