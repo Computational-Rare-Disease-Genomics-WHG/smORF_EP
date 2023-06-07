@@ -128,7 +128,7 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
             ##print(introns_smorf)
             
             ## compute compatible smorf-transcripts
-            matching_t, unmatching_t, map_gen2transc, map_transc2gen = compatibility_smorf_transcript(reference_genome[each_chrom], transcripts_smorf, introns_smorf, smorf_id, smorf_start, smorf_end, smorf_strand)
+            matching_t, unmatching_t, transcripts_mapping_dictionary = compatibility_smorf_transcript(reference_genome[each_chrom], transcripts_smorf, introns_smorf, smorf_id, smorf_start, smorf_end, smorf_strand)
             ##print(smorf_id)
             ##print(matching_t)
             ##print(unmatching_t)
@@ -170,6 +170,11 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
                         introns_transcript = introns_chr.loc[introns_chr['transcript_id'] == each_t]
                         #$print(introns_transcript.head)
 
+                        ##gen2transc mapping for this transcript
+                        map_gen2transc = transcripts_mapping_dictionary[each_t][0]
+
+                        ##transc2gen mapping for this transcript
+                        map_transc2gen = transcripts_mapping_dictionary[each_t][1]
 
                         ## row_t is the info about the transctipt
                         consequence, change, prot_cons, prot_change = tool(

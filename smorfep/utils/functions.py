@@ -298,8 +298,8 @@ def genome2transcript_coords(start, end, strand, introns_df):
     map_genome2transcript = {} ## dictionary genCoord --> transcCoord
     map_transcript2genome = {} ## dictionary transcCoord  --> genCoord
 
-    if introns_df.empty: ## no introns case
-        if strand == '+':
+    if introns_df.empty: ## no introns from smORF start until transcript end
+        if strand == '+': ## Checked - OK
             pos_transc = 0
             for each in range(start, end+1):  ## +1 to include the last position in the seq
                 map_genome2transcript[each] = pos_transc  
@@ -308,6 +308,7 @@ def genome2transcript_coords(start, end, strand, introns_df):
                 pos_transc += 1
 
         elif strand == '-':
+            print('- strand, no introns')
             pos_transc = 0
             for i in range(end, start, -1):
                 map_genome2transcript[i] = pos_transc
@@ -351,6 +352,7 @@ def genome2transcript_coords(start, end, strand, introns_df):
                 pos_transc += 1
 
         elif strand == '-':
+            print('- strand, with introns')
             introns_df = introns_df.sort_values(by=['start'], ascending=False) ## introns in crestcent order
 
             intron_num = 1
@@ -359,6 +361,7 @@ def genome2transcript_coords(start, end, strand, introns_df):
                 if intron_num == 1: ## first intron
 
                     for val in range(end, row['end'],-1): ## genomic coord would be row['end']+1 -- python index starts at 0
+                        print(val)
                         map_genome2transcript[val] = pos_transc
                         map_transcript2genome[pos_transc] = val
                         
@@ -1057,14 +1060,6 @@ def check_stop(seq, new_sequence, start, end, variant_pos, strand, transcript_in
             else:
                 seq2transcEnd = get_sequence(end+1, transcript_info.iloc[0].end, transcript_info.iloc[0].strand, ref_sequence)
 
-                print(map_coordinates)
-
-                print(transcript_info.iloc[0].end)
-
-                print(seq == seq2transcEnd)
-                print(seq)
-                print(seq2transcEnd)
-
                 new_seq, new_stop = stop_transcript_search(new_sequence, seq2transcEnd, map_coordinates)
 
                 if new_seq == None: 
@@ -1206,6 +1201,8 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
     matching_transcripts = []
     unmatching_trancripts = pd.DataFrame(columns=['smorf_id','transcript_id', 'type', 'length'])
 
+    transcripts_mapping_dictionary = {} ## per transcript ID stores map_gen2transc, map_transc2gen
+
     stop_codons = ['TAG', 'TAA', 'TGA']
 
     for index, row in transcript_info.iterrows(): ## transcript coordinates, each line assumed to be a different transcript
@@ -1338,9 +1335,10 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
         
         ## transcript matches 
         matching_transcripts.append(t_id)
+        transcripts_mapping_dictionary[t_id] = [map_gen2transc, map_transc2gen]
 
 
-    return matching_transcripts, unmatching_trancripts, map_gen2transc, map_transc2gen
+    return matching_transcripts, unmatching_trancripts, transcripts_mapping_dictionary
 
 
 
