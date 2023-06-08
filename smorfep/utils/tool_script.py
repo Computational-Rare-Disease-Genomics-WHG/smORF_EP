@@ -37,7 +37,6 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
     t_start = transcript_info.iloc[0].start
     t_end = transcript_info.iloc[0].end
     t_strand = transcript_info.iloc[0].strand 
-    print(transcript_info)
 
 
     ## 1 - Get sequence from Ref genome
@@ -86,9 +85,6 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
         ## transcript start until smORF end
         transcript_introns_df =  transcript_introns_df[(transcript_introns_df['start']>= t_start) & (transcript_introns_df['end']<= end)]
         transcript_introns_df_extension = transcript_introns_df[(transcript_introns_df['start']>= t_start) & (transcript_introns_df['end']<=start-1)]
-
-    print('transcripts introns empty?', transcript_introns_df.empty)
-    print('transcripts introns extension empty?', transcript_introns_df_extension.empty)
         
 
     ## introns of the smorf region
