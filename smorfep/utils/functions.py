@@ -351,7 +351,6 @@ def genome2transcript_coords(start, end, strand, introns_df):
                 pos_transc += 1
 
         elif strand == '-':
-            print('- strand, with introns')
             introns_df = introns_df.sort_values(by=['start'], ascending=False) ## introns in crestcent order
 
             intron_num = 1
@@ -360,7 +359,6 @@ def genome2transcript_coords(start, end, strand, introns_df):
                 if intron_num == 1: ## first intron
 
                     for val in range(end, row['end'],-1): ## genomic coord would be row['end']+1 -- python index starts at 0
-                        print(val)
                         map_genome2transcript[val] = pos_transc
                         map_transcript2genome[pos_transc] = val
                         
@@ -369,7 +367,7 @@ def genome2transcript_coords(start, end, strand, introns_df):
                     next_start = row['start'] -1
 
                 else: 
-                    for v in range(next_start, row['end'], -1):  ## TODO: XXX to check 
+                    for v in range(next_start, row['end'], -1): ## Checked - OK
                         map_genome2transcript[v] = pos_transc
                         map_transcript2genome[pos_transc] = v
                         
@@ -1571,7 +1569,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
 
     ## 1- var starts in the exon
     if var_pos_check == True: 
-        print('var_starts within the intron')
+        ##print('var_starts within the intron')
 
         if strand == '+':
             ## if deletion -- Check ref allele len
