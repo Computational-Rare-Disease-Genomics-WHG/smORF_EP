@@ -140,9 +140,9 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
         else: 
             ## seq is updated with introns removal above -- function remove_introns
             if strand == '+':
-                s, s_index = find_stop_inframe(seq[:len(seq)-3], map_transc2gen) ## removes last codon and searches for stop codons inframe
+                s, s_index = find_stop_inframe(seq[:len(seq)-3], strand, map_transc2gen) ## removes last codon and searches for stop codons inframe
             elif strand == '-':
-                s, s_index = find_stop_inframe(seq[:len(seq)-3], map_transc2gen)
+                s, s_index = find_stop_inframe(seq[:len(seq)-3], strand, map_transc2gen)
 
             if s != None: ## Multiple stop codons in the sequence 
                 return 'wrong_sequence', 'More_than_one_stop', '-', '-'
@@ -243,7 +243,7 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
 
                     ## frameshift insertion
                     else: 
-                        new_seq = frameshift(new_sequence, extension_seq, map_transc2gen)
+                        new_seq = frameshift(new_sequence, strand, extension_seq, map_transc2gen)
 
                         if new_seq != None: ## stop found within the transcript
                             len_change = len(new_seq) - len(seq)
@@ -270,7 +270,7 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
 
                     ## frameshift deletion
                     else: 
-                        new_seq = frameshift(new_sequence, extension_seq, map_transc2gen)
+                        new_seq = frameshift(new_sequence, strand, extension_seq, map_transc2gen)
 
                         if new_seq != None: ## stop found within the transcript
                             len_change = len(new_seq) - len(seq)
@@ -310,9 +310,9 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
         ## 3.2 - check multiple stop codons
         else:     ## checks if the sequence is correct and there is not more than one stop codon
             if strand == '+':
-                s, s_index = find_stop_inframe(seq[:len(seq)-3], map_transc2gen) ## removes last codon and searches for stop codons inframe
+                s, s_index = find_stop_inframe(seq[:len(seq)-3], strand, map_transc2gen) ## removes last codon and searches for stop codons inframe
             elif strand == '-':
-                s, s_index = find_stop_inframe(seq[:len(seq)-3], map_transc2gen)
+                s, s_index = find_stop_inframe(seq[:len(seq)-3], strand, map_transc2gen)
 
             if s != None: ## Multiple stop codons in the sequence 
                 return 'wrong_sequence', 'More_than_one_stop', '-', '-'
@@ -405,7 +405,7 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
 
             ## 3.6.2 frameshift insertion
             else:
-                new_seq = frameshift(new_sequence, extension_seq, map_transc2gen)
+                new_seq = frameshift(new_sequence, strand, extension_seq, map_transc2gen)
 
                 if new_seq != None: 
                     len_change = len(new_seq) - len(seq)
@@ -432,7 +432,7 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
 
             ## 3.7.2 frameshift deletion -- WORKING 2023-01-24
             else:
-                new_seq = frameshift(new_sequence, extension_seq, map_transc2gen)
+                new_seq = frameshift(new_sequence, strand, extension_seq, map_transc2gen)
 
                 if new_seq != None: ## stop found within the transcript
                     len_change = len(new_seq) - len(seq)

@@ -735,7 +735,7 @@ def protein_consequence_transcript(seq, new_seq, var_pos, map_coordinates):
 
 
 
-def frameshift(seq, transcript_extension, map_coordinates): 
+def frameshift(seq,strand, transcript_extension, map_coordinates): 
     """
         Function that extends the sequence and searches for the new stop codon. 
         Used to access the consequence on the protein when a frameshift mutation happens.
@@ -767,7 +767,7 @@ def frameshift(seq, transcript_extension, map_coordinates):
         corrected_seq = seq + transcript_extension[:1]
         transcript_extension = transcript_extension[1:]
 
-    new_seq, new_stop = stop_transcript_search(corrected_seq, transcript_extension, map_coordinates)
+    new_seq, new_stop = stop_transcript_search(corrected_seq, strand, transcript_extension, map_coordinates)
 
     if new_stop == None: ## stop not found
         return None
@@ -777,7 +777,7 @@ def frameshift(seq, transcript_extension, map_coordinates):
 
 
 
-def find_stop_inframe(seq, map_coordinates):
+def find_stop_inframe(seq, strand, map_coordinates):
     """
         Function to find inframe stop codons.
         Used to find regions of interest with a start and end codon.
@@ -812,12 +812,19 @@ def find_stop_inframe(seq, map_coordinates):
         ## as we work in the sequence we want always the first stop position -> first seq_index on the stops list 
         stop_trios.sort()
         new_stop_index = stop_trios[0]*3 ## gives the index of the first letter on the stop codon
+        # if new stop is last nucleotide of transcript
+        if new_stop_index + 3 > max(map_coordinates):
+            if strand == '+':
+                return map_coordinates[new_stop_index] + 3, new_stop_index+3
+            elif strand == '-':
+                return map_coordinates[new_stop_index] - 3, new_stop_index+3
+        else:
+            return map_coordinates[new_stop_index+3], new_stop_index+3
 
-        return map_coordinates[new_stop_index+3], new_stop_index+3
     
     
 
-def stop_transcript_search(seq, transcript_extension, map_coordinates):
+def stop_transcript_search(seq, strand, transcript_extension, map_coordinates):
     """
         Function to search a new stop when a stop lost variant occurs. 
 
@@ -835,11 +842,11 @@ def stop_transcript_search(seq, transcript_extension, map_coordinates):
         Returns the new sequence and the ßnew stop coordinate
     """
     #debug: add one positions into map_coordinates to account the exact end of transcript
-    map_coordinates[max(map_coordinates, key=map_coordinates.get) + 1] = max(map_coordinates.values()) + 1
+    #map_coordinates[max(map_coordinates, key=map_coordinates.get) + 1] = max(map_coordinates.values()) + 1
 
     ## 1- first search in the corrected sequence 
     
-    new_stop, new_stop_index = find_stop_inframe(seq, map_coordinates)
+    new_stop, new_stop_index = find_stop_inframe(seq, strand, map_coordinates)
 
     if new_stop != None: 
         new_seq = seq[:new_stop_index]
@@ -848,7 +855,7 @@ def stop_transcript_search(seq, transcript_extension, map_coordinates):
     else: 
         ## 2 - if not in the corrected sequence, search until the end of the transcript
         extended_sequence = seq + transcript_extension
-        new_stop, new_stop_index = find_stop_inframe(extended_sequence, map_coordinates)  ## genomic coordinate of the new stop (including stop codon)
+        new_stop, new_stop_index = find_stop_inframe(extended_sequence, strand, map_coordinates)  ## genomic coordinate of the new stop (including stop codon)
 
         if new_stop == None:
             ## stop not within the transcript range
@@ -1051,7 +1058,7 @@ def check_stop(seq, new_sequence, start, end, variant_pos, strand, transcript_in
             else:
                 seq2transcEnd = get_sequence(end+1, transcript_info.iloc[0].end, transcript_info.iloc[0].strand, ref_sequence)
 
-                new_seq, new_stop = stop_transcript_search(new_sequence, seq2transcEnd, map_coordinates)
+                new_seq, new_stop = stop_transcript_search(new_sequence, strand, seq2transcEnd, map_coordinates)
 
                 if new_seq == None: 
                     len_change = 'off_transcript_stop'
@@ -1086,7 +1093,7 @@ def check_stop(seq, new_sequence, start, end, variant_pos, strand, transcript_in
             else:
                 seq2transcEnd = get_sequence(transcript_info.iloc[0].start, start, transcript_info.iloc[0].strand, ref_sequence)
 
-                new_seq, new_stop = stop_transcript_search(new_sequence, seq2transcEnd, map_coordinates)
+                new_seq, new_stop = stop_transcript_search(new_sequence, strand, seq2transcEnd, map_coordinates)
                 
                 if new_seq == None: 
                     len_change = 'off_transcript_stop'
@@ -1158,7 +1165,7 @@ def check_stop_transcript(seq, new_sequence, start, end, variant_pos, strand, ma
             else:
         ## new_sequence is the sequence with the variant
         ## new end is not a stop codon
-                new_seq, new_stop = stop_transcript_search(new_sequence, extension_seq, map_coordinates_t)
+                new_seq, new_stop = stop_transcript_search(new_sequence, strand, extension_seq, map_coordinates_t)
 
                 if new_seq == None: 
                     len_change = 'off_transcript_stop'
@@ -1228,9 +1235,9 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
 
             ## Checks the number of stop codons in the sequence
             if strand == '+':
-                s, s_index = find_stop_inframe(smorf_seq[:len(smorf_seq)-3], map_transc2gen) ## removes last codon and searches for stop codons inframe
+                s, s_index = find_stop_inframe(smorf_seq[:len(smorf_seq)-3], strand, map_transc2gen) ## removes last codon and searches for stop codons inframe
             elif strand == '-':
-                s, s_index = find_stop_inframe(smorf_seq[:len(smorf_seq)-3], map_transc2gen)
+                s, s_index = find_stop_inframe(smorf_seq[:len(smorf_seq)-3], strand, map_transc2gen)
 
         ## smorf with introns
         elif not introns_transcript.empty:
@@ -1245,9 +1252,9 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
 
             ## Checks the number of stop codons in the sequence
             if strand == '+':
-                s, s_index = find_stop_inframe(smorf_seq[:len(smorf_seq)-3], map_transc2gen) ## removes last codon and searches for stop codons inframe
+                s, s_index = find_stop_inframe(smorf_seq[:len(smorf_seq)-3], strand, map_transc2gen) ## removes last codon and searches for stop codons inframe
             elif strand == '-':
-                s, s_index = find_stop_inframe(smorf_seq[:len(smorf_seq)-3], map_transc2gen)
+                s, s_index = find_stop_inframe(smorf_seq[:len(smorf_seq)-3], strand, map_transc2gen)
 
             ## 1- check introns
             if strand == '+':
