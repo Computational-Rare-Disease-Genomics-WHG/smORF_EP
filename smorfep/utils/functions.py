@@ -1136,36 +1136,47 @@ def check_stop_transcript(seq, new_sequence, start, end, variant_pos, strand, ma
         stop_positions = [map_coordinates_t[last_position-2], map_coordinates_t[last_position-1], map_coordinates_t[last_position]]
         ## below does not work if there are introns in the stop codon
         stop_positions = [end-2, end-1, end]
+        smend = end
     elif strand == '-':
         last_position = map_coordinates_g[start]
 
         stop_positions = [map_coordinates_t[last_position-2], map_coordinates_t[last_position-1], map_coordinates_t[last_position]]
         ## below does not work if there are introns in the stop codon
         stop_positions = [start+2, start+1, start]
+        smend = start
 
     ## mapping is addapted: transcript starts from start if forward strand, and end for the reverse strand
     if variant_pos in stop_positions: 
+            if smend == map_coordinates_t[last_position]: ## smorf stops in the last position of the transcript
+                if len(seq) == len(new_sequence):
+                    len_change = seq[len(seq)-3:] + '->' + new_sequence[len(new_sequence)-3:]
+
+                    if new_sequence[len(new_sequence)-3:] in stop_codons:
+                        return 'stop_retained_variant', len_change, '-', '-'
+                else:
+                    return None, 'off_transcript_stop', '-', '-'
+            else:
         ## new_sequence is the sequence with the variant
         ## new end is not a stop codon
-        new_seq, new_stop = stop_transcript_search(new_sequence, extension_seq, map_coordinates_t)
+                new_seq, new_stop = stop_transcript_search(new_sequence, extension_seq, map_coordinates_t)
 
-        if new_seq == None: 
-            len_change = 'off_transcript_stop'
-            prot_cons = '-'
-            change_prot = '-'
+                if new_seq == None: 
+                    len_change = 'off_transcript_stop'
+                    prot_cons = '-'
+                    change_prot = '-'
 
-        else: 
-            len_change = len(new_seq) - len(seq)
+                else: 
+                    len_change = len(new_seq) - len(seq)
 
-            if len_change == 0: 
-                len_change = seq[len(seq)-3:] + '->' + new_seq[len(new_seq)-3:]
+                    if len_change == 0: 
+                        len_change = seq[len(seq)-3:] + '->' + new_seq[len(new_seq)-3:]
 
-                return 'stop_retained_variant', len_change, '-', '-'
-            
-            else: 
-                prot_cons, change_prot = protein_consequence(seq, new_seq, variant_pos, start, end, strand)
+                        return 'stop_retained_variant', len_change, '-', '-'
+                    
+                    else: 
+                        prot_cons, change_prot = protein_consequence(seq, new_seq, variant_pos, start, end, strand)
 
-            return 'stop_lost', len_change, prot_cons, change_prot
+                    return 'stop_lost', len_change, prot_cons, change_prot
     
     return None, '-', '-', '-'
         
