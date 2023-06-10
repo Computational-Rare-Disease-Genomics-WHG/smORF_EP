@@ -1440,7 +1440,8 @@ def within_exon(start, end, mapgen2transc):
     exonnts = 0 ## count the number of 
     for position in range(start, end):
         if position in mapgen2transc.keys():
-            print(position)
+            print('exon pos:', position)
+            exonnts += 1
 
     return exonnts
 
@@ -1588,8 +1589,10 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                 print('ref_end in splice_region_positions:', ref_end_pos in splice_site_donor)
 
 
-                if ref_end_pos in donor_positions and exon_nts == 1: ## splice donor
-                    ## 1st nt is anchor and deletion only on the donor region -- otehrwise frameshift+splice_region 
+                if ref_end_pos in donor_positions and exon_nts >= 1: ## splice donor
+                    ## Case1: exon_nts = 1 --> 1st nt is anchor and deletion only on the donor region 
+                    ## Case 2: exon_nts >1 + ref_end_pos within the donor_positions --> splice_donor variant
+                    # -- otehrwise frameshift+splice_region 
                     dna_cons = 'splice_donor_variant'
                     prot_cons = '-'
 
@@ -1598,7 +1601,6 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
 
                     print('deletion size ', deletion_size)
                     print(splice_regions_df)
-                    ## TODO: distinguish these from splice_region -- pOS 96 should be splice_region instead of inframe_del
 
                     if deletion_size % 3 == 0:
                         dna_cons = 'inframe_deletion, splice_region_variant'
@@ -1628,11 +1630,12 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                     insertion_size = len(alt) -1 ## -1 to remove anchor base
 
                     if insertion_size % 3 == 0:
-                        dna_cons = 'inframe_insertion, splice_site_donor'
+                        dna_cons = 'inframe_insertion, splice_region_variant'
                         prot_cons = 'protein_elongation'
                     else: 
-                        dna_cons = 'frameshift_insertion, splice_site_donor'
+                        dna_cons = 'frameshift_insertion, splice_region_variant'
                         prot_cons = '-'
+                ## TODO: Check this
                 elif find_position(map_gen2transc, var_pos+1) == True: ## insertion still in the exon region
                     dna_cons = 'splice_site_donor'
                     prot_cons = ''
