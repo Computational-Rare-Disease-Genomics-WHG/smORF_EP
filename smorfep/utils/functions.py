@@ -1461,6 +1461,8 @@ def map_splice_regions(introns_df, splice_size, intron_exon_size=3, splice_da_si
         Input: 
         - intron_coordinates: dataframe with the coordinates of intron regions
         - splice_size: user defined or default (8bps as VEP) splice region size 
+        - intron_exon_size: number of nucleotides in the exon precede the intron (by default 2bps as VEP)
+        - splice_da_size: size of the donor/acceptor region (by default 2bps as VEP)
 
         Returns a dataframe with the start and end coordinate of splice regions -- 2 per intron. 
                 
@@ -1522,7 +1524,7 @@ def map_splice_regions(introns_df, splice_size, intron_exon_size=3, splice_da_si
 def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_regions_df):
     """ 
         Function to check if a variant crosses exon-intron boundaries.
-        # Special case of variants, only required for indels
+        # Special case, only required for indels.
 
         Assumes ref and alt in with-anchor-nt format.
 
@@ -1579,8 +1581,12 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                 ##print('ref end position', ref_end_pos)
                 ##print(var_pos, ref_end_pos, ref, alt)
 
-                exon_nts = within_exon(var_pos, ref_end_pos, map_gen2transc)
-                ##print('exon nts: ', exon_nts)
+                exon_nts = within_exon(var_pos, ref_end_pos, map_gen2transc) ## TODO: CHECK, seems wrong
+                print('exon nts: ', exon_nts)
+
+                print('ref_end in donor_positions:', ref_end_pos in donor_positions)
+                print('ref_end in splice_region_positions:', ref_end_pos in splice_site_donor)
+
 
                 if ref_end_pos in donor_positions and exon_nts == 1: ## splice donor
                     ## 1st nt is anchor and deletion only on the donor region -- otehrwise frameshift+splice_region 
@@ -1589,6 +1595,10 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
 
                 elif ref_end_pos in splice_site_donor: ## splice-region
                     deletion_size = len(ref) -1 ## -1 to remove anchor base
+
+                    print('deletion size ', deletion_size)
+                    print(splice_regions_df)
+                    ## TODO: distinguish these from splice_region -- pOS 96 should be splice_region instead of inframe_del
 
                     if deletion_size % 3 == 0:
                         dna_cons = 'inframe_deletion, splice_region_variant'
@@ -1632,21 +1642,21 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                     prot_cons = None
 
             elif len(ref) == len(alt):
-                if var_pos in donor_positions:         
-                    dna_cons = 'splice_donor_variant'
-                    prot_cons = '-'  
-                elif var_pos in splice_site_donor:
-                    dna_cons = 'splice_region_variant'
-                    prot_cons = '-'  
-                elif var_pos in acceptor_positions:
-                    dna_cons = 'splice_acceptor_variant'
-                    prot_cons = '-'
-                elif var_pos in splice_site_acceptor:
-                    dna_cons = 'splice_region_variant'
-                    prot_cons = '-'
-                else: 
-                    dna_cons = None
-                    prot_cons = None
+                # if var_pos in donor_positions:         
+                #     dna_cons = 'splice_donor_variant'
+                #     prot_cons = '-'  
+                # elif var_pos in splice_site_donor:
+                #     dna_cons = 'splice_region_variant'
+                #     prot_cons = '-'  
+                # elif var_pos in acceptor_positions:
+                #     dna_cons = 'splice_acceptor_variant'
+                #     prot_cons = '-'
+                # elif var_pos in splice_site_acceptor:
+                #     dna_cons = 'splice_region_variant'
+                #     prot_cons = '-'
+                # else: 
+                dna_cons = None
+                prot_cons = None
         ## done until here
 
 
