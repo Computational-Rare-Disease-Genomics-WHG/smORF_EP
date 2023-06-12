@@ -1637,7 +1637,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                     else: 
                         dna_cons = 'frameshift_insertion, splice_region_variant'
                         prot_cons = '-'
-
+                        
                         ## done until here
 
 
