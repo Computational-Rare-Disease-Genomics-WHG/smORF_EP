@@ -1445,6 +1445,7 @@ def within_exon(start, end, mapgen2transc):
 
     return exonnts
 
+
 ## reported on the forward strand
 def map_splice_regions(introns_df, splice_size, intron_exon_size=3, splice_da_size=2):
 
@@ -1583,7 +1584,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                 ##print('ref end position', ref_end_pos)
                 ##print(var_pos, ref_end_pos, ref, alt)
 
-                exon_nts = within_exon(var_pos, ref_end_pos, map_gen2transc) ## TODO: CHECK, seems wrong
+                exon_nts = within_exon(var_pos, ref_end_pos, map_gen2transc) ## Checked -- OK
 
                 # print('exon nts: ', exon_nts)
 
@@ -1608,7 +1609,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                         dna_cons = 'inframe_deletion, splice_region_variant'
                         prot_cons = 'protein_truncation'
                     else: 
-                        dna_cons = 'frameshift_deletion, splice_region_variant'
+                        dna_cons = 'frameshift_variant, splice_region_variant' ## frameshift_deletion
                         prot_cons = '-'
 
                 elif var_end_check == True: ## variant fully in the exon -- run exon var analysis
@@ -1635,7 +1636,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                         dna_cons = 'inframe_insertion, splice_region_variant'
                         prot_cons = 'protein_elongation'
                     else: 
-                        dna_cons = 'frameshift_insertion, splice_region_variant'
+                        dna_cons = 'frameshift_variant, splice_region_variant' ## frameshift_insertion
                         prot_cons = '-'
                         
                         ## done until here
@@ -1654,6 +1655,8 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                 dna_cons = None
                 prot_cons = None
 
+
+        ## start within exon, reverse strand
         elif strand == '-':
             ## if del -- Check ref allele len
             if len(ref) > len(alt): 
@@ -1679,7 +1682,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
     ## 2 - var starts in the intron 
     else:
         print('start within intron')
-
+        ## forward strand
         if strand == '+':
             ## if del -- Check ref allele len
             if len(ref) > len(alt): 
@@ -1689,6 +1692,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
             elif len(alt) > len(ref):
                 pass
 
+        ## start within intron, reverse strand
         elif strand == '-':
             ## if del -- Check ref allele len
             if len(ref) > len(alt):  
