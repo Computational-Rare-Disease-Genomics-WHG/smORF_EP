@@ -1581,17 +1581,9 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
             if len(ref) > len(alt): 
                 ref_end_pos = var_pos + len(ref) -1 ## OK
                 var_end_check = find_position(map_gen2transc, ref_end_pos)
-                ##print('ref end position', ref_end_pos)
-                ##print(var_pos, ref_end_pos, ref, alt)
 
                 exon_nts = within_exon(var_pos, ref_end_pos, map_gen2transc) ## Checked -- OK
-
-                # print('exon nts: ', exon_nts)
-
-                # print('ref_end in donor_positions:', ref_end_pos in donor_positions)
-                # print('ref_end in splice_region_positions:', ref_end_pos in splice_site_donor)
-
-
+     
                 if ref_end_pos in donor_positions and exon_nts >= 1: ## splice donor
                     ## Case1: exon_nts = 1 --> 1st nt is anchor and deletion only on the donor region 
                     ## Case 2: exon_nts >1 + ref_end_pos within the donor_positions --> splice_donor variant
@@ -1647,10 +1639,11 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                     dna_cons = 'splice_site_donor'
                     prot_cons = ''
                 
-                else: ## variant still in the exon
+                else: ## variant still in the exon -- Will run the exon annotation
                     dna_cons = None
                     prot_cons = None
 
+            ## Will run the exon annotation 
             elif len(ref) == len(alt):
                 dna_cons = None
                 prot_cons = None
@@ -1660,7 +1653,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
         elif strand == '-':
             ## if del -- Check ref allele len
             if len(ref) > len(alt): 
-                ref_end_pos = var_pos - len(ref)## To check ?????
+                ref_end_pos = var_pos - len(ref)## TODO: To check ?????
                 var_end_check = find_position(map_gen2transc, ref_end_pos)
                 vartype = 'del'
 
