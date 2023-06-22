@@ -972,6 +972,7 @@ def check_start(seq, new_sequence, start, end, variant_pos, strand):
 
         if variant_pos >= start and variant_pos <= start +2 and seq[:3] != new_sequence[:3]: 
         ## last condition is for indels right after the start codon, as the coordinate will be the last nt of the start codon, which is kept the same
+            len_change = seq[:3] + '->' + new_sequence[:3]
             return 'start_lost', len_change, prot_cons, change_prot
         
         else:
@@ -983,7 +984,7 @@ def check_start(seq, new_sequence, start, end, variant_pos, strand):
         change_prot = '-'
 
         if variant_pos <= end and variant_pos >= end -2 and seq[:3] != new_sequence[:3]: ## last condition is for indels right after the start codon, as the coordinate will be the last nt of the start codon, which is kept the same
-
+            len_change = seq[:3] + '->' + new_sequence[:3]
             return 'start_lost', len_change, prot_cons, change_prot
     
         else: 
@@ -1016,6 +1017,7 @@ def check_start_transcript(seq, new_sequence, variant_pos, map_coordinates):
     ## independent of the strand, as the trancript is always from start codon to stop codon
     ## mapping is addapted: transcript starts from start if forward strand, and end for the reverse strand
     if transcript_var_pos in [0,1,2] and seq[:3] != new_sequence[:3]: 
+        len_change = seq[:3] + '->' + new_sequence[:3]
         return 'start_lost', len_change, prot_cons, change_prot
     
     else: 
