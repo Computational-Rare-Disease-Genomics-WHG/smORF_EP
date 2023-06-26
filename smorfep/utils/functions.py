@@ -1580,7 +1580,9 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
 
     ## 1- var starts in the exon
     if var_pos_check == True: 
-        ##print('var_starts within the exon')
+        print(var_pos, ref, alt)
+        print('var_starts within the exon')
+        
 
         if strand == '+':
             ## if deletion -- Check ref allele len -- Testing examples annotatons OK
@@ -1649,6 +1651,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                     dna_cons = None
                     prot_cons = None
 
+            ## SNV -- single position does not cross intron-exon
             ## Will run the exon annotation 
             elif len(ref) == len(alt):
                 dna_cons = None
@@ -1680,16 +1683,32 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
    
     ## 2 - var starts in the intron 
     else:
+        print(var_pos, ref, alt)
         print('start within intron')
         ## forward strand
         if strand == '+':
             ## if del -- Check ref allele len
             if len(ref) > len(alt): 
-                pass 
+                print(acceptor_positions)
+                print(var_pos in acceptor_positions)
+                if var_pos in acceptor_positions and var_pos+1 not in acceptor_positions: ## variant anchor is the last nt of the intron
+                    print('var_pos is last nt of the intron')
+                    dna_cons =  'frameshift_variant, splice_region_variant'
+                    prot_cons = '-'
+                else: 
+                    pass
 
             ## if ins -- Check alt allele len 
             elif len(alt) > len(ref):
-                pass
+                if var_pos in acceptor_positions and var_pos+1 not in acceptor_positions: ## variant anchor is the last nt of the intron
+                    print('var_pos is last nt of the intron')
+                    dna_cons =  'frameshift_variant, splice_region_variant'
+                    prot_cons = '-'
+                else:
+                    pass
+
+            else: ## SNV -- single position does not cross intron-exon
+                return None, None, None, None
 
         ## start within intron, reverse strand
         elif strand == '-':
@@ -1699,7 +1718,11 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
             ## if ins -- Check alt allele len 
             elif len(alt) > len(ref):
                 pass
-
+        
+            else: ## SNV -- single position does not cross intron-exon
+                return None, None, None, None
+        
+        ## for testing, as block abover is incomplete, we need this: 
         return None, None, None, None
 
     return dna_cons, '-', prot_cons, '-'
