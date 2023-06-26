@@ -1695,8 +1695,15 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                     print('var_pos is last nt of the intron')
                     dna_cons =  'frameshift_variant, splice_region_variant'
                     prot_cons = '-'
-                else: 
-                    pass
+                elif var_pos in acceptor_positions and var_pos+1 in acceptor_positions:
+                    dna_cons = 'splice_acceptor_variant'
+                    prot_cons = '-'
+                ## condition just for deletions -- if insertion, it is just splice_region    
+                elif var_pos not in acceptor_positions and var_pos+1 in acceptor_positions: ## anchor nt is pre-acceptor region
+                    dna_cons = 'splice_acceptor_variant'
+                    prot_cons = '-'
+                else:
+                    return None, None, None, None
 
             ## if ins -- Check alt allele len 
             elif len(alt) > len(ref):
@@ -1704,8 +1711,12 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                     print('var_pos is last nt of the intron')
                     dna_cons =  'frameshift_variant, splice_region_variant'
                     prot_cons = '-'
+                elif var_pos in acceptor_positions and var_pos+1 in acceptor_positions:
+                    dna_cons = 'splice_acceptor_variant'
+                    prot_cons = '-'
+
                 else:
-                    pass
+                    return None, None, None, None
 
             else: ## SNV -- single position does not cross intron-exon
                 return None, None, None, None
@@ -1714,15 +1725,16 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
         elif strand == '-':
             ## if del -- Check ref allele len
             if len(ref) > len(alt):  
+                dna_cons = 'todo'
+                prot_cons = '-'
                 pass
             ## if ins -- Check alt allele len 
             elif len(alt) > len(ref):
+                dna_cons = 'todo'
+                prot_cons = '-'
                 pass
         
             else: ## SNV -- single position does not cross intron-exon
                 return None, None, None, None
-        
-        ## for testing, as block abover is incomplete, we need this: 
-        return None, None, None, None
 
     return dna_cons, '-', prot_cons, '-'
