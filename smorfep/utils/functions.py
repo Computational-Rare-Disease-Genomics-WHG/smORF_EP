@@ -1017,10 +1017,14 @@ def check_start_transcript(seq, new_sequence, variant_pos, map_coordinates):
     ## independent of the strand, as the trancript is always from start codon to stop codon
     ## mapping is addapted: transcript starts from start if forward strand, and end for the reverse strand
     if transcript_var_pos in [0,1,2] and seq[:3] != new_sequence[:3]: 
-        len_change = seq[:3] + '->' + new_sequence[:3]
-        return 'start_lost', len_change, prot_cons, change_prot
-    
-    else: 
+        if new_sequence[:3] == 'ATG': ## not considering change to non-canonical start codon.
+            len_change = seq[:3] + '->' + new_sequence[:3]
+            return 'start_retained_variant', len_change, prot_cons, change_prot
+        else: 
+            len_change = seq[:3] + '->' + new_sequence[:3]
+            return 'start_lost', len_change, prot_cons, change_prot
+
+    else: ## not a start affecting variant
         return None, len_change, prot_cons, change_prot
 
 
