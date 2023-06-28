@@ -1583,7 +1583,6 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
         print(var_pos, ref, alt)
         print('var_starts within the exon')
         
-
         if strand == '+':
             ## if deletion -- Check ref allele len -- Testing examples annotatons OK
             if len(ref) > len(alt): 
@@ -1602,9 +1601,6 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                 elif ref_end_pos in splice_site_donor: ## splice-region
                     deletion_size = len(ref) -1 ## -1 to remove anchor base
 
-                    # print('deletion size ', deletion_size)
-                    # print(splice_regions_df)
-
                     if deletion_size % 3 == 0:
                         dna_cons = 'inframe_deletion, splice_region_variant'
                         prot_cons = 'protein_truncation'
@@ -1618,7 +1614,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                     prot_cons = None
 
 
-            ## if insertion -- Check alt allele len ## XXX 
+            ## if insertion -- Check alt allele len
             elif len(alt) > len(ref):
                 alt_end_pos = var_pos + len(alt) -1 ## OK
                 ##print(var_pos, alt_end_pos, ref, alt)
@@ -1644,6 +1640,8 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
 
                 ## TODO: Check this -- test on the donor regions XXX
                 elif find_position(map_gen2transc, var_pos+1) == True: ## insertion still in the exon region
+                    print('splice site donor testing')
+                    print(var_pos+1) 
                     dna_cons = 'splice_site_donor'
                     prot_cons = ''
                 
@@ -1679,7 +1677,6 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                 dna_cons = 'todo'
                 prot_cons = '-'
             
- 
    
     ## 2 - var starts in the intron 
     else:
