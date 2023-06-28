@@ -1634,16 +1634,6 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                     else: 
                         dna_cons = 'frameshift_variant, splice_region_variant' ## frameshift_insertion
                         prot_cons = '-'
-                        
-                        ## done until here
-
-
-                ## TODO: Check this -- test on the donor regions XXX
-                elif find_position(map_gen2transc, var_pos+1) == True: ## insertion still in the exon region
-                    print('splice site donor testing')
-                    print(var_pos+1) 
-                    dna_cons = 'splice_site_donor'
-                    prot_cons = ''
                 
                 else: ## variant still in the exon -- Will run the exon annotation
                     dna_cons = None
@@ -1656,13 +1646,14 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                 prot_cons = None
 
 
+            ## done until here
+
         ## start within exon, reverse strand
         elif strand == '-':
             ## if del -- Check ref allele len
             if len(ref) > len(alt): 
                 ref_end_pos = var_pos - len(ref)## TODO: To check ?????
                 var_end_check = find_position(map_gen2transc, ref_end_pos)
-                vartype = 'del'
 
                 dna_cons = 'todo'
                 prot_cons = '-'
@@ -1672,7 +1663,6 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
             elif len(alt) > len(ref):
                 alt_end_pos = var_pos - len(alt)## To check ?????
                 var_end_check = find_position(map_gen2transc, alt_end_pos)
-                vartype = 'ins'
 
                 dna_cons = 'todo'
                 prot_cons = '-'
