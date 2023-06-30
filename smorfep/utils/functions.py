@@ -1647,6 +1647,8 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
 
             ## done until here
 
+            ## done until here
+
         ## start within exon, reverse strand
         elif strand == '-':
             ## if del -- Check ref allele len
@@ -1667,6 +1669,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
 
                 dna_cons = 'todo'
                 prot_cons = '-'
+            
             
             elif len(ref) == len(alt): ## SNV - runs exon annotation
                 dna_cons = None
