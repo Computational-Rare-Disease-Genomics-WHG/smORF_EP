@@ -1475,7 +1475,7 @@ def map_splice_regions(introns_df, splice_size, intron_exon_size=3, splice_da_si
 
         NOTE 1: donor and acceptor reported on the forward strand. For annotations on the reverse strand donor and acceptor should be reversed. 
                 
-        NOTE 2: by default the three last nucleotides in the exon are considered part of the splice_region (same as VEP).
+        NOTE 2: by default the 3 last/first nucleotides in the exon (resp. donor/acceptor for forward strand, otherwise for reverse strand) are considered part of the splice_region (same as VEP).
         To change this, change into_exon_size variable in this function.
 
     """ 
@@ -1645,6 +1645,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                 dna_cons = None
                 prot_cons = None
 
+            ## done until here
 
             ## done until here
 
@@ -1653,6 +1654,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
             ## if del -- Check ref allele len
             if len(ref) > len(alt): 
                 ref_end_pos = var_pos - len(ref)## TODO: To check ?????
+                print(var_pos, ref, alt, ref_end_pos)
                 var_end_check = find_position(map_gen2transc, ref_end_pos)
 
                 dna_cons = 'todo'
@@ -1662,10 +1664,16 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
             ## if ins -- Check alt allele len 
             elif len(alt) > len(ref):
                 alt_end_pos = var_pos - len(alt)## To check ?????
+                print(alt_end_pos)
                 var_end_check = find_position(map_gen2transc, alt_end_pos)
 
                 dna_cons = 'todo'
                 prot_cons = '-'
+            
+            
+            elif len(ref) == len(alt): ## SNV - runs exon annotation
+                dna_cons = None
+                prot_cons = None
             
    
     ## 2 - var starts in the intron 

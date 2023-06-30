@@ -18,6 +18,9 @@
 ## intron variant
 ## stop lost (genomic)
 
+## start retain (genomic)
+## stop retain (genomic)
+
 
 import sys
 import os
@@ -120,7 +123,7 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
             ## transcript needs to cover the full sequence region
             ## transcript in the same strand
             transcripts_to_check_smorf = transcripts_smorf['transcript_id'].unique()
-            ##print(transcripts_to_check_smorf)
+            print('unique transcript IDS:', transcripts_to_check_smorf)
 
             ## collect the introns to the transcripts found for this smorf
             introns_smorf = introns_chr[introns_chr['transcript_id'].apply(lambda x: any(val in x for val in transcripts_to_check_smorf))]
@@ -153,7 +156,7 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
                 continue ## moves to next smorf
 
             else: 
-                print(smorf_vars_df)
+                ##print(smorf_vars_df)
 
                 ## per variant - line
                 for index, row in smorf_vars_df.iterrows():
