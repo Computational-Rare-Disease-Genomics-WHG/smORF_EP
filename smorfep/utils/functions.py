@@ -1646,7 +1646,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                 prot_cons = None
 
             ## done until here
-            
+
 
         ## start within exon, reverse strand
         elif strand == '-':
@@ -1657,7 +1657,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                 var_end_check = find_position(map_gen2transc, ref_end_pos)
 
                 dna_cons = 'todo'
-                prot_cons = '-'
+                prot_cons = '-' 
                 
 
             ## if ins -- Check alt allele len 
