@@ -1646,8 +1646,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                 prot_cons = None
 
             ## done until here
-
-            ## done until here
+            
 
         ## start within exon, reverse strand
         elif strand == '-':
