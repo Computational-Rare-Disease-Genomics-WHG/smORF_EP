@@ -431,13 +431,14 @@ def add_variant_transcriptSeq(sequence, start, end,  ref, alt, position, map_coo
  
         
     else:
+        ## XXX uncomment prints -- TODO
         print(position, ref, alt, start, end)
         print('ref allele does not correspond!')
         print('reference genome: ', sequence[variant_index:variant_index+len(ref)])
         print('ref input: ', ref) 
-        print(map_coordinates)
-        print(position) 
-        print(sequence)
+        ##print(map_coordinates)
+        ##print(position) 
+        ##print(sequence)
         return None, sequence[variant_index:variant_index+len(ref)], ref
 
     return new_seq, None, None
@@ -1652,17 +1653,38 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
         elif strand == '-':
             ## if del -- Check ref allele len
             if len(ref) > len(alt): 
-                ref_end_pos = var_pos - len(ref)## TODO: To check ?????
+                ref_end_pos = var_pos - len(ref) +1 ## checked - OK
                 print(var_pos, ref, alt, ref_end_pos)
                 var_end_check = find_position(map_gen2transc, ref_end_pos)
+                print(ref_end_pos)
+                print(var_end_check)
 
-                dna_cons = 'todo'
-                prot_cons = '-' 
+                ## TODO: check if donor is the acceptor on the reverse strand or if they were inverted on the function that computed them XXX 
+                if ref_end_pos in donor_positions and exon_nts >= 1: ## splice acceptor as we are on the reverse strand
+                    dna_cons = 'splice_acceptor_variant'
+                    prot_cons = '-'
                 
+                elif ref_end_pos in splice_site_donor: ## splice region
+                    deletion_size = len(ref) - 1 ## excluding anchor base
+
+                    if deletion_size % 3 == 0: 
+                        dna_cons = 'inframe_deletion, splice_region_variant'
+                        prot_cons = 'protein_truncation'
+                    else: 
+                        dna_cons = 'frameshift_variant, splice_region_variant' ## frameshift_deletion
+                        prot_cons = '-'
+
+
+                elif var_end_check == True: ## variant fully in the exon -- run exon var analysis
+                    # print('var end in the exon')
+                    dna_cons = None
+                    prot_cons = None
+                
+                ## edited the block above 2023-07-03
 
             ## if ins -- Check alt allele len 
             elif len(alt) > len(ref):
-                alt_end_pos = var_pos - len(alt)## To check ?????
+                alt_end_pos = var_pos - len(alt) +1 ## checked - OK
                 print(alt_end_pos)
                 var_end_check = find_position(map_gen2transc, alt_end_pos)
 
@@ -1719,6 +1741,9 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
         elif strand == '-':
             ## if del -- Check ref allele len
             if len(ref) > len(alt):  
+                
+                
+
                 dna_cons = 'todo'
                 prot_cons = '-'
                 pass
