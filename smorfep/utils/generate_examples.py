@@ -9,7 +9,6 @@ from smorfep.utils.functions import *
 import random
 
 ### functions 
-
 def choice_excluding(lst, exception):
     possible_choices = [item for item in lst if item != exception]
     return random.choice(possible_choices)
@@ -42,9 +41,9 @@ ref = read_single_fasta(str(chrom), ref_path, files_prefix, files_suffix)
 
 ## get sequence
 seq_left = get_sequence(intron_start-exon_nts-1, intron_start+intron_nts-1+indel_max_size, strand, ref)
-print(intron_start, exon_nts, intron_nts)
-print(intron_start-exon_nts-1, intron_start+intron_nts-1)
-print(seq_left)
+# print(intron_start, exon_nts, intron_nts)
+# print(intron_start-exon_nts-1, intron_start+intron_nts-1)
+##print(seq_left)
 
 ## output open and header
 out = open(outputname, 'w')
