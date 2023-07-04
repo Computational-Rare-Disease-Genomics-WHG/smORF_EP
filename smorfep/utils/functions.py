@@ -1582,7 +1582,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
     ## 1- var starts in the exon
     if var_pos_check == True: 
         print(var_pos, ref, alt)
-        print('var_starts within the exon')
+        print('var starts within the exon')
         
         if strand == '+':
             ## if deletion -- Check ref allele len -- Testing examples annotatons OK
@@ -1653,7 +1653,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
         elif strand == '-':
             ## if del -- Check ref allele len
             if len(ref) > len(alt): 
-                ref_end_pos = var_pos - len(ref) +1 ## checked - OK
+                ref_end_pos = var_pos + len(ref) -1 ## checked - OK -- Working Now: XXX TODO: check it when we switch the strand conversion to smoerfep, from smorfinit
                 print(var_pos, ref, alt, ref_end_pos)
                 var_end_check = find_position(map_gen2transc, ref_end_pos)
                 print(ref_end_pos)
