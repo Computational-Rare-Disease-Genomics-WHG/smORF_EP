@@ -10,41 +10,6 @@ import random
 
 ### functions 
 
-## redefined here, as we get the sequence 3' --> 5' on the reverse strand, for the VCF variants generation
-def get_sequence(start, end, strand, ref):
-
-    """
-        Function to get the genomic sequence from the reference genome
-        given the start position, the end position and the strand.
-
-        It requires the specification of the location of the reference
-        genome. 
-
-        ## NOTE: 
-        The chrososome does not need to be specified as it is assumed 
-        that the reference is a single chromosome sequence. 
-
-        Input: 
-        - sequence start coordinate - ref genome
-        - sequence end coordinate - ref genome
-        - strand: for + strand it pulls the reference, for - strand it reverse complement the sequence
-
-        Output: 
-        genomci sequence for the given start, end and strand
-
-    """
-
-    ## .upper needed so the sequence is all capital letters. Ref contains lowercase letters 
-    if strand == '+':
-        seq = ref[start-1:end].upper() 
-
-    elif strand == '-':
-        seq = complement_seq(ref[start-1:end].upper())
-    ## upper to have all capital letters needed for protein sequence
-    
-    return seq
-
-
 def choice_excluding(lst, exception):
     possible_choices = [item for item in lst if item != exception]
     return random.choice(possible_choices)
@@ -77,9 +42,9 @@ ref = read_single_fasta(str(chrom), ref_path, files_prefix, files_suffix)
 
 ## get sequence
 seq_left = get_sequence(intron_start-exon_nts-1, intron_start+intron_nts-1+indel_max_size, strand, ref)
-# print(intron_start, exon_nts, intron_nts)
-# print(intron_start-exon_nts-1, intron_start+intron_nts-1)
-##print(seq_left)
+print(intron_start, exon_nts, intron_nts)
+print(intron_start-exon_nts-1, intron_start+intron_nts-1)
+print(seq_left)
 
 ## output open and header
 out = open(outputname, 'w')
@@ -100,7 +65,9 @@ for var_size in range(indel_max_size+1): ## +1 to include the indel_max_size
             var_type = 'SNV'
 
             ##print(var_pos, ref, alt, var_type)
-            out.write('\n'+chrom+'\t'+str(var_pos)+'\t'+ref+'\t'+alt+'\t'+orf_start+'\t'+orf_end+'\t'+strand+'\t'+var_type+'\t'+orf_id)
+
+            ## uncoment next line for SNV
+            ##out.write('\n'+chrom+'\t'+str(var_pos)+'\t'+ref+'\t'+alt+'\t'+orf_start+'\t'+orf_end+'\t'+strand+'\t'+var_type+'\t'+orf_id)
 
 
 
