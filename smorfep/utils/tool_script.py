@@ -40,6 +40,8 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
 
 
     ## 1 - Get sequence from Ref genome
+    print(strand)
+    print(start, end)
     seq = get_sequence(start, end, strand, ref_sequence)
 
     ## check if the format is deletion without anchor: 
