@@ -1653,6 +1653,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
         elif strand == '-':
             ## if del -- Check ref allele len
             if len(ref) > len(alt): 
+
                 ## NOTE: next line can't be inverted, as if so, ref_start > ref_end and this breaks the code
                 ref_end_pos = var_pos + len(ref) -1 ## checked - OK -- Working Now: XXX TODO: check it when we switch the strand conversion to smoerfep, from smorfinput
                 print(var_pos, ref, alt, ref_end_pos) ## XXX TODO: var_pos is shifted one position -- To check!!!!
