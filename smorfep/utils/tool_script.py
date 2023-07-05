@@ -180,6 +180,30 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
             elif intron_status == 'Not intronic': ##If variant does not fall into an intron we check the protein consequence
                 ## check for all other variants
 
+                ## pre-process variant on the reverse strand
+                if strand == '-':
+                    if len(ref) == len(alt): ##SNV
+                        r = complement_seq(ref)
+                        a = complement_seq(alt)
+                        ## same position as reported
+
+                    elif len(ref) > len(alt): ## deletion - OK
+                        pos_diff = len(ref) - len(alt)
+
+                        a = get_sequence(int(variant_pos)+pos_diff+1, int(variant_pos)+pos_diff+1, strand, ref_sequence)
+                        ref_allele_sufix = reverse_complement_seq(ref)
+                        r = a + ref_allele_sufix[:-1] ## removes the last nt
+                        variant_pos = int(variant_pos)+pos_diff+1 ## var pos next position after the deletion section
+                        ## re-defines variant_pos
+
+                    elif len(ref) < len(alt): ## insertion 
+                        r = get_sequence(int(variant_pos)+1, int(variant_pos)+1, strand, ref_sequence)
+                        alt_allele_sufix = reverse_complement_seq(alt)
+                        a = r + alt_allele_sufix[:-1] ## removes the last nt
+                        variant_pos = variant_pos+1 ## same position as reported
+                        ## re-defines variant_pos
+
+
                 ## 2.5.1- introduce the variant 
                 new_sequence, ref_original, ref_inFile = add_variant_transcriptSeq(seq, start, end, ref, alt, variant_pos, map_gen2transc)
 
@@ -322,6 +346,31 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
         #     if s != None: ## Multiple stop codons in the sequence 
         #         return 'wrong_sequence', 'More_than_one_stop', '-', '-'
 
+        
+        ## Pre-processing variant if in the reverse strand
+        ## XXX Moved from input_generator to here and before add_variant_transcript
+        
+        if strand == '-':
+            if len(ref) == len(alt): ##SNV
+                r = complement_seq(ref)
+                a = complement_seq(alt)
+                ## same position as reported
+
+            elif len(ref) > len(alt): ## deletion - OK
+                pos_diff = len(ref) - len(alt)
+
+                a = get_sequence(int(variant_pos)+pos_diff+1, int(variant_pos)+pos_diff+1, strand, ref_sequence)
+                ref_allele_sufix = reverse_complement_seq(ref)
+                r = a + ref_allele_sufix[:-1] ## removes the last nt
+                variant_pos = int(variant_pos)+pos_diff+1 ## var pos next position after the deletion section
+                ## re-defines variant_pos
+
+            elif len(ref) < len(alt): ## insertion 
+                r = get_sequence(int(variant_pos)+1, int(variant_pos)+1, strand, ref_sequence)
+                alt_allele_sufix = reverse_complement_seq(alt)
+                a = r + alt_allele_sufix[:-1] ## removes the last nt
+                variant_pos = variant_pos+1 ## same position as reported
+                ## re-defines variant_pos
 
         # ## 3.3 - Introduce the variant
         new_sequence, ref_original, ref_inFile = add_variant(seq, start, end, ref, alt, variant_pos, strand)
