@@ -1653,11 +1653,16 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
         elif strand == '-':
             ## if del -- Check ref allele len
             if len(ref) > len(alt): 
-                ref_end_pos = var_pos + len(ref) -1 ## checked - OK -- Working Now: XXX TODO: check it when we switch the strand conversion to smoerfep, from smorfinit
-                print(var_pos, ref, alt, ref_end_pos)
+                ## NOTE: next line can't be inverted, as if so, ref_start > ref_end and this breaks the code
+                ref_end_pos = var_pos + len(ref) -1 ## checked - OK -- Working Now: XXX TODO: check it when we switch the strand conversion to smoerfep, from smorfinput
+                print(var_pos, ref, alt, ref_end_pos) ## XXX TODO: var_pos is shifted one position -- To check!!!!
                 var_end_check = find_position(map_gen2transc, ref_end_pos)
                 print(ref_end_pos)
                 print(var_end_check)
+
+                ## variant start in the exon and ends in the intron
+                exon_nts = within_exon(var_pos, ref_end_pos, map_gen2transc)
+                print('exon nts: ', exon_nts)
 
                 ## TODO: check if donor is the acceptor on the reverse strand or if they were inverted on the function that computed them XXX 
                 if ref_end_pos in donor_positions and exon_nts >= 1: ## splice acceptor as we are on the reverse strand
@@ -1680,11 +1685,11 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                     dna_cons = None
                     prot_cons = None
                 
-                ## edited the block above 2023-07-03
+                ## edited the block above 2023-07-04 - working
 
             ## if ins -- Check alt allele len 
             elif len(alt) > len(ref):
-                alt_end_pos = var_pos - len(alt) +1 ## checked - OK
+                alt_end_pos = var_pos + len(alt) - 1 ## XXX TODO: CHECK ????
                 print(alt_end_pos)
                 var_end_check = find_position(map_gen2transc, alt_end_pos)
 
