@@ -115,32 +115,41 @@ def bedvcf2intput(ref_path, bedfilename, vcffilename, outputname, bheader, vhead
                     var_id = 'VAR-' + str(vars_id_index)
 
 
-                if strand_smorf == '+':
-                    ## gnomad variants are on the forward strand, no special edits 
-                    r = row_var.REF
-                    a = row_var.ALT
-                    new_var_pos = row_var.POS ## same position as reported
+                ## NOTE: variants are usually reported on the forward strand -- We keep this notation
+                r = row_var.REF
+                a = row_var.ALT
+                new_var_pos = row_var.POS ## same position as reported
 
-                elif strand_smorf == '-':
-                    if len(row_var.REF) == len(row_var.ALT): ##SNV
-                        r = complement_seq(row_var.REF)
-                        a = complement_seq(row_var.ALT)
-                        new_var_pos = row_var.POS ## same position as reported
+                ## ---------------------------------------------
+                ## Block to convert variants to strand specific
+                ## ---------------------------------------------
 
-                    elif len(row_var.REF) > len(row_var.ALT): ## deletion - OK
-                        pos_diff = len(row_var.REF) - len(row_var.ALT)
+                # if strand_smorf == '+':
+                #     ## gnomad variants are on the forward strand, no special edits 
+                #     r = row_var.REF
+                #     a = row_var.ALT
+                #     new_var_pos = row_var.POS ## same position as reported
 
-                        a = get_sequence(int(row_var.POS)+pos_diff+1, int(row_var.POS)+pos_diff+1, strand_smorf, reference_genome[chrm_smorf])
-                        ref_allele_sufix = reverse_complement_seq(row_var.REF)
-                        r = a + ref_allele_sufix[:-1] ## removes the last nt
-                        new_var_pos = int(row_var.POS)+pos_diff+1 ## var pos next position after the deletion section
+                # elif strand_smorf == '-':
+                #     if len(row_var.REF) == len(row_var.ALT): ##SNV
+                #         r = complement_seq(row_var.REF)
+                #         a = complement_seq(row_var.ALT)
+                #         new_var_pos = row_var.POS ## same position as reported
+
+                #     elif len(row_var.REF) > len(row_var.ALT): ## deletion - OK
+                #         pos_diff = len(row_var.REF) - len(row_var.ALT)
+
+                #         a = get_sequence(int(row_var.POS)+pos_diff+1, int(row_var.POS)+pos_diff+1, strand_smorf, reference_genome[chrm_smorf])
+                #         ref_allele_sufix = reverse_complement_seq(row_var.REF)
+                #         r = a + ref_allele_sufix[:-1] ## removes the last nt
+                #         new_var_pos = int(row_var.POS)+pos_diff+1 ## var pos next position after the deletion section
                         
 
-                    elif len(row_var.REF) < len(row_var.ALT): ## insertion 
-                        r = get_sequence(int(row_var.POS)+1, int(row_var.POS)+1, strand_smorf, reference_genome[chrm_smorf])
-                        alt_allele_sufix = reverse_complement_seq(row_var.ALT)
-                        a = r + alt_allele_sufix[:-1] ## removes the last nt
-                        new_var_pos = row_var.POS+1 ## same position as reported
+                #     elif len(row_var.REF) < len(row_var.ALT): ## insertion 
+                #         r = get_sequence(int(row_var.POS)+1, int(row_var.POS)+1, strand_smorf, reference_genome[chrm_smorf])
+                #         alt_allele_sufix = reverse_complement_seq(row_var.ALT)
+                #         a = r + alt_allele_sufix[:-1] ## removes the last nt
+                #         new_var_pos = row_var.POS+1 ## same position as reported
 
 
                 new_var = pd.DataFrame(
