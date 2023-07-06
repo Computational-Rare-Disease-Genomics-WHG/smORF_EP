@@ -266,7 +266,7 @@ def add_variant(sequence, start, end,  ref, alt, position, strand):
  
         
     else:
-        print(position, ref, alt, strand , start, end)
+        print(position, ref, alt, strand, start, end)
         print('ref allele does not correspond!')
         print('reference genome: ', sequence[variant_index:variant_index+len(ref)])
         print('ref input: ', ref)
