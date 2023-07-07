@@ -7,6 +7,9 @@ transcripts/
 get_reference_genome.sh
 get_transcripts_GENCODE.sh
 
+## test output files
+test/*_consequences_*.vcf
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
