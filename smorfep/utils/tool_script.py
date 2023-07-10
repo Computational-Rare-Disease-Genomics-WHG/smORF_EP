@@ -40,9 +40,12 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
 
 
     ## 1 - Get sequence from Ref genome
-    print(strand)
-    print(start, end)
+    ##print(strand)
+    ##print(start, end)
     seq = get_sequence(start, end, strand, ref_sequence)
+    # print(seq)
+    # print('seq len before variant ', len(seq))
+    # print('diff end - start ', end-start)
 
     ## check if the format is deletion without anchor: 
     check_anchor_nt = check_var_type(ref, alt)
@@ -265,9 +268,10 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
                 ## 2.5.4.2 - Insertions
                 if len(alt) > len(ref):
 
+                    len_change = len(alt) - len(ref)
+
                     ## inframe
-                    if len(new_sequence) % 3 == 0: 
-                        len_change == len(new_sequence) - len(seq)
+                    if len(new_sequence) % 3 == 0 and len_change == 3: 
 
                         prot_cons, prot_change = protein_consequence_transcript(seq, new_sequence, variant_pos, map_gen2transc)
 
@@ -426,12 +430,10 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
 
         ## 3.6 - insetions
         if len(ref) < len(alt): 
+            len_change = len(alt) - len(ref)
 
             ## 3.6.1 inframe
-            if len(new_sequence) % 3 == 0: 
-
-                len_change = len(new_sequence)- len(seq)
-                # print('inframe insertion')
+            if len(new_sequence) % 3 == 0 and len_change == 3: 
 
                 prot_cons, prot_change = protein_consequence(seq, new_sequence, variant_pos, start, end, strand)
 
