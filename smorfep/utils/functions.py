@@ -770,6 +770,7 @@ def frameshift(seq, transcript_extension, map_coordinates):
 
     seq_len = len(seq)
     difference = seq_len%3 ## -> how many nucleotides it shifts: 0 (inframe), 1 or 2
+    print(difference)
 
     if difference == 1: ## we need to add 2 base to get new frame
         corrected_seq = seq + transcript_extension[:2]
@@ -1687,15 +1688,15 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
             ## if ins -- Check alt allele len 
             elif len(alt) > len(ref):
                 print('reverse insertion')
-                alt_end_pos = var_pos + len(alt) - 1 ## XXX TODO: CHECK ????
+                alt_end_pos = var_pos - (len(alt)-1) ## len(alt)-1 to exclude anchor nt
+                print(len(alt)-1)
                 print(alt_end_pos)
-                var_end_check = find_position(map_gen2transc, alt_end_pos)
 
                 ## variant start in the exon and ends in the intron
-                exon_nts = within_exon(var_pos, alt_end_pos, map_gen2transc)
+                exon_nts = within_exon(alt_end_pos, var_pos, map_gen2transc) ## as is reverse strand, end of variant < var_pos
                 print('exon nts: ', exon_nts)
 
-                if exon_nts == 1 and find_position(map_gen2transc, var_pos+1) == False: ## insertion after the last nt in the exon
+                if exon_nts == 1 and find_position(map_gen2transc, var_pos-1) == False: ## insertion after the last nt in the exon
 
                     insertion_size = len(alt) -1 ## -1 to remove anchor base
 
@@ -1773,6 +1774,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                 
             ## if ins -- Check alt allele len 
             elif len(alt) > len(ref):
+
                 if var_pos in acceptor_positions and var_pos+1 not in acceptor_positions: ## variant anchor is the last nt of the intron
                     print('var_pos is last nt of the intron')
                     dna_cons =  'frameshift_variant, splice_region_variant'
