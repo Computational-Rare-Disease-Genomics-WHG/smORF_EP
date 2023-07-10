@@ -228,7 +228,7 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
                         ## they are in a separate file
 
 
-    print(vars_cons_df)
+    ##print(vars_cons_df)
             
     ## write_the output
     vars_cons_df.to_csv(outputname, sep='\t', lineterminator='\n', index=False)
