@@ -1656,8 +1656,11 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
             if len(ref) > len(alt): 
 
                 ## NOTE: next line can't be inverted, as if so, ref_start > ref_end and this breaks the code
-                ref_end_pos = var_pos + len(ref) -1 ## checked - OK -- Working Now
+                ref_end_pos = var_pos - (len(ref)-1) ## checked - OK -- Working Now
                 var_end_check = find_position(map_gen2transc, ref_end_pos)
+                print('var_pos and ref_end_pos ', var_pos, ref_end_pos)
+                print(var_end_check)
+                print(find_position(map_gen2transc, var_pos))
       
                 ## variant start in the exon and ends in the intron
                 exon_nts = within_exon(var_pos, ref_end_pos, map_gen2transc)
@@ -1665,7 +1668,19 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
 
                 ## donor is always the end on the left and acceptor on the right of the intron. 
                 ## NOTE: for reverse strand donor_positions are for the acceptor region, and vice-versa
-                if ref_end_pos in donor_positions and exon_nts >= 1: ## splice acceptor as we are on the reverse strand
+
+                if var_end_check == False and find_position(map_gen2transc, var_pos) == True: ## deletion in betwen exon and intron
+                    deletion_size = len(ref) - 1 ## excluding anchor base
+
+                    if deletion_size % 3 == 0: 
+                        dna_cons = 'inframe_deletion, splice_region_variant'
+                        prot_cons = 'protein_truncation'
+                    else: 
+                        dna_cons = 'frameshift_variant, splice_region_variant' ## frameshift_deletion
+                        prot_cons = '-'
+
+
+                elif ref_end_pos in donor_positions and exon_nts >= 1: ## splice acceptor as we are on the reverse strand
                     dna_cons = 'splice_acceptor_variant'
                     prot_cons = '-'
                 
@@ -1699,7 +1714,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                 # print(donor_positions)
                 # print('\n exon coordinates map')
                 # print(map_gen2transc)
-                
+
             
 
                 ## variant start in the exon and ends in the intron
@@ -1751,6 +1766,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
             if len(ref) > len(alt): 
                 print(acceptor_positions)
                 print(var_pos in acceptor_positions)
+                
                 if var_pos in acceptor_positions and var_pos+1 not in acceptor_positions: ## variant anchor is the last nt of the intron
                     print('var_pos is last nt of the intron')
                     dna_cons =  'frameshift_variant, splice_region_variant'
@@ -1783,7 +1799,28 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
         elif strand == '-':
             ## if del -- Check ref allele len
             if len(ref) > len(alt):  
-                if var_pos in acceptor_positions and var_pos+1 not in acceptor_positions: ## variant anchor is the last nt of the intron
+                print('var_pos in acceptor')
+
+                ref_end_pos = var_pos - (len(ref)-1) ## TO CHECK XXX TODO
+                var_end_check = find_position(map_gen2transc, ref_end_pos)
+                print(var_pos)
+                print(ref_end_pos)
+                print(var_end_check)
+                print()
+
+                if var_end_check == True and find_position(map_gen2transc, var_pos) == False: ## deletion in betwen exon and intron
+                    deletion_size = len(ref) - 1 ## excluding anchor base
+
+                    if deletion_size % 3 == 0: 
+                        dna_cons = 'inframe_deletion, splice_region_variant'
+                        prot_cons = 'protein_truncation'
+                    else: 
+                        dna_cons = 'frameshift_variant, splice_region_variant' ## frameshift_deletion
+                        prot_cons = '-'
+
+
+                ## TODO: Check this condition too!!!!
+                elif var_pos in acceptor_positions and var_pos+1 not in acceptor_positions: ## variant anchor is the last nt of the intron
                     print('var_pos is last nt of the intron')
                     dna_cons =  'frameshift_variant, splice_region_variant'
                     prot_cons = '-'
@@ -1796,14 +1833,35 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                 
             ## if ins -- Check alt allele len 
             elif len(alt) > len(ref):
+                print('reverse insertion')
+                alt_end_pos = var_pos - (len(alt)-1) ## len(alt)-1 to exclude anchor nt
+                print(var_pos)
+                print(alt_end_pos)
+                var_end_check = find_position(map_gen2transc, alt_end_pos)
+                print('alt end', find_position(map_gen2transc, alt_end_pos))
+                print('var_pos', find_position(map_gen2transc, var_pos))
 
-                if var_pos in acceptor_positions and var_pos+1 not in acceptor_positions: ## variant anchor is the last nt of the intron
-                    print('var_pos is last nt of the intron')
-                    dna_cons =  'frameshift_variant, splice_region_variant'
-                    prot_cons = '-'
-                elif var_pos in acceptor_positions and var_pos+1 in acceptor_positions:
-                    dna_cons = 'splice_donor_variant'
-                    prot_cons = '-'
+                if var_end_check == True and find_position(map_gen2transc, var_pos) == False: 
+                    insertion_size = len(alt) -1 ## -1 to remove anchor base
+
+                    if insertion_size % 3 == 0:
+                        dna_cons = 'inframe_insertion, splice_region_variant'
+                        prot_cons = 'protein_elongation'
+                    else: 
+                        dna_cons = 'frameshift_variant, splice_region_variant' ## frameshift_insertion
+                        prot_cons = '-'
+
+
+                elif var_pos in acceptor_positions and var_pos+1 not in acceptor_positions: ## variant anchor is the last nt of the intron
+                    insertion_size = len(alt) -1 ## -1 to remove anchor base
+
+                    if insertion_size % 3 == 0:
+                        dna_cons = 'inframe_insertion, splice_region_variant'
+                        prot_cons = 'protein_elongation'
+                    else: 
+                        dna_cons = 'frameshift_variant, splice_region_variant' ## frameshift_insertion
+                        prot_cons = '-'
+
 
                 else:
                     return None, None, None, None
