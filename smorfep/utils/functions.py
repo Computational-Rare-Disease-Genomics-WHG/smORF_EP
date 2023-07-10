@@ -1691,12 +1691,22 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                 alt_end_pos = var_pos - (len(alt)-1) ## len(alt)-1 to exclude anchor nt
                 print(len(alt)-1)
                 print(alt_end_pos)
+                var_end_check = find_position(map_gen2transc, alt_end_pos)
+                # print('var_check end: ', var_end_check)
+                # print('\n splice region sites')
+                # print(splice_site_donor)
+                # print('\n splice donor sites')
+                # print(donor_positions)
+                # print('\n exon coordinates map')
+                # print(map_gen2transc)
+                
+            
 
                 ## variant start in the exon and ends in the intron
                 exon_nts = within_exon(alt_end_pos, var_pos, map_gen2transc) ## as is reverse strand, end of variant < var_pos
-                print('exon nts: ', exon_nts)
+                print('exon nts: ', exon_nts) ## excludes the anchor
 
-                if exon_nts == 1 and find_position(map_gen2transc, var_pos-1) == False: ## insertion after the last nt in the exon
+                if exon_nts == 1 and find_position(map_gen2transc, var_pos+1) == False: ## insertion after the last nt in the exon
 
                     insertion_size = len(alt) -1 ## -1 to remove anchor base
 
@@ -1706,6 +1716,18 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                     else: 
                         dna_cons = 'frameshift_variant, splice_region_variant' ## frameshift_insertion
                         prot_cons = '-'
+
+                elif var_pos in splice_site_donor and alt_end_pos in splice_site_donor and var_pos not in donor_positions and alt_end_pos not in donor_positions: 
+
+                    insertion_size = len(alt) -1 ## -1 to remove anchor base
+
+                    if insertion_size % 3 == 0:
+                        dna_cons = 'inframe_insertion, splice_region_variant'
+                        prot_cons = 'protein_elongation'
+                    else: 
+                        dna_cons = 'frameshift_variant, splice_region_variant' ## frameshift_insertion
+                        prot_cons = '-'
+
                 
                 else: ## variant still in the exon -- Will run the exon annotation
                     dna_cons = None
