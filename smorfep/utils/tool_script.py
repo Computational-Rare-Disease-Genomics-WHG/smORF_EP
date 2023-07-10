@@ -146,9 +146,9 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
             variant_pos = variant_pos+1 ## same position as reported
             ## re-defines variant_pos 
         
-        print('After conversion -- reverse strand only')
-        print(variant_pos)
-        print(ref, alt)
+        # print('After conversion -- reverse strand only')
+        # print(variant_pos)
+        # print(ref, alt)
 
 
     ## 2 - Processing presence of introns in the smORF
