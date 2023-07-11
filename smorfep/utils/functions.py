@@ -1834,17 +1834,6 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                     if [x for x in all_del_pos if x in donor_positions] != []: ## list empty if no overlap -- OK
                         dna_cons = 'splice_acceptor_variant'
                         prot_cons = '-'
-                
-                ## check acceptor sites
-                elif [x for x in all_del_pos if x in donor_positions] != []: ## list empty if no overlap -- OK
-                    dna_cons = 'splice_acceptor_variant'
-                    prot_cons = '-'
-                
-                ## Check splice region
-                elif [x for x in all_del_pos if x in splice_site_donor] != []: ## -- OK
-                    dna_cons = 'splice_region_variant'
-                    prot_cons = '-'
-
 
                     else:
                         deletion_size = len(ref) - 1 ## excluding anchor base
