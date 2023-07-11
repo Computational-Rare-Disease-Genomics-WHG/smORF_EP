@@ -50,8 +50,8 @@ def main():
     all_nts = ['A', 'T', 'G', 'C']
 
     ## load the reeference genome chr sequence
-    files_prefix, files_suffix = check_prefix_sufix_ref_files(args.ref_path)
-    ref = read_single_fasta(args.chrom, args.ref_path, files_prefix, files_suffix)
+    files_prefix, files_suffix = check_prefix_sufix_ref_files(args.refpath)
+    ref = read_single_fasta(args.chrom, args.refpath, files_prefix, files_suffix)
 
     ## get sequence
     seq_left = get_sequence(args.windowStart-args.exonNts-1, args.windowStart+args.intronNts-1+args.indelMaxSize, '+', ref)
