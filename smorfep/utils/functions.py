@@ -1829,14 +1829,21 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
 
 
                 if var_end_check == True and find_position(map_gen2transc, var_pos) == False: ## deletion in betwen exon and intron
-                    deletion_size = len(ref) - 1 ## excluding anchor base
 
-                    if deletion_size % 3 == 0: 
-                        dna_cons = 'inframe_deletion, splice_region_variant'
-                        prot_cons = 'protein_truncation'
-                    else: 
-                        dna_cons = 'frameshift_variant, splice_region_variant' ## frameshift_deletion
+                    ## if affects the acceptor site 
+                    if [x for x in all_del_pos if x in donor_positions] != []: ## list empty if no overlap -- OK
+                        dna_cons = 'splice_acceptor_variant'
                         prot_cons = '-'
+
+                    else:
+                        deletion_size = len(ref) - 1 ## excluding anchor base
+
+                        if deletion_size % 3 == 0: 
+                            dna_cons = 'inframe_deletion, splice_region_variant'
+                            prot_cons = 'protein_truncation'
+                        else: 
+                            dna_cons = 'frameshift_variant, splice_region_variant' ## frameshift_deletion
+                            prot_cons = '-'
                 
                 ## check acceptor sites
                 elif [x for x in all_del_pos if x in donor_positions] != []: ## list empty if no overlap -- OK
@@ -1871,16 +1878,23 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                 var_end_check = find_position(map_gen2transc, alt_end_pos)
                 print('alt end', find_position(map_gen2transc, alt_end_pos))
                 print('var_pos', find_position(map_gen2transc, var_pos))
+                all_ins_pos = [i for i in range(alt_end_pos, var_pos)]
+
 
                 if var_end_check == True and find_position(map_gen2transc, var_pos) == False: 
-                    insertion_size = len(alt) -1 ## -1 to remove anchor base
-
-                    if insertion_size % 3 == 0:
-                        dna_cons = 'inframe_insertion, splice_region_variant'
-                        prot_cons = 'protein_elongation'
-                    else: 
-                        dna_cons = 'frameshift_variant, splice_region_variant' ## frameshift_insertion
+                    if [x for x in all_ins_pos if x in donor_positions] != []: ## list empty if no overlap -- OK
+                        dna_cons = 'splice_acceptor_variant'
                         prot_cons = '-'
+
+                    else:
+                        insertion_size = len(alt) -1 ## -1 to remove anchor base
+
+                        if insertion_size % 3 == 0:
+                            dna_cons = 'inframe_insertion, splice_region_variant'
+                            prot_cons = 'protein_elongation'
+                        else: 
+                            dna_cons = 'frameshift_variant, splice_region_variant' ## frameshift_insertion
+                            prot_cons = '-'
 
 
                 elif var_pos in acceptor_positions and var_pos+1 not in acceptor_positions: ## variant anchor is the last nt of the intron
