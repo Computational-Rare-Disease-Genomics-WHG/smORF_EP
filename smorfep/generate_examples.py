@@ -36,7 +36,7 @@ def main():
     parser.add_argument('-i','--orfID', metavar='\b', required=True, type=str, help='ORF ID')
     parser.add_argument('-ws','--windowStart', metavar='\b', required=True, type=int, help='variants region start coordinate')
     parser.add_argument('-we','--windowEnd', metavar='\b', required=True, type=int, help='variants region end coordinate')
-    parser.add_argument('-m','--indelMaxSize', metavar='\b', required=True, type=str, help='indel maximum size')
+    parser.add_argument('-m','--indelMaxSize', metavar='\b', required=True, type=int, help='indel maximum size')
     parser.add_argument('-r','--refpath', metavar='\b', required=True, type=str, help='Path to the reference genome')
     parser.add_argument('-o', '--outputfile', metavar='\b', required=True, type=str, help='output file name')
     parser.add_argument('-e', '--exonNts', metavar='\b', type=int, default=3, help='output file name')
