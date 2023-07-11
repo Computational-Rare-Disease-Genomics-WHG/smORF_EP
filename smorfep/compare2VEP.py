@@ -6,14 +6,12 @@
 
 ## VEP testing files were obtained by runing VEP on a VCF input file with the variants using the online ENSEMBL tool
 
+## NOTE: working with the output from VEP web
+## TODO: check how it does with the VEP output from the cluster
+
 import argparse
 
 from smorfep.utils.functions import *
-
-
-def color_red_or_green(val):
-    color = 'green' if val == 'Same annotation' else 'red'
-    return 'color: %s' % color
 
 
 
