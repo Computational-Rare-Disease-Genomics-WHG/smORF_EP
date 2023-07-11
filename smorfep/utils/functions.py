@@ -550,6 +550,22 @@ def read_vep_annotations(filename):
 
     return vep_df
 
+def read_vep_online(filename):
+    """
+        Function to read and format the VEP annotations into a pandas dataframe
+        for further processing. 
+
+        NOTE: Columns format from file obtained using VEP online API
+
+        Returns the pandas dataframe
+    """
+
+    vep_df = pd.read_csv(filename, sep ='\t', header=None, comment='#')
+    vep_df.columns = ['CHROM','POS','ID','REF','ALT','QUAL','FILTER','INFO']
+
+    return vep_df
+    
+
 
 
 
