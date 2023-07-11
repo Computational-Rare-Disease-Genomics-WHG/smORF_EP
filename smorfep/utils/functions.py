@@ -518,6 +518,8 @@ def read_vep_annotations(filename):
         Function to read and format the VEP annotations into a pandas dataframe
         for further processing. 
 
+        NOTE: Columns format used here match the output from running VEP on the HPC 
+
         Returns the pandas dataframe
     """
 
