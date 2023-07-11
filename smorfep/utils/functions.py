@@ -518,6 +518,8 @@ def read_vep_annotations(filename):
         Function to read and format the VEP annotations into a pandas dataframe
         for further processing. 
 
+        NOTE: Columns format used here match the output from running VEP on the HPC 
+
         Returns the pandas dataframe
     """
 
@@ -547,6 +549,59 @@ def read_vep_annotations(filename):
 
 
     return vep_df
+
+
+
+def read_vep_web(filename):
+    """
+        Function to read and format the VEP annotations into a pandas dataframe
+        for further processing. 
+
+        NOTE: Columns format from file obtained using VEP web API
+
+        Returns the pandas dataframe
+    """
+
+    vep_df = pd.read_csv(filename, sep ='\t', header=None, comment='#')
+    vep_df.columns = ['CHROM','POS','ID','REF','ALT','QUAL','FILTER','INFO']
+
+    ## Create df with a consequence per transcript
+    vep_transc_annot_df = pd.DataFrame(data=None, columns=['CHROM','POS','ID','REF','ALT', 'TRANSC_ID', 'SO','IMPACT'])
+
+    index_gen = 0
+
+    for index, row in vep_df.iterrows():
+        c = row.CHROM
+        pos = row.POS
+        var_id = row.ID
+        r = row.REF
+        a = row.ALT
+
+        info = row.INFO.split(',')
+        for each_entry in info: 
+            each_entry = each_entry.split('|')
+
+            transc_id = each_entry[6]
+            so = each_entry[1]
+            impact = each_entry[2]
+
+            new_line = pd.DataFrame(
+                {
+                'CHROM': c,
+                'POS' : pos,
+                'ID' : var_id,
+                'REF' : r,
+                'ALT' : a,
+                'TRANSC_ID' : transc_id,
+                'SO' : so,
+                'IMPACT' : impact
+                }, index=[index_gen]
+            )
+
+            vep_transc_annot_df = pd.concat([vep_transc_annot_df, new_line])
+
+    return vep_transc_annot_df
+    
 
 
 
@@ -1834,17 +1889,6 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                     if [x for x in all_del_pos if x in donor_positions] != []: ## list empty if no overlap -- OK
                         dna_cons = 'splice_acceptor_variant'
                         prot_cons = '-'
-                
-                ## check acceptor sites
-                elif [x for x in all_del_pos if x in donor_positions] != []: ## list empty if no overlap -- OK
-                    dna_cons = 'splice_acceptor_variant'
-                    prot_cons = '-'
-                
-                ## Check splice region
-                elif [x for x in all_del_pos if x in splice_site_donor] != []: ## -- OK
-                    dna_cons = 'splice_region_variant'
-                    prot_cons = '-'
-
 
                     else:
                         deletion_size = len(ref) - 1 ## excluding anchor base
