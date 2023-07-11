@@ -550,12 +550,14 @@ def read_vep_annotations(filename):
 
     return vep_df
 
-def read_vep_online(filename):
+
+
+def read_vep_web(filename):
     """
         Function to read and format the VEP annotations into a pandas dataframe
         for further processing. 
 
-        NOTE: Columns format from file obtained using VEP online API
+        NOTE: Columns format from file obtained using VEP web API
 
         Returns the pandas dataframe
     """
@@ -563,7 +565,42 @@ def read_vep_online(filename):
     vep_df = pd.read_csv(filename, sep ='\t', header=None, comment='#')
     vep_df.columns = ['CHROM','POS','ID','REF','ALT','QUAL','FILTER','INFO']
 
-    return vep_df
+    ## Create df with a consequence per transcript
+    vep_transc_annot_df = pd.DataFrame(data=None, columns=['CHROM','POS','ID','REF','ALT', 'TRANSC_ID', 'SO','IMPACT'])
+
+    index_gen = 0
+
+    for index, row in vep_df.iterrows():
+        c = row.CHROM
+        pos = row.POS
+        var_id = row.ID
+        r = row.REF
+        a = row.ALT
+
+        info = row.INFO.split(',')
+        for each_entry in info: 
+            each_entry = each_entry.split('|')
+
+            transc_id = each_entry[6]
+            so = each_entry[1]
+            impact = each_entry[2]
+
+            new_line = pd.DataFrame(
+                {
+                'CHROM': c,
+                'POS' : pos,
+                'ID' : var_id,
+                'REF' : r,
+                'ALT' : a,
+                'TRANSC_ID' : transc_id,
+                'SO' : so,
+                'IMPACT' : impact
+                }, index=[index_gen]
+            )
+
+            vep_transc_annot_df = pd.concat([vep_transc_annot_df, new_line])
+
+    return vep_transc_annot_df
     
 
 
