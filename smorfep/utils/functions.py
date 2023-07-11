@@ -1797,11 +1797,12 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
 
         ## start within intron, reverse strand
         elif strand == '-':
-            ## if del -- Check ref allele len
+            ## del -- Check ref allele len
             if len(ref) > len(alt):  
+                print('reverse del')
                 print('var_pos in acceptor')
 
-                ref_end_pos = var_pos - (len(ref)-1) ## TO CHECK XXX TODO
+                ref_end_pos = var_pos - (len(ref)-1) ## OK -- end position is before var_pos
                 var_end_check = find_position(map_gen2transc, ref_end_pos)
                 print(var_pos)
                 print(ref_end_pos)
@@ -1811,6 +1812,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                 # print(all_del_pos)
                 # print(donor_positions)
                 # print([x for x in all_del_pos if x in donor_positions])
+                print([x for x in all_del_pos if x in splice_site_donor])
 
 
                 if var_end_check == True and find_position(map_gen2transc, var_pos) == False: ## deletion in betwen exon and intron
@@ -1823,9 +1825,16 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                         dna_cons = 'frameshift_variant, splice_region_variant' ## frameshift_deletion
                         prot_cons = '-'
                 
+                ## check acceptor sites
                 elif [x for x in all_del_pos if x in donor_positions] != []: ## list empty if no overlap -- OK
                     dna_cons = 'splice_acceptor_variant'
                     prot_cons = '-'
+                
+                ## Check splice region
+                elif [x for x in all_del_pos if x in splice_site_donor] != []: ## -- OK
+                    dna_cons = 'splice_region_variant'
+                    prot_cons = '-'
+
 
 
                 ## TODO: Check this condition too!!!!
@@ -1840,7 +1849,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                 else:
                     return None, None, None, None
                 
-            ## if ins -- Check alt allele len 
+            ## ins -- Check alt allele len 
             elif len(alt) > len(ref):
                 print('reverse insertion')
                 alt_end_pos = var_pos - (len(alt)-1) ## len(alt)-1 to exclude anchor nt
