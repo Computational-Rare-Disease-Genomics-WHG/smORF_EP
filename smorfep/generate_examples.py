@@ -34,8 +34,8 @@ def main():
     parser.add_argument('-oe','--orfEnd', metavar='\b', required=True, type=str, help='ORF end coordinate')
     parser.add_argument('-s','--strand', metavar='\b', required=True, type=str, help='strand')
     parser.add_argument('-i','--orfID', metavar='\b', required=True, type=str, help='ORF ID')
-    parser.add_argument('-ws','--windowStart', metavar='\b', required=True, type=int, help='variants region start coordinate')
-    parser.add_argument('-we','--windowEnd', metavar='\b', required=True, type=int, help='variants region end coordinate')
+    parser.add_argument('-ws','--intronStart', metavar='\b', required=True, type=int, help='intron start coordinate')
+    parser.add_argument('-we','--intronEnd', metavar='\b', required=True, type=int, help='intro end coordinate')
     parser.add_argument('-m','--indelMaxSize', metavar='\b', required=True, type=int, help='indel maximum size')
     parser.add_argument('-r','--refpath', metavar='\b', required=True, type=str, help='Path to the reference genome')
     parser.add_argument('-o', '--outputfile', metavar='\b', required=True, type=str, help='output file name')
@@ -54,10 +54,13 @@ def main():
     ref = read_single_fasta(args.chrom, args.refpath, files_prefix, files_suffix)
 
     ## get sequence
-    seq_left = get_sequence(args.windowStart-args.exonNts-1, args.windowStart+args.intronNts-1+args.indelMaxSize, '+', ref)
+    seq_left = get_sequence(args.intronStart-args.exonNts-1, args.intronStart+args.intronNts-1+args.indelMaxSize, '+', ref)
     # print(args.windowStart, args.exonNts, args.intronNts)
     # print(args.windowStart-args.exonNts-1, args.windowStart+args.intronNts-1)
     # print(seq_left)
+
+    ## get sequence right end
+    seq_right = get_sequence(args.intronEnd-args.intronNts-1, args.intronEnd+args.exonNts-1+args.indelMaxSize, '+', ref)
 
     ## output open and header
     out = open(args.outputfile, 'w')
@@ -70,14 +73,16 @@ def main():
     for var_size in range(args.indelMaxSize+1): ## +1 to include the args.indelMaxSize
         print(var_size)
         diff = args.indelMaxSize-var_size
-        iter_seq = seq_left[:len(seq_left)-diff]
+        ##iter_seq = seq_left[:len(seq_left)-diff] ## left side
+        iter_seq = seq_right[:len(seq_right)-diff] ## right side
         ##print(iter_seq)
 
         var_id = 'XXX'+str(var_index)
 
         if var_size == 0: ## SNV -- runs only once
             for each_nt in range(len(iter_seq)-var_size):
-                var_pos = each_nt + args.windowStart-args.exonNts-1
+                var_pos = each_nt + args.intronStart-args.exonNts-1 ## left side
+                ##var_pos = each_nt + args.intronEnd-args.intronNts-1 ## right side 
                 ref = iter_seq[each_nt]
                 alt = choice_excluding(all_nts, ref)
                 var_type = 'SNV'
@@ -92,7 +97,10 @@ def main():
 
         else: ## insertion and deletion  
             for each_nt in range(len(iter_seq)-var_size):
-                var_pos = var_pos = each_nt + args.windowStart-args.exonNts-1
+                var_pos = each_nt + args.intronStart-args.exonNts-1 ## left side
+
+                var_pos = each_nt + args.intronEnd-args.intronNts-1 ## right
+
 
                 ref_ins = iter_seq[each_nt]
                 alt_ins = iter_seq[each_nt] + ''.join(random.choices(all_nts, k=var_size))
