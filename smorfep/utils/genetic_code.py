@@ -33,7 +33,7 @@ genetic_code_transc = { "UUU":"F",
                  "CGC" : "R",
                  "CGA" : "R",
                  "CGG" : "R",
-                 
+
                  "AUU" : "I",
                  "AUC" : "I",
                  "AUA" : "I",
@@ -105,7 +105,7 @@ genetic_code_gen = { "TTT":"F",
                  "CGC" : "R",
                  "CGA" : "R",
                  "CGG" : "R",
-                 
+
                  "ATT" : "I",
                  "ATC" : "I",
                  "ATA" : "I",
@@ -140,5 +140,3 @@ genetic_code_gen = { "TTT":"F",
                  "GGA" : "G",
                  "GGG" : "G"           
     }
-
-

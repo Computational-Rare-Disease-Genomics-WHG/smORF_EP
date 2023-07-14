@@ -38,7 +38,7 @@ def main():
     parser.add_argument('-we','--intronEnd', metavar='\b', required=True, type=int, help='intro end coordinate')
     parser.add_argument('-m','--indelMaxSize', metavar='\b', required=True, type=int, help='indel maximum size')
     parser.add_argument('-r','--refpath', metavar='\b', required=True, type=str, help='Path to the reference genome')
-    parser.add_argument('-o', '--outputfile', metavar='\b', required=True, type=str, help='output file name')
+    parser.add_argument('-o', '--outputfile', metavar='\b', required=True, type=str, help='output filename prefix. Default format: .vcf')
     parser.add_argument('-e', '--exonNts', metavar='\b', type=int, default=3, help='output file name')
     parser.add_argument('-j', '--intronNts', metavar='\b', type=int, default=8, help='output file name')
 
@@ -63,11 +63,16 @@ def main():
     seq_right = get_sequence(args.intronEnd-args.intronNts-1, args.intronEnd+args.exonNts-1+args.indelMaxSize, '+', ref)
 
     ## output open and header
-    out = open(args.outputfile, 'w')
-    out.write('chrm\tvar_pos\tref\talt\tstart\tend\tstrand\tvar_id\tsmorf_id')
+    out_left = open(args.outputfile+'_donor.vcf', 'w')
+    out_left.write('chrm\tvar_pos\tref\talt\tstart\tend\tstrand\tvar_id\tsmorf_id')
+    
+    out_right = open(args.outputfile+'_acceptor.vcf', 'w')
+    out_right.write('chrm\tvar_pos\tref\talt\tstart\tend\tstrand\tvar_id\tsmorf_id')
 
     var_index = 1
     var_id = 'XXX'+str(var_index)
+
+    ## done until here XXX
 
     ## NOTE: starts 1 postion before the exons nts -- as we use anchor notation
     for var_size in range(args.indelMaxSize+1): ## +1 to include the args.indelMaxSize
