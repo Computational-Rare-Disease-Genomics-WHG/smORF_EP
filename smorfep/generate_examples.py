@@ -69,64 +69,98 @@ def main():
     out_right = open(args.outputfile+'_acceptor.vcf', 'w')
     out_right.write('chrm\tvar_pos\tref\talt\tstart\tend\tstrand\tvar_id\tsmorf_id')
 
-    var_index = 1
-    var_id = 'XXX'+str(var_index)
+    var_index_left = 1
+    var_id_left = 'XXX'+str(var_index_left)
 
-    ## done until here XXX
+    var_index_right = 1
+    var_id_right = 'XXX'+str(var_index_right)
+
 
     ## NOTE: starts 1 postion before the exons nts -- as we use anchor notation
     for var_size in range(args.indelMaxSize+1): ## +1 to include the args.indelMaxSize
         print(var_size)
         diff = args.indelMaxSize-var_size
-        ##iter_seq = seq_left[:len(seq_left)-diff] ## left side
-        iter_seq = seq_right[:len(seq_right)-diff] ## right side
+        iter_seq_left = seq_left[:len(seq_left)-diff] ## left side
+        iter_seq_right = seq_right[:len(seq_right)-diff] ## right side
         ##print(iter_seq)
 
-        var_id = 'XXX'+str(var_index)
-
         if var_size == 0: ## SNV -- runs only once
-            for each_nt in range(len(iter_seq)-var_size):
-                var_pos = each_nt + args.intronStart-args.exonNts-1 ## left side
-                ##var_pos = each_nt + args.intronEnd-args.intronNts-1 ## right side 
-                ref = iter_seq[each_nt]
+            for each_nt_left in range(len(iter_seq_left)-var_size):
+                var_pos_left = each_nt_left + args.intronStart-args.exonNts-1 ## left side
+                ref = iter_seq_left[each_nt_left]
                 alt = choice_excluding(all_nts, ref)
                 var_type = 'SNV'
 
-                ##print(var_pos, ref, alt, var_type)
+                ##print(var_pos_left, ref, alt, var_type)
 
                 ## uncoment next line for SNV
-                ##out.write('\n'+chrom+'\t'+str(var_pos)+'\t'+ref+'\t'+alt+'\t'+orf_start+'\t'+orf_end+'\t'+strand+'\t'+var_type+'\t'+orf_id)
-                ##var_index +=1
-                ##var_id = 'XXX'+str(var_index)
+                ##out_left.write('\n'+chrom+'\t'+str(var_pos_left)+'\t'+ref+'\t'+alt+'\t'+orf_start+'\t'+orf_end+'\t'+strand+'\t'+var_id_left +'\t'+var_type+'\t'+orf_id)
+                ##var_index_left +=1
+                ##var_id_left = 'XXX'+str(var_index_left)
+
+
+            for each_nt_right in range(len(iter_seq_right)-var_size):
+                var_pos_right = each_nt_right + args.intronEnd-args.intronNts-1 ## right side 
+                ref = iter_seq_right[each_nt_right]
+                alt = choice_excluding(all_nts, ref)
+                var_type = 'SNV'
+
+                ##out_left.write('\n'+chrom+'\t'+str(var_pos_right)+'\t'+ref+'\t'+alt+'\t'+orf_start+'\t'+orf_end+'\t'+strand+'\t'+var_id_right +'\t'+var_type+'\t'+orf_id)
+                ##var_index_right +=1
+                ##var_id_right = 'XXX'+str(var_index_right)
 
 
         else: ## insertion and deletion  
-            for each_nt in range(len(iter_seq)-var_size):
-                var_pos = each_nt + args.intronStart-args.exonNts-1 ## left side
 
-                var_pos = each_nt + args.intronEnd-args.intronNts-1 ## right
+            ## left side of the intron
+            for each_nt_left in range(len(iter_seq_left)-var_size):
+                var_pos_left = each_nt_left + args.intronStart-args.exonNts-1 ## left side
 
-
-                ref_ins = iter_seq[each_nt]
-                alt_ins = iter_seq[each_nt] + ''.join(random.choices(all_nts, k=var_size))
+                ref_ins = iter_seq_left[each_nt_left]
+                alt_ins = iter_seq_left[each_nt_left] + ''.join(random.choices(all_nts, k=var_size))
                 var_type_ins = str(var_size) + 'nt_ins'
 
-                ref_del = iter_seq[each_nt:each_nt+var_size+1]
-                alt_del = iter_seq[each_nt]
+                ref_del = iter_seq_left[each_nt_left:each_nt_left+var_size+1]
+                alt_del = iter_seq_left[each_nt_left]
                 var_type_del = str(var_size) + 'nt_del'
 
-                # print(var_pos, ref_ins, alt_ins, var_type_ins)
-                # print(var_pos, ref_del, alt_del, var_type_del)
-                out.write('\n'+args.chrom+'\t'+str(var_pos)+'\t'+ref_ins+'\t'+alt_ins+'\t'+args.orfStart+'\t'+args.orfEnd+'\t'+args.strand+'\t'+var_id +'_'+var_type_ins+'\t'+args.orfID)
-                var_index +=1
-                var_id = 'XXX'+str(var_index)
-                out.write('\n'+args.chrom+'\t'+str(var_pos)+'\t'+ref_del+'\t'+alt_del+'\t'+args.orfStart+'\t'+args.orfEnd+'\t'+args.strand+'\t'+var_id +'_'+var_type_del+'\t'+args.orfID)
 
-                var_index +=1
-                var_id = 'XXX'+str(var_index)
+                # print(var_pos_left, ref_ins, alt_ins, var_type_ins)
+                # print(var_pos_left, ref_del, alt_del, var_type_del)
+                out_left.write('\n'+args.chrom+'\t'+str(var_pos_left)+'\t'+ref_ins+'\t'+alt_ins+'\t'+args.orfStart+'\t'+args.orfEnd+'\t'+args.strand+'\t'+var_id_left +'_'+var_type_ins+'\t'+args.orfID)
+                var_index_left +=1
+                var_id_left = 'XXX'+str(var_index_left)
+                out_left.write('\n'+args.chrom+'\t'+str(var_pos_left)+'\t'+ref_del+'\t'+alt_del+'\t'+args.orfStart+'\t'+args.orfEnd+'\t'+args.strand+'\t'+var_id_left +'_'+var_type_del+'\t'+args.orfID)
 
-    out.close()
 
+                var_index_left +=1
+                var_id_left = 'XXX'+str(var_index_left)
+
+
+
+             ## right side of the intron
+            for each_nt_right in range(len(iter_seq_right)-var_size):
+
+                var_pos_right = each_nt_right + args.intronEnd-args.intronNts-1 ## right
+                ref_ins = iter_seq_right[each_nt_right]
+                alt_ins = iter_seq_right[each_nt_right] + ''.join(random.choices(all_nts, k=var_size))
+                var_type_ins = str(var_size) + 'nt_ins'
+
+                ref_del = iter_seq_right[each_nt_right:each_nt_right+var_size+1]
+                alt_del = iter_seq_right[each_nt_right]
+                var_type_del = str(var_size) + 'nt_del'
+
+
+                out_right.write('\n'+args.chrom+'\t'+str(var_pos_right)+'\t'+ref_ins+'\t'+alt_ins+'\t'+args.orfStart+'\t'+args.orfEnd+'\t'+args.strand+'\t'+var_id_right +'_'+var_type_ins+'\t'+args.orfID)
+                var_index_right +=1
+                var_id_right = 'XXX'+str(var_index_right)
+                out_right.write('\n'+args.chrom+'\t'+str(var_pos_right)+'\t'+ref_del+'\t'+alt_del+'\t'+args.orfStart+'\t'+args.orfEnd+'\t'+args.strand+'\t'+var_id_right +'_'+var_type_del+'\t'+args.orfID)
+
+                var_index_right +=1
+                var_id_right = 'XXX'+str(var_index_right)
+
+    out_left.close()
+    out_right.close()
 
 
 
