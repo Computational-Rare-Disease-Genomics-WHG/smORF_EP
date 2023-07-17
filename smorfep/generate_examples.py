@@ -100,7 +100,7 @@ def main():
 
 
             for each_nt_right in range(len(iter_seq_right)-var_size):
-                var_pos_right = each_nt_right + args.intronEnd-args.intronNts-1 ## right side 
+                var_pos_right = each_nt_right + args.intronEnd-args.intronNts ## right side 
                 ref = iter_seq_right[each_nt_right]
                 alt = choice_excluding(all_nts, ref)
                 var_type = 'SNV'
@@ -141,7 +141,7 @@ def main():
              ## right side of the intron
             for each_nt_right in range(len(iter_seq_right)-var_size):
 
-                var_pos_right = each_nt_right + args.intronEnd-args.intronNts-1 ## right
+                var_pos_right = each_nt_right + args.intronEnd-args.intronNts ## right
                 ref_ins = iter_seq_right[each_nt_right]
                 alt_ins = iter_seq_right[each_nt_right] + ''.join(random.choices(all_nts, k=var_size))
                 var_type_ins = str(var_size) + 'nt_ins'
