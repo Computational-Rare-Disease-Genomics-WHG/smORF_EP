@@ -110,8 +110,6 @@ def main():
                 ##var_id_right = 'XXX'+str(var_index_right)
 
 
-    ## done until here XXX
-
         else: ## insertion and deletion  
 
             ## left side of the intron
