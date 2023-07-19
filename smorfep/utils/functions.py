@@ -432,6 +432,7 @@ def add_variant_transcriptSeq(sequence, start, end,  ref, alt, position, map_coo
         
     else:
         ## XXX uncomment prints -- TODO
+        print('add_variant_transcriptSeq function')
         print(position, ref, alt, start, end)
         print('ref allele does not correspond!')
         print('reference genome: ', sequence[variant_index:variant_index+len(ref)])
