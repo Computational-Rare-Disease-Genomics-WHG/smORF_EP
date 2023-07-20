@@ -396,7 +396,7 @@ def genome2transcript_coords(start, end, strand, introns_df):
 
 
 ## for sequences with introns
-def add_variant_transcriptSeq(sequence, start, end,  ref, alt, position, map_coordinates):
+def add_variant_transcriptSeq(sequence, start, end, ref, alt, position, map_coordinates):
     """
         Function to add a variant given:
         - sequence
@@ -406,6 +406,9 @@ def add_variant_transcriptSeq(sequence, start, end,  ref, alt, position, map_coo
         - alt -- alternative allele
         - position -- genomic position of the variant
         - strand -- strand 
+
+        NOTE: It removes the introns before adding the variant. 
+        Not used for variants that cross exon-intron sections.
 
         Returns the new genomic sequence
     """
@@ -432,6 +435,7 @@ def add_variant_transcriptSeq(sequence, start, end,  ref, alt, position, map_coo
         
     else:
         ## XXX uncomment prints -- TODO
+        print('add_variant_transcriptSeq function')
         print(position, ref, alt, start, end)
         print('ref allele does not correspond!')
         print('reference genome: ', sequence[variant_index:variant_index+len(ref)])

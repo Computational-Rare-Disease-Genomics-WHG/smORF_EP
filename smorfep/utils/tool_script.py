@@ -122,6 +122,8 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
             ext_len = len(extension_seq)
 
 
+        ## Variant conversion to reverse strand
+        print('\n')
         print('original info')
         print(variant_pos, ref, alt)
         ## pre-process variant on the reverse strand
@@ -137,6 +139,7 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
             ref_allele_sufix = reverse_complement_seq(ref)
             ref = alt + ref_allele_sufix[:-1] ## removes the last nt
             variant_pos = int(variant_pos)+pos_diff+1 ## var pos next position after the deletion section
+            print(alt, ref_allele_sufix, ref, variant_pos)
             ## re-defines variant_pos
 
         elif len(ref) < len(alt): ## insertion 

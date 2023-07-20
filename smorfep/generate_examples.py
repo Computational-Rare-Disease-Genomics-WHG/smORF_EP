@@ -82,7 +82,8 @@ def main():
         diff = args.indelMaxSize-var_size
         iter_seq_left = seq_left[:len(seq_left)-diff] ## left side
         iter_seq_right = seq_right[:len(seq_right)-diff] ## right side
-        ##print(iter_seq)
+        ##print(iter_seq_left)
+        print(iter_seq_right)
 
         if var_size == 0: ## SNV -- runs only once
             for each_nt_left in range(len(iter_seq_left)-var_size):
@@ -100,7 +101,9 @@ def main():
 
 
             for each_nt_right in range(len(iter_seq_right)-var_size):
-                var_pos_right = each_nt_right + args.intronEnd-args.intronNts ## right side 
+              
+                var_pos_right = each_nt_right + args.intronEnd-args.intronNts-1 ## right side 
+
 
                 ref = iter_seq_right[each_nt_right]
                 alt = choice_excluding(all_nts, ref)
@@ -141,8 +144,9 @@ def main():
 
              ## right side of the intron
             for each_nt_right in range(len(iter_seq_right)-var_size):
-              
-                var_pos_right = each_nt_right + args.intronEnd-args.intronNts ## right
+
+                var_pos_right = each_nt_right + args.intronEnd-args.intronNts-1 ## right
+
 
                 ref_ins = iter_seq_right[each_nt_right]
                 alt_ins = iter_seq_right[each_nt_right] + ''.join(random.choices(all_nts, k=var_size))
@@ -151,6 +155,8 @@ def main():
                 ref_del = iter_seq_right[each_nt_right:each_nt_right+var_size+1]
                 alt_del = iter_seq_right[each_nt_right]
                 var_type_del = str(var_size) + 'nt_del'
+
+                print(var_pos_right, ref_ins, alt_ins, ref_del, alt_del)
 
 
                 out_right.write('\n'+args.chrom+'\t'+str(var_pos_right)+'\t'+ref_ins+'\t'+alt_ins+'\t'+args.orfStart+'\t'+args.orfEnd+'\t'+args.strand+'\t'+var_id_right +'_'+var_type_ins+'\t'+args.orfID)
