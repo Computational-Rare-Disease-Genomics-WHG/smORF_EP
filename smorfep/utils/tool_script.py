@@ -8,7 +8,7 @@
 from smorfep.utils.functions import *
 
 
-def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, strand, ref, alt, variant_pos, map_gen2transc, map_transc2gen, splice_site=8):
+def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, strand, ref, alt, variant_pos, map_gen2transc, map_transc2gen, splice_site=8, donor_acceptor_size = 2):
 
     """
         Function that runs the variant consequence check.
@@ -196,7 +196,7 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
         ## XXX TODO: think on the starting in the intron, but extending to the exon variants !!!!! 
         ## Check exon-intron crossing variants
 
-        dna_c, dna_seq_c, prot_c, prot_seq_c = check_exon_intron_vars(variant_pos, ref, alt, strand, map_gen2transc, splice_regions_df)
+        dna_c, dna_seq_c, prot_c, prot_seq_c, donor_positions, acceptor_positions, splice_site_donor, splice_site_acceptor = check_exon_intron_vars(variant_pos, ref, alt, strand, map_gen2transc, splice_regions_df)
         print(' ')
         print(variant_pos, ref, alt)
         print(dna_c, dna_seq_c, prot_c, prot_seq_c)
@@ -204,7 +204,7 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
         if dna_c == None: 
 
             ## this works on the coordinates
-            intron_status = search_introns(transcript_introns_df, variant_pos, strand, splice_site)
+            intron_status = search_introns(transcript_introns_df, variant_pos, ref, alt, strand, donor_positions, acceptor_positions, splice_site_donor, splice_site_acceptor, splice_site, donor_acceptor_size)
             ## This only checks if the var_pos is within the intron
 
             if intron_status != 'Not intronic':
