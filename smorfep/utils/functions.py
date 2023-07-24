@@ -1610,7 +1610,7 @@ def map_splice_regions(introns_df, splice_size, intron_exon_size=3, splice_da_si
     return splice_regions_df
 
 
-def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_regions_df):
+def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_regions_df, splice_size =8, intron_exon_size=3, splice_da_size=2):
     """ 
         Function to check if a variant crosses exon-intron boundaries.
         # Special case, only required for indels.
@@ -1627,6 +1627,8 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
         
         Note1: Intron coordinates are not included in the mapping, as introns are not present in the transcript sequence.
 
+        Note2: donor is the interval on the left of the intron; acceptor is the end on the right end of the intron (strand independent)
+
         Output: 
         Consequnce(s) of the variant for this case. 
         Or 'None' if the full length of the variant is within the exon --> run the normal analysis after.
@@ -1637,69 +1639,68 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
 
     filtered_donor = splice_regions_df[splice_regions_df['splice_region'].str.contains('donor_sr_intron')] ## only donor
     filtered_donor = filtered_donor[(filtered_donor['start'] <= var_pos) & (filtered_donor['end'] >= var_pos)]  ## gets the donor site of interest
-    print(filtered_donor)
+    ##print(filtered_donor)
+
+    filtered_acceptor = splice_regions_df[splice_regions_df['splice_region'].str.contains('acceptor_sr_intron')] ## only acceptor
+    filtered_acceptor = filtered_acceptor[(filtered_acceptor['start'] <= var_pos) & (filtered_acceptor['end'] >= var_pos)]  
+    ##print(filtered_acceptor)
+
+    ## save donor and acceptor positions
+    ## for all the donor and acceptor sites per transcript 
+    ## for donor/acceptor variants
+    donor_acceptor_positions = []
+    ##donor_positions = []
+    ##acceptor_positions = []
+
+    ## splice_regions (1-3 bases in the exon flanking the intron start + 7-XX base within the intron (XX for VEP is 8, but user can define other lenght))
+    ## for splice_region_variant
+    ## NOTE: left -- donor; right -- acceptor (foraward strand, reverse otherwise) 
+    splice_region = []
+    ##splice_region_left = []
+    ##plice_region_right = []
+
+    ## Positions between 6-XX bases within the intron (XX for VEP is 8, but user can define other lenght)
+    ## for splice_donor/acceptor_region_variant
+    splice_donor_acceptor_region = []
+    ##splice_donor_region = []
+    ##splice_acceptor_region = []
+
+    ## 5th position within the intron ends
+    fifthbase = None
+    # donor_5th = None
+    # acceptor_5th = None 
 
     if filtered_donor.empty: 
-        print('empty')
-        intron_end_type = 'acceptor_end'
-
-        filtered_acceptor = splice_regions_df[splice_regions_df['splice_region'].str.contains('acceptor_sr_intron')] ## only acceptor
-        filtered_acceptor = filtered_acceptor[(filtered_acceptor['start'] <= var_pos) & (filtered_acceptor['end'] >= var_pos)]  
-        print(filtered_acceptor)
-
-        ## compute the intron regions
-
-
-        ## save acceptor positions
-        ## for acceptor variants
-        acceptor_positions = []
-
-        ## splice_regions (1-3 bases in the exon flanking the intron start + 7-XX base within the intron (XX for VEP is 8, but user can define other lenght))
-        ## for splice_region_variant
-        ## NOTE:  right -- acceptor (foraward strand, reverse otherwise) 
-        splice_region_right = []
-
-        ## Positions between 6-XX bases within the intron (XX for VEP is 8, but user can define other lenght)
-        ## for splice_acceptor_region_variant
-        splice_acceptor_region = []
-
-        ## 5th position within the intron ends
-        acceptor_5th = 0 
-
+        intron_end_region = 'acceptor_end'
         for index_a, row_a in filtered_acceptor.iterrows(): 
-            acceptor_positions.extend([g for g in range(row_a.da_start, row_a.da_end+1)])
-            splice_region_right.extend([t for t in range(row.start, row.end+1)])
+            print(row)
+            donor_acceptor_positions.extend([g for g in range(row_a.da_start, row_a.da_end+1)])
+
+
+            
+
 
     else: 
-        print('not empty')
-        intron_end_type = 'donor_end'
+        intron_end_region = 'donor_end'
+        for index, row in filtered_donor.iterrows(): 
+            ##print(row)
+            donor_acceptor_positions.extend([i for i in range(row.da_start, row.da_end+1)])
+            ##print(donor_acceptor_positions)
 
-        ## compute the intron regions
+            splice_region.extend([m for m in range(row.start, row.start+intron_exon_size)]) 
+            splice_region.extend([m for m in range(row.end-(splice_size-6)+1, row.end+1)]) ## VEP uses 6th base up to splice region upper range (8bps) as for splice region
+            ##print(splice_region) 
 
-        ## 1- save donor positions
-        ## for all the donor and acceptor sites per transcript 
-        ## for donor variants
-        donor_positions = []
+            fifthbase = row.da_start + 4 ## +4 as da_start is the first base of the intron
+            ##print(fifthbase)
 
-        ## splice_regions (1-3 bases in the exon flanking the intron start + 7-XX base within the intron (XX for VEP is 8, but user can define other lenght))
-        ## for splice_region_variant
-        ## NOTE: left -- donor (foraward strand, reverse otherwise) 
-        splice_region_left = []
-
-        ## Positions between 6-XX bases within the intron (XX for VEP is 8, but user can define other lenght)
-        ## for splice_donor_region_variant
-        splice_donor_region = []
-
-        ## 5th position within the intron ends
-        donor_5th = 0
+            splice_donor_acceptor_region.extend([t for t in range(row.da_start+splice_da_size, fifthbase)])
+            splice_donor_acceptor_region.extend([fifthbase+1]) ## adds 6th base -- default VEP 
+            ##print(splice_donor_acceptor_region)
 
 
-        for index,row in filtered_donor.iterrows(): 
-            donor_positions.extend([i for i in range(row.da_start, row.da_end+1)])
-            ##print('donor coordinates computation')
-            ##print(donor_positions)
-            splice_region_left.extend([m for m in range(row.start, row.end+1)])
-        
+
+    return None
 
     ## 1- var starts in the exon
     if var_pos_check == True: 
