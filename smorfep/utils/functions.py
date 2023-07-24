@@ -54,10 +54,9 @@ def check_prefix_sufix_ref_files(filepath):
     files_list = os.listdir(filepath)
     ## takes first file
     f = files_list[0]
-    ## find number in the filename -- variable part
-    num = re.findall(r'\d+', f)[0]  ## [0] as the result is a list with a single element
-    files_prefix = f.split(num)[0]
-    files_suffix = f.split(num)[1]
+
+    files_prefix = f[:(f.find('chr')+3)]
+    files_suffix = f[f.find('_GRCh'):]
 
     return files_prefix, files_suffix
 
@@ -842,7 +841,10 @@ def stop_transcript_search(seq, strand, transcript_extension, map_coordinates):
         Returns the new sequence and the ßnew stop coordinate
     """
     #debug: add one positions into map_coordinates to account the exact end of transcript
-    #map_coordinates[max(map_coordinates, key=map_coordinates.get) + 1] = max(map_coordinates.values()) + 1
+    max_key, max_value = max(map_coordinates, key=map_coordinates.get), max(map_coordinates.values())
+    map_coordinates[max_key + 1] = max_value + 1
+    map_coordinates[max_key + 2] = max_value + 2
+
 
     ## 1- first search in the corrected sequence 
     
