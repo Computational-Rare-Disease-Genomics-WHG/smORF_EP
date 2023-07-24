@@ -1689,7 +1689,6 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
             ##print(splice_donor_acceptor_region)
             
 
-
     else: 
         intron_end_region = 'donor_end'
         for index, row in filtered_donor.iterrows(): 
@@ -1709,15 +1708,12 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
             ##print(splice_donor_acceptor_region)
 
 
-
-    return None
-
     ## 1- var starts in the exon
-    if var_pos_check == True: 
+    if var_pos_check == True:  
         print(var_pos, ref, alt)
         print('var starts within the exon')
         
-        if strand == '+':
+        if strand == '+': ### TODO: Edit all this block 
             ## if deletion -- Check ref allele len -- Testing examples annotatons OK
             if len(ref) > len(alt): 
                 ref_end_pos = var_pos + len(ref) -1 ## OK
@@ -1725,14 +1721,20 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
 
                 exon_nts = within_exon(var_pos, ref_end_pos, map_gen2transc) ## Checked -- OK
      
-                if ref_end_pos in donor_positions and exon_nts >= 1: ## splice donor
+                if ref_end_pos in donor_acceptor_positions and exon_nts >= 1: ## splice donor
                     ## Case1: exon_nts = 1 --> 1st nt is anchor and deletion only on the donor region 
                     ## Case 2: exon_nts >1 + ref_end_pos within the donor_positions --> splice_donor variant
                     # -- otehrwise frameshift+splice_region 
-                    dna_cons = 'splice_donor_variant'
-                    prot_cons = '-'
+                    if intron_end_region == 'donor_end':
+                        dna_cons = 'splice_donor_variant'
+                        prot_cons = '-'
+                    elif intron_end_region == 'acceptor_end': 
+                        dna_cons = 'splice_acceptor_variant'
+                        prot_cons = '-'
 
-                elif ref_end_pos in splice_region_left: ## splice-region
+                        ## XXX: Edited this bit
+
+                elif ref_end_pos in splice_region:  ## XXX Edited this line 
                     deletion_size = len(ref) -1 ## -1 to remove anchor base
 
                     if deletion_size % 3 == 0:
