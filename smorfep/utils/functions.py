@@ -1673,10 +1673,20 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
     if filtered_donor.empty: 
         intron_end_region = 'acceptor_end'
         for index_a, row_a in filtered_acceptor.iterrows(): 
-            print(row)
+            ##print(row_a)
             donor_acceptor_positions.extend([g for g in range(row_a.da_start, row_a.da_end+1)])
+            ##print(donor_acceptor_positions)
 
+            splice_region.extend([j for j in range(row_a.start, row_a.start+(splice_size-6))]) ## VEP uses 6th base up to splice region upper range (8bps) as for splice region
+            splice_region.extend([j for j in range(row_a.end-intron_exon_size+1, row_a.end+1)]) 
+            ##print(splice_region) 
 
+            fifthbase = row_a.da_end - 4 ## -4 as da_end is the first base of the intron
+            ##print(fifthbase)
+
+            splice_donor_acceptor_region.extend([t for t in range(fifthbase+1, row_a.da_end-splice_da_size+1)])
+            splice_donor_acceptor_region.extend([fifthbase-1]) ## adds 6th base -- default VEP 
+            ##print(splice_donor_acceptor_region)
             
 
 
@@ -1688,7 +1698,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
             ##print(donor_acceptor_positions)
 
             splice_region.extend([m for m in range(row.start, row.start+intron_exon_size)]) 
-            splice_region.extend([m for m in range(row.end-(splice_size-6)+1, row.end+1)]) ## VEP uses 6th base up to splice region upper range (8bps) as for splice region
+            splice_region.extend([m for m in range(row.end-(splice_size-6), row.end+1)]) ## VEP uses 6th base up to splice region upper range (8bps) as for splice region
             ##print(splice_region) 
 
             fifthbase = row.da_start + 4 ## +4 as da_start is the first base of the intron
