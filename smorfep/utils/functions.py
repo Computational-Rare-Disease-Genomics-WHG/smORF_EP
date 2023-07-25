@@ -1644,6 +1644,22 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
     ## find if var position is in a exon
     var_pos_check = find_position(map_gen2transc, var_pos)
 
+    ## Get the postions affected by the variant
+    if len(ref) == len(alt): ## SNV
+        all_var_pos = [var_pos]
+    elif len(ref) < len(alt): ## insertion
+        if strand == '+':
+            all_var_pos = [v for v in range(var_pos, var_pos + len(alt) -1)]
+        elif strand == '-':
+            all_var_pos = [v for v in range(var_pos - (len(alt)-1), var_pos)]
+    elif len(ref) > len(alt): ## deletion
+        if strand == '+':
+            all_var_pos = [v for v in range(var_pos, var_pos + len(ref) -1)]
+        elif strand == '-':
+            all_var_pos = [v for v in range(var_pos - (len(ref)-1), var_pos+1)]
+    
+    print(all_var_pos)
+
     filtered_donor = splice_regions_df[splice_regions_df['splice_region'].str.contains('donor_sr_intron')] ## only donor
     filtered_donor = filtered_donor[(filtered_donor['start'] <= var_pos) & (filtered_donor['end'] >= var_pos)]  ## gets the donor site of interest
     ##print(filtered_donor)
@@ -1678,6 +1694,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
     # acceptor_5th = None 
 
     if filtered_donor.empty:
+        print(filtered_acceptor)
         row_a = filtered_acceptor.iloc[0] ## right side
 
         if strand == '+':
@@ -1717,6 +1734,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
             
 
     else: 
+        print(filtered_donor)
         row = filtered_donor.iloc[0] ## left side
         if strand == '+':
             intron_end_region = 'donor_end'
@@ -1753,7 +1771,12 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
             print(splice_donor_acceptor_region)
 
 
-    
+    if intron_end_region == 'donor_end':
+
+
+        pass
+    elif intron_end_region == 'acceptor_end':
+        pass
 
 
     ## 1- var starts in the exon
