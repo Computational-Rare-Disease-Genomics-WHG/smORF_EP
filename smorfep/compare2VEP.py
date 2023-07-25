@@ -48,7 +48,7 @@ def main():
     ## iterate per line in the smorfep file -- filters per transcript that cover the smORFs in analysis -- smaller possible df
     for index, row in smorfep_df.iterrows():
 
-        consequence = row.DNA_consequence.split(', ')
+        consequence = row.DNA_consequence.split('&')
         ##print(consequence)
         
         ## get the vep so for the same transcript 
