@@ -610,7 +610,7 @@ def read_vep_web(filename):
 
 
 ## TODO: update the input variable as output from exon-intron function XXX
-def search_introns(introns, var_pos, ref, alt, strand, donor_positions, acceptor_positions, splice_site_donor, splice_site_acceptor, splice_site = 8, donor_acceptor_size = 2): 
+def search_introns(introns, var_pos, ref, alt, strand, donor_acceptor_positions, splice_region, splice_donor_acceptor_region, fifthbase, intron_end_region, splice_site = 8, donor_acceptor_size = 2): 
     """
         Function to search if the variants are within an intronic region. 
         Input: 
@@ -667,17 +667,24 @@ def search_introns(introns, var_pos, ref, alt, strand, donor_positions, acceptor
 
 
             ## if it gets within splice-site size(8bps default) from start of intron: splice donor
-            if [x for x in all_var_pos if x in acceptor_positions] != []: 
-                result = 'splice_acceptor_variant'
-            
-            elif [x for x in all_var_pos if x in donor_positions] != []: ## list empty if no overlap -- OK
-                result = 'splice_donor_variant'
+            if [x for x in all_var_pos if x in donor_acceptor_positions] != []: 
+                if intron_end_region == 'acceptor_end':
+                    result = 'splice_acceptor_variant'
+                elif intron_end_region == 'donor_end':
+                    result = 'splice_donor_variant'
 
-            elif [x for x in all_var_pos if x in splice_site_acceptor] != []:  ## splice_site -1 as the first base is s
+            elif [x for x in all_var_pos if x in splice_region] != []:  ## splice_site -1 as the first base is s
                 result = 'splice_region_variant'
-            elif [x for x in all_var_pos if x in splice_site_donor] != []:
-                result = 'splice_region_variant'
-        
+            elif [x for x in all_var_pos if x in splice_donor_acceptor_region] != []:
+                if intron_end_region == 'acceptor_end':
+                    result = 'splice_acceptor_region_variant'
+                elif intron_end_region == 'donor_end':
+                    result = 'splice_donor_region_variant'
+            elif fifthbase in all_var_pos: 
+                if intron_end_region == 'acceptor_end':
+                    result = 'splice_acceptor_region_variant'
+                elif intron_end_region == 'donor_end':
+                    result = 'splice_donor_region_variant'
 
         elif strand == '-': 
             s = intron_select_start[0] ## end on the intron in the reverse strand
@@ -1659,45 +1666,68 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
     ##splice_region_left = []
     ##plice_region_right = []
 
-    ## Positions between 6-XX bases within the intron (XX for VEP is 8, but user can define other lenght)
+    ## Positions between 3-6 bases (VEP default) within the intron
     ## for splice_donor/acceptor_region_variant
     splice_donor_acceptor_region = []
     ##splice_donor_region = []
     ##splice_acceptor_region = []
 
-    ## 5th position within the intron ends
+    ## 5th position within the intron donor side (ONLY donor!)
     fifthbase = None
     # donor_5th = None
     # acceptor_5th = None 
 
-    if filtered_donor.empty: 
-        intron_end_region = 'acceptor_end'
-        for index_a, row_a in filtered_acceptor.iterrows(): 
+    if filtered_donor.empty:
+        row_a = filtered_acceptor.iloc[0] ## right side
+
+        if strand == '+':
+
+            intron_end_region = 'acceptor_end'
+
+            ##for index_a, row_a in filtered_acceptor.iterrows(): 
             ##print(row_a)
             donor_acceptor_positions.extend([g for g in range(row_a.da_start, row_a.da_end+1)])
-            ##print(donor_acceptor_positions)
+            print(donor_acceptor_positions)
 
             splice_region.extend([j for j in range(row_a.start, row_a.start+(splice_size-6))]) ## VEP uses 6th base up to splice region upper range (8bps) as for splice region
             splice_region.extend([j for j in range(row_a.end-intron_exon_size+1, row_a.end+1)]) 
-            ##print(splice_region) 
+            print(splice_region) 
+
+            splice_donor_acceptor_region.extend([t for t in range(fifthbase-1, row_a.da_end-splice_da_size+1)])
+            splice_donor_acceptor_region.extend([fifthbase-1]) ## adds 6th base -- default VEP 
+            print(splice_donor_acceptor_region)
+
+        
+        elif strand == '-':
+            intron_end_region = 'donor_end'
+
+            donor_acceptor_positions.extend([g for g in range(row_a.da_start, row_a.da_end+1)])
+            print(donor_acceptor_positions)
+
+            splice_region.extend([j for j in range(row_a.start, row_a.start+(splice_size-6))]) ## VEP uses 6th base up to splice region upper range (8bps) as for splice region
+            splice_region.extend([j for j in range(row_a.end-intron_exon_size+1, row_a.end+1)]) 
+            print(splice_region) 
 
             fifthbase = row_a.da_end - 4 ## -4 as da_end is the first base of the intron
-            ##print(fifthbase)
+            print(fifthbase)
 
             splice_donor_acceptor_region.extend([t for t in range(fifthbase+1, row_a.da_end-splice_da_size+1)])
             splice_donor_acceptor_region.extend([fifthbase-1]) ## adds 6th base -- default VEP 
-            ##print(splice_donor_acceptor_region)
+            print(splice_donor_acceptor_region)
             
 
     else: 
-        intron_end_region = 'donor_end'
-        for index, row in filtered_donor.iterrows(): 
+        row = filtered_donor.iloc[0] ## left side
+        if strand == '+':
+            intron_end_region = 'donor_end'
+
+            ##for index, row in filtered_donor.iterrows(): 
             ##print(row)
             donor_acceptor_positions.extend([i for i in range(row.da_start, row.da_end+1)])
             ##print(donor_acceptor_positions)
 
             splice_region.extend([m for m in range(row.start, row.start+intron_exon_size)]) 
-            splice_region.extend([m for m in range(row.end-(splice_size-6), row.end+1)]) ## VEP uses 6th base up to splice region upper range (8bps) as for splice region
+            splice_region.extend([m for m in range(row.end-(splice_size-6)+1, row.end+1)]) ## VEP uses 6th base up to splice region upper range (8bps) as for splice region
             ##print(splice_region) 
 
             fifthbase = row.da_start + 4 ## +4 as da_start is the first base of the intron
@@ -1706,6 +1736,24 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
             splice_donor_acceptor_region.extend([t for t in range(row.da_start+splice_da_size, fifthbase)])
             splice_donor_acceptor_region.extend([fifthbase+1]) ## adds 6th base -- default VEP 
             ##print(splice_donor_acceptor_region)
+        
+        elif strand == '-':
+            intron_end_region = 'acceptor_end'
+
+            ##for index, row in filtered_donor.iterrows(): 
+            ##print(row)
+            donor_acceptor_positions.extend([i for i in range(row.da_start, row.da_end+1)])
+            ##print(donor_acceptor_positions)
+
+            splice_region.extend([m for m in range(row.start, row.start+intron_exon_size)]) 
+            splice_region.extend([m for m in range(row.end-(splice_size-6)+1, row.end+1)]) ## VEP uses 6th base up to splice region upper range (8bps) as for splice region
+            print(splice_region) 
+
+            splice_donor_acceptor_region.extend([t for t in range(row.da_start+splice_da_size, row.end-(splice_size-6)+1)])
+            print(splice_donor_acceptor_region)
+
+
+    
 
 
     ## 1- var starts in the exon
@@ -1815,11 +1863,16 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                         prot_cons = '-'
 
 
-                elif ref_end_pos in donor_positions and exon_nts >= 1: ## splice acceptor as we are on the reverse strand
-                    dna_cons = 'splice_acceptor_variant'
-                    prot_cons = '-'
+                elif ref_end_pos in donor_acceptor_positions and exon_nts >= 1: ## splice acceptor as we are on the reverse strand
+                    if intron_end_region == 'donor_end':
+                        dna_cons = 'splice_acceptor_variant'
+                        prot_cons = '-'
+                    elif intron_end_region == 'acceptor_end':
+                        dna_cons = 'splice_donor_variant'
+                        prot_cons = '-'
+
                 
-                elif ref_end_pos in splice_region_left: ## splice region
+                elif ref_end_pos in splice_region: ## splice region
                     deletion_size = len(ref) - 1 ## excluding anchor base
 
                     if deletion_size % 3 == 0: 
@@ -1867,7 +1920,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                         dna_cons = 'frameshift_variant, splice_region_variant' ## frameshift_insertion
                         prot_cons = '-'
 
-                elif var_pos in splice_region_left and alt_end_pos in splice_region_left and var_pos not in donor_positions and alt_end_pos not in donor_positions: 
+                elif var_pos in splice_region and alt_end_pos in splice_region and var_pos not in donor_acceptor_positions and alt_end_pos not in donor_acceptor_positions: 
 
                     insertion_size = len(alt) -1 ## -1 to remove anchor base
 
@@ -1879,7 +1932,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                         prot_cons = '-'
                 
                 ##TODO:  Check with left side example if cna be elif -- before edits 16 Jul it was if
-                elif var_end_check == True and [x for x in all_ins_pos if x in splice_region_left] != []:
+                elif var_end_check == True and [x for x in all_ins_pos if x in splice_region] != []:
                     insertion_size = len(alt) -1 ## -1 to remove anchor base
 
                     if insertion_size % 3 == 0:
@@ -1889,19 +1942,6 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                         dna_cons = 'frameshift_variant, splice_region_variant' ## frameshift_insertion
                         prot_cons = '-'
                 
-                ## Acceptor side -- left side of the intron
-                elif var_pos in splice_region_right and alt_end_pos in splice_region_right and var_pos not in acceptor_positions and alt_end_pos not in acceptor_positions: 
-
-                    insertion_size = len(alt) -1 ## -1 to remove anchor base
-
-                    if insertion_size % 3 == 0:
-                        dna_cons = 'inframe_insertion, splice_region_variant'
-                        prot_cons = 'protein_elongation'
-                    else: 
-                        dna_cons = 'frameshift_variant, splice_region_variant' ## frameshift_insertion
-                        prot_cons = '-'
-
-
                 
                 else: ## variant still in the exon -- Will run the exon annotation
                     dna_cons = None
@@ -1923,15 +1963,15 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
         if strand == '+':
             ## if del -- Check ref allele len
             if len(ref) > len(alt): 
-                print(acceptor_positions)
-                print(var_pos in acceptor_positions)
+                print(donor_acceptor_positions)
+                print(var_pos in donor_acceptor_positions)
                 
-                if var_pos in acceptor_positions and var_pos+1 not in acceptor_positions: ## variant anchor is the last nt of the intron
+                if var_pos in donor_acceptor_positions and var_pos+1 not in donor_acceptor_positions: ## variant anchor is the last nt of the intron
                     print('var_pos is last nt of the intron')
                     dna_cons =  'frameshift_variant, splice_region_variant'
                     prot_cons = '-'
                 ## condition just for deletions -- if insertion, it is just splice_region    
-                elif var_pos not in acceptor_positions and var_pos+1 in acceptor_positions: ## anchor nt is pre-acceptor region
+                elif var_pos not in donor_acceptor_positions and var_pos+1 in donor_acceptor_positions: ## anchor nt is pre-acceptor region
                     dna_cons = 'splice_acceptor_variant'
                     prot_cons = '-'
                 else:
@@ -1940,11 +1980,11 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
 
             ## if ins -- Check alt allele len 
             elif len(alt) > len(ref):
-                if var_pos in acceptor_positions and var_pos+1 not in acceptor_positions: ## variant anchor is the last nt of the intron
+                if var_pos in donor_acceptor_positions and var_pos+1 not in donor_acceptor_positions: ## variant anchor is the last nt of the intron
                     print('var_pos is last nt of the intron')
                     dna_cons =  'frameshift_variant, splice_region_variant'
                     prot_cons = '-'
-                elif var_pos in acceptor_positions and var_pos+1 in acceptor_positions:
+                elif var_pos in donor_acceptor_positions and var_pos+1 in donor_acceptor_positions:
                     dna_cons = 'splice_acceptor_variant'
                     prot_cons = '-'
 
@@ -1974,14 +2014,14 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                 print(all_del_pos)
                 # print(donor_positions)
                 # print([x for x in all_del_pos if x in donor_positions])
-                print([x for x in all_del_pos if x in splice_region_left])
+                print([x for x in all_del_pos if x in splice_region])
 
 
                 ## Check acceptor -- left side of the intron
                 if var_end_check == True and find_position(map_gen2transc, var_pos) == False: ## deletion in betwen exon and intron
 
                     ## if affects the acceptor site 
-                    if [x for x in all_del_pos if x in donor_positions] != []: ## list empty if no overlap -- OK
+                    if [x for x in all_del_pos if x in donor_acceptor_positions] != []: ## list empty if no overlap -- OK
                         dna_cons = 'splice_acceptor_variant'
                         prot_cons = '-'
 
@@ -1996,12 +2036,12 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                             prot_cons = '-'
                 
                 ## check acceptor sites
-                elif [x for x in all_del_pos if x in donor_positions] != []: ## list empty if no overlap -- OK
+                elif [x for x in all_del_pos if x in donor_acceptor_positions] != []: ## list empty if no overlap -- OK
                     dna_cons = 'splice_acceptor_variant'
                     prot_cons = '-'
                 
                 ## Check splice region
-                elif [x for x in all_del_pos if x in splice_region_left] != []: ## -- OK
+                elif [x for x in all_del_pos if x in splice_region] != []: ## -- OK
                     dna_cons = 'splice_region_variant'
                     prot_cons = '-'
 
@@ -2014,7 +2054,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                 if var_end_check == False and find_position(map_gen2transc, var_pos) == True: ## deletion in betwen exon and intron
 
                     ## if affects the donor site 
-                    if [x for x in all_del_pos if x in acceptor_positions] != []: ## list empty if no overlap -- OK
+                    if [x for x in all_del_pos if x in donor_acceptor_positions] != []: ## list empty if no overlap -- OK
                         dna_cons = 'splice_donor_variant'
                         prot_cons = '-'
 
@@ -2029,12 +2069,12 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                             prot_cons = '-'
                 
                 ## check acceptor sites
-                elif [x for x in all_del_pos if x in acceptor_positions] != []: ## list empty if no overlap -- OK
+                elif [x for x in all_del_pos if x in donor_acceptor_positions] != []: ## list empty if no overlap -- OK
                     dna_cons = 'splice_donor_variant'
                     prot_cons = '-'
                 
                 ## Check splice region
-                elif [x for x in all_del_pos if x in splice_region_right] != []: ## -- OK
+                elif [x for x in all_del_pos if x in splice_region] != []: ## -- OK
                     dna_cons = 'splice_region_variant'
                     prot_cons = '-'
 
@@ -2057,7 +2097,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
 
 
                 if var_end_check == True and find_position(map_gen2transc, var_pos) == False: 
-                    if [x for x in all_ins_pos if x in donor_positions] != []: ## list empty if no overlap -- OK
+                    if [x for x in all_ins_pos if x in donor_acceptor_positions] != []: ## list empty if no overlap -- OK
                         dna_cons = 'splice_acceptor_variant'
                         prot_cons = '-'
 
@@ -2072,7 +2112,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                             prot_cons = '-'
 
 
-                elif var_pos in acceptor_positions and var_pos+1 not in acceptor_positions: ## variant anchor is the last nt of the intron
+                elif var_pos in donor_acceptor_positions and var_pos+1 not in donor_acceptor_positions: ## variant anchor is the last nt of the intron
                     insertion_size = len(alt) -1 ## -1 to remove anchor base
 
                     if insertion_size % 3 == 0:
@@ -2093,4 +2133,4 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
 
             ## start within intron block reverse strand --edited 2023-07-05
 
-    return dna_cons, '-', prot_cons, '-', donor_positions, acceptor_positions, splice_region_left, splice_region_right 
+    return dna_cons, '-', prot_cons, '-', donor_acceptor_positions, splice_region, splice_donor_acceptor_region, fifthbase, intron_end_region
