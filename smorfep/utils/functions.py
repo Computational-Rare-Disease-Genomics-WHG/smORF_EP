@@ -1643,6 +1643,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
 
     ## find if var position is in a exon
     var_pos_check = find_position(map_gen2transc, var_pos)
+    print('var_pos', var_pos)
 
     ## Get the postions affected by the variant
     if len(ref) == len(alt): ## SNV
@@ -1651,7 +1652,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
         if strand == '+':
             all_var_pos = [v for v in range(var_pos, var_pos + len(alt) -1)]
         elif strand == '-':
-            all_var_pos = [v for v in range(var_pos - (len(alt)-1), var_pos)]
+            all_var_pos = [v for v in range(var_pos-(len(alt)-1), var_pos+1)]
     elif len(ref) > len(alt): ## deletion
         if strand == '+':
             all_var_pos = [v for v in range(var_pos, var_pos + len(ref) -1)]
@@ -1661,12 +1662,15 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
     print(all_var_pos)
 
     filtered_donor = splice_regions_df[splice_regions_df['splice_region'].str.contains('donor_sr_intron')] ## only donor
-    filtered_donor = filtered_donor[(filtered_donor['start'] <= var_pos) & (filtered_donor['end'] >= var_pos)]  ## gets the donor site of interest
-    ##print(filtered_donor)
+    filtered_donor = filtered_donor[(filtered_donor['start'] <= var_pos) & (filtered_donor['end'] >= var_pos)]
+    ## gets the donor site of interest
+    print('filtered donor')
+    print(filtered_donor)
 
     filtered_acceptor = splice_regions_df[splice_regions_df['splice_region'].str.contains('acceptor_sr_intron')] ## only acceptor
     filtered_acceptor = filtered_acceptor[(filtered_acceptor['start'] <= var_pos) & (filtered_acceptor['end'] >= var_pos)]  
-    ##print(filtered_acceptor)
+    print('filtered acceptor')
+    print(filtered_acceptor)
 
     ## save donor and acceptor positions
     ## for all the donor and acceptor sites per transcript 
@@ -1694,7 +1698,6 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
     # acceptor_5th = None 
 
     if filtered_donor.empty:
-        print(filtered_acceptor)
         row_a = filtered_acceptor.iloc[0] ## right side
 
         if strand == '+':
@@ -1733,8 +1736,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
             print(splice_donor_acceptor_region)
             
 
-    else: 
-        print(filtered_donor)
+    elif not filtered_donor.empty: 
         row = filtered_donor.iloc[0] ## left side
         if strand == '+':
             intron_end_region = 'donor_end'
@@ -1769,7 +1771,9 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
 
             splice_donor_acceptor_region.extend([t for t in range(row.da_start+splice_da_size, row.end-(splice_size-6)+1)])
             print(splice_donor_acceptor_region)
-
+    
+    else: ## variants not crossing the donor or acceptor regions
+        return None, '-', None, '-', donor_acceptor_positions, splice_region, splice_donor_acceptor_region, fifthbase, intron_end_region
 
     if intron_end_region == 'donor_end':
 
