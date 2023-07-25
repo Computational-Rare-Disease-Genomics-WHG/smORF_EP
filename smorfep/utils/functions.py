@@ -611,6 +611,7 @@ def read_vep_web(filename):
 
 ## TODO: update the input variable as output from exon-intron function XXX
 def search_introns(introns, var_pos, ref, alt, strand, donor_acceptor_positions, splice_region, splice_donor_acceptor_region, fifthbase, intron_end_region, splice_site = 8, donor_acceptor_size = 2): 
+
     """
         Function to search if the variants are within an intronic region. 
         Input: 
@@ -1684,6 +1685,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
     print(filtered_acceptor)
 
 
+
     ## save donor and acceptor positions
     ## for all the donor and acceptor sites per transcript 
     ## for donor/acceptor variants
@@ -1723,6 +1725,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
             splice_region.extend([m for m in range(row.start, row.start+intron_exon_size)]) 
             splice_region.extend([m for m in range(row.end-(splice_size-6)+1, row.end+1)]) ## VEP uses 6th base up to splice region upper range (8bps) as for splice region
             ##print(splice_region) 
+
 
             fifthbase = row.da_start + 4 ## +4 as da_start is the first base of the intron
             ##print(fifthbase)
@@ -1850,6 +1853,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
             if var_start_check == True and var_end_check == True and [x for x in check_no_anchor if x in splice_region] != []: ## variant within the exon, but on the splice region -- last 3 nt of the exon (VEP default)
                 insertion_size = len(alt) -1 ## -1 to remove anchor base
 
+
                 if insertion_size % 3 == 0:
                     dna_cons = 'inframe_insertion, splice_region_variant'
                     prot_cons = 'protein_elongation'
@@ -1860,6 +1864,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
             ## NOTE: this and next condition to get the forward and reverse strand cases
             elif exon_nts >= 1 and var_end_check == False and var_start_check == True: ## insertion after the last nt in the exon
                 insertion_size = len(alt) -1 ## -1 to remove anchor base
+
 
                 if insertion_size % 3 == 0:
                     dna_cons = 'inframe_insertion, splice_region_variant'
@@ -2020,7 +2025,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                     dna_cons = 'Not_intronic'
                     prot_cons = None
 
-
+ 
 
     elif intron_end_region == 'acceptor_end':
         if var_type == 'SNV': 
@@ -2031,6 +2036,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
             if [x for x in check_no_anchor if x in donor_acceptor_positions] != []: ## if it is a deletion and affects the splice site is donor 
                 dna_cons = 'splice_acceptor_variant'
                 prot_cons = '-'
+
 
             pass ## TODO
 
@@ -2127,6 +2133,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
     #             ## variant start in the exon and ends in the intron
     #             exon_nts = within_exon(var_pos, ref_end_pos, map_gen2transc)
     #             print('exon nts: ', exon_nts)
+
 
     #             ## donor is always the end on the left and acceptor on the right of the intron. 
     #             ## NOTE: for reverse strand donor_positions are for the acceptor region, and vice-versa
@@ -2413,3 +2420,4 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
     #         ## start within intron block reverse strand --edited 2023-07-05
 
     return dna_cons, '-', prot_cons, '-', donor_acceptor_positions, splice_region, splice_donor_acceptor_region, fifthbase, intron_end_region
+
