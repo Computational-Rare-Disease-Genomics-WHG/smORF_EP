@@ -1858,7 +1858,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                     prot_cons = '-'
 
             ## NOTE: this and next condition to get the forward and reverse strand cases
-            elif exon_nts == 1 and var_end_check == False and var_start_check == True: ## insertion after the last nt in the exon
+            elif exon_nts >= 1 and var_end_check == False and var_start_check == True: ## insertion after the last nt in the exon
                 insertion_size = len(alt) -1 ## -1 to remove anchor base
 
                 if insertion_size % 3 == 0:
@@ -1868,7 +1868,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                     dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_insertion
                     prot_cons = '-'
 
-            elif exon_nts == 1 and var_end_check == True and var_start_check == False: ## insertion after the last nt in the exon
+            elif exon_nts >= 1 and var_end_check == True and var_start_check == False: ## insertion after the last nt in the exon
                 insertion_size = len(alt) -1 ## -1 to remove anchor base
 
                 if insertion_size % 3 == 0:
@@ -1877,6 +1877,28 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                 else: 
                     dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_insertion
                     prot_cons = '-'
+
+            elif var_pos_check == True and var_next_pos == False: 
+                insertion_size = len(alt) -1 ## -1 to remove anchor base
+
+                if insertion_size % 3 == 0:
+                    dna_cons = 'inframe_insertion, splice_region_variant'
+                    prot_cons = 'protein_elongation'
+                else: 
+                    dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_insertion
+                    prot_cons = '-'
+            
+            elif var_pos_check == False and var_next_pos == True: 
+                insertion_size = len(alt) -1 ## -1 to remove anchor base
+
+                if insertion_size % 3 == 0:
+                    dna_cons = 'inframe_insertion, splice_region_variant'
+                    prot_cons = 'protein_elongation'
+                else: 
+                    dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_insertion
+                    prot_cons = '-'
+
+            
 
             elif var_pos_check == True and var_next_pos == True and [x for x in check_no_anchor if x in splice_region] != []: ## variant within the exon, but on the splice region -- last 3 nt of the exon (VEP default)
                 insertion_size = len(alt) -1 ## -1 to remove anchor base
@@ -1939,7 +1961,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                     prot_cons = '-'
 
             ## NOTE: This and next condition to consider forward and reverse strand
-            elif exon_nts == 1 and var_end_check == False and var_start_check == True: ## deletion after the last nt in the exon
+            elif exon_nts >= 1 and var_end_check == False and var_start_check == True: ## deletion after the last nt in the exon
                 deletion_size = len(ref) -1 ## -1 to remove anchor base
 
                 if deletion_size % 3 == 0: 
@@ -1949,7 +1971,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                     dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_deletion
                     prot_cons = '-'
 
-            elif exon_nts == 1 and var_end_check == True and var_start_check == False: ## insertion after the last nt in the exon
+            elif exon_nts >= 1 and var_end_check == True and var_start_check == False: ## insertion after the last nt in the exon
                 deletion_size = len(ref) -1 ## -1 to remove anchor base
 
                 if deletion_size % 3 == 0: 
