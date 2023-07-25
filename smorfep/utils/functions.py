@@ -1645,6 +1645,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
     var_pos_check = find_position(map_gen2transc, var_pos)
     print('var_pos', var_pos)
 
+
     ## Get the postions affected by the variant
     if len(ref) == len(alt): ## SNV
         all_var_pos = [var_pos]
@@ -1661,16 +1662,22 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
     
     print(all_var_pos)
 
+
+    ## Filter donor and acceptor regions -- should contain the variant position
+    ## NOTE: donor and acceptor are mutually exclusive
     filtered_donor = splice_regions_df[splice_regions_df['splice_region'].str.contains('donor_sr_intron')] ## only donor
+    print(filtered_donor)
     filtered_donor = filtered_donor[(filtered_donor['start'] <= var_pos) & (filtered_donor['end'] >= var_pos)]
     ## gets the donor site of interest
     print('filtered donor')
     print(filtered_donor)
 
     filtered_acceptor = splice_regions_df[splice_regions_df['splice_region'].str.contains('acceptor_sr_intron')] ## only acceptor
+    print(filtered_acceptor)
     filtered_acceptor = filtered_acceptor[(filtered_acceptor['start'] <= var_pos) & (filtered_acceptor['end'] >= var_pos)]  
     print('filtered acceptor')
     print(filtered_acceptor)
+
 
     ## save donor and acceptor positions
     ## for all the donor and acceptor sites per transcript 
@@ -1697,48 +1704,10 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
     # donor_5th = None
     # acceptor_5th = None 
 
-    if filtered_donor.empty:
-        row_a = filtered_acceptor.iloc[0] ## right side
-
-        if strand == '+':
-
-            intron_end_region = 'acceptor_end'
-
-            ##for index_a, row_a in filtered_acceptor.iterrows(): 
-            ##print(row_a)
-            donor_acceptor_positions.extend([g for g in range(row_a.da_start, row_a.da_end+1)])
-            print(donor_acceptor_positions)
-
-            splice_region.extend([j for j in range(row_a.start, row_a.start+(splice_size-6))]) ## VEP uses 6th base up to splice region upper range (8bps) as for splice region
-            splice_region.extend([j for j in range(row_a.end-intron_exon_size+1, row_a.end+1)]) 
-            print(splice_region) 
-
-            splice_donor_acceptor_region.extend([t for t in range(fifthbase-1, row_a.da_end-splice_da_size+1)])
-            splice_donor_acceptor_region.extend([fifthbase-1]) ## adds 6th base -- default VEP 
-            print(splice_donor_acceptor_region)
-
-        
-        elif strand == '-':
-            intron_end_region = 'donor_end'
-
-            donor_acceptor_positions.extend([g for g in range(row_a.da_start, row_a.da_end+1)])
-            print(donor_acceptor_positions)
-
-            splice_region.extend([j for j in range(row_a.start, row_a.start+(splice_size-6))]) ## VEP uses 6th base up to splice region upper range (8bps) as for splice region
-            splice_region.extend([j for j in range(row_a.end-intron_exon_size+1, row_a.end+1)]) 
-            print(splice_region) 
-
-            fifthbase = row_a.da_end - 4 ## -4 as da_end is the first base of the intron
-            print(fifthbase)
-
-            splice_donor_acceptor_region.extend([t for t in range(fifthbase+1, row_a.da_end-splice_da_size+1)])
-            splice_donor_acceptor_region.extend([fifthbase-1]) ## adds 6th base -- default VEP 
-            print(splice_donor_acceptor_region)
-            
-
-    elif not filtered_donor.empty: 
+    if not filtered_donor.empty: 
         row = filtered_donor.iloc[0] ## left side
         if strand == '+':
+            print('+ donor end')
             intron_end_region = 'donor_end'
 
             ##for index, row in filtered_donor.iterrows(): 
@@ -1758,6 +1727,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
             ##print(splice_donor_acceptor_region)
         
         elif strand == '-':
+            print('- acceptor end')
             intron_end_region = 'acceptor_end'
 
             ##for index, row in filtered_donor.iterrows(): 
@@ -1771,9 +1741,56 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
 
             splice_donor_acceptor_region.extend([t for t in range(row.da_start+splice_da_size, row.end-(splice_size-6)+1)])
             print(splice_donor_acceptor_region)
+
+    elif not filtered_acceptor.empty:
+        row_a = filtered_acceptor.iloc[0] ## right side
+
+        if strand == '+':
+            print('+ acceptor end')
+
+            intron_end_region = 'acceptor_end'
+
+            ##for index_a, row_a in filtered_acceptor.iterrows(): 
+            ##print(row_a)
+            donor_acceptor_positions.extend([g for g in range(row_a.da_start, row_a.da_end+1)])
+            print(donor_acceptor_positions)
+
+            splice_region.extend([j for j in range(row_a.start, row_a.start+(splice_size-6))]) ## VEP uses 6th base up to splice region upper range (8bps) as for splice region
+            splice_region.extend([j for j in range(row_a.end-intron_exon_size+1, row_a.end+1)]) 
+            print(splice_region) 
+
+            splice_donor_acceptor_region.extend([t for t in range(fifthbase-1, row_a.da_end-splice_da_size+1)])
+            splice_donor_acceptor_region.extend([fifthbase-1]) ## adds 6th base -- default VEP 
+            print(splice_donor_acceptor_region)
+
+        
+        elif strand == '-':
+            print('- donor end')
+            intron_end_region = 'donor_end'
+
+            donor_acceptor_positions.extend([g for g in range(row_a.da_start, row_a.da_end+1)])
+            print(donor_acceptor_positions)
+
+            splice_region.extend([j for j in range(row_a.start, row_a.start+(splice_size-6))]) ## VEP uses 6th base up to splice region upper range (8bps) as for splice region
+            splice_region.extend([j for j in range(row_a.end-intron_exon_size+1, row_a.end+1)]) 
+            print(splice_region) 
+
+            fifthbase = row_a.da_end - 4 ## -4 as da_end is the first base of the intron
+            print(fifthbase)
+
+            splice_donor_acceptor_region.extend([t for t in range(fifthbase+1, row_a.da_end-splice_da_size+1)])
+            splice_donor_acceptor_region.extend([fifthbase-1]) ## adds 6th base -- default VEP 
+            print(splice_donor_acceptor_region)
+            
+
+    
     
     else: ## variants not crossing the donor or acceptor regions
-        return None, '-', None, '-', donor_acceptor_positions, splice_region, splice_donor_acceptor_region, fifthbase, intron_end_region
+        return None, '-', None, '-', donor_acceptor_positions, splice_region, splice_donor_acceptor_region, fifthbase, None
+
+
+
+
 
     if intron_end_region == 'donor_end':
 
