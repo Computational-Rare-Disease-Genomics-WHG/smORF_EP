@@ -97,6 +97,15 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
         introns_chr = introns_df.loc[introns_df['chr'] == 'chr'+str(each_chrom)]
         ## TODO: OPTIMIZE --> allow cache freeing after each chromosome -- remove chromosome from the ref_genome dictionary
 
+
+        ## XXX
+        ## TODO: Remove these lines after testing SMAD2 
+        ## Just transcript : ENST00000262160.11
+        transcripts_chr = transcripts_chr.loc[transcripts_chr['transcript_id'] == 'ENST00000262160.11']
+        introns_chr = introns_chr.loc[introns_chr['transcript_id'] == 'ENST00000262160.11']
+        ## XXX
+
+        
         ## per smORF
         ## 1 - Collect the list of smORFs
         ## 2 - iterate per smORFs
