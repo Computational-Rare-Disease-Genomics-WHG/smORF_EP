@@ -1907,7 +1907,6 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                     prot_cons = '-'
 
 
-
             elif [x for x in check_no_anchor if x in donor_acceptor_positions] != []: ## if it is a deletion and affects the splice site is donor 
                 dna_cons = 'splice_donor_variant'
                 prot_cons = '-'
@@ -1916,6 +1915,10 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                 ## For insertions that cross the 5th base VEP annotates with splice_donor_region_variant&intron_variant -- We match 
                 ##dna_cons = 'splice_donor_5th_base_variant&intron_variant'
                 dna_cons = 'splice_donor_region_variant&intron_variant' 
+                prot_cons = '-'
+
+            elif [x for x in all_var_pos if x in donor_acceptor_positions] != [] and [x for x in all_var_pos if x in splice_donor_acceptor_region] != []: ## if the insertion happens between the donor main site and the splice_donor_region '-- insertion on the 3rd base within intron
+                dna_cons = 'splice_region_variant&intron_variant'
                 prot_cons = '-'
 
 
