@@ -1955,7 +1955,11 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
         ## deletions
         elif var_type == 'deletion':
 
-            if var_start_check == True and var_end_check == True and [x for x in check_no_anchor if x in splice_region] != []: ## variant within the exon, but on the splice region -- last 3 nt of the exon (VEP default)
+            if [x for x in check_no_anchor if x in donor_acceptor_positions] != []: ## if it is a deletion and affects the splice site is donor 
+                dna_cons = 'splice_donor_variant'
+                prot_cons = '-'
+
+            elif var_start_check == True and var_end_check == True and [x for x in check_no_anchor if x in splice_region] != []: ## variant within the exon, but on the splice region -- last 3 nt of the exon (VEP default)
                 deletion_size = len(ref) -1 ## -1 to remove anchor base
 
                 if deletion_size % 3 == 0: 
@@ -1996,9 +2000,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                     dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_insertion
                     prot_cons = '-'
             
-            elif [x for x in check_no_anchor if x in donor_acceptor_positions] != []: ## if it is a deletion and affects the splice site is donor 
-                dna_cons = 'splice_donor_variant'
-                prot_cons = '-'
+
             
             elif fifthbase in check_no_anchor: 
                 dna_cons = 'splice_donor_5th_base_variant&intron_variant'
