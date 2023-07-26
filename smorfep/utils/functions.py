@@ -1531,13 +1531,15 @@ def within_exon(start, end, mapgen2transc):
         Returns the number of nucleotides that fall wihin exonic region(s).
     """
 
-    exonnts = 0 ## count the number of 
-    for position in range(start, end):
-        if position in mapgen2transc.keys():
-            print('exon pos:', position)
-            exonnts += 1
+    # exonnts = 0 ## count the number of 
+    # for position in range(start, end):
+    #     if position in mapgen2transc.keys():
+    #         print('exon pos:', position)
+    #         exonnts += 1
 
-    return exonnts
+    positions_exon = [x for x in range(start, end+1) if x in mapgen2transc.keys()]
+
+    return len(positions_exon)
 
 
 ## reported on the forward strand
@@ -1666,23 +1668,24 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
             all_var_pos = [v for v in range(var_pos - (len(ref)-1), var_pos+1)]
             var_next_pos = var_pos-1
     
+    print('all_var_positions:')
     print(all_var_pos)
 
 
     ## Filter donor and acceptor regions -- should contain the variant position
     ## NOTE: donor and acceptor are mutually exclusive
     filtered_donor = splice_regions_df[splice_regions_df['splice_region'].str.contains('donor_sr_intron')] ## only donor
-    print(filtered_donor)
+    ##print(filtered_donor)
     filtered_donor = filtered_donor[(filtered_donor['start'] <= var_pos) & (filtered_donor['end'] >= var_pos)]
     ## gets the donor site of interest
-    print('filtered donor')
-    print(filtered_donor)
+    ##print('filtered donor')
+    ##print(filtered_donor)
 
     filtered_acceptor = splice_regions_df[splice_regions_df['splice_region'].str.contains('acceptor_sr_intron')] ## only acceptor
-    print(filtered_acceptor)
+    ##print(filtered_acceptor)
     filtered_acceptor = filtered_acceptor[(filtered_acceptor['start'] <= var_pos) & (filtered_acceptor['end'] >= var_pos)]  
-    print('filtered acceptor')
-    print(filtered_acceptor)
+    ##print('filtered acceptor')
+    ##print(filtered_acceptor)
 
 
 
@@ -1794,11 +1797,11 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
         return None, '-', None, '-', donor_acceptor_positions, splice_region, splice_donor_acceptor_region, fifthbase, None
 
 
-    print(all_var_pos)
-
     ## variant start and end coordinates
     var_start = all_var_pos[0]
     var_end = all_var_pos[-1]
+    print('var_start', var_start)
+    print('var_end', var_end)
 
     ## check start and end within exon: 
     var_pos_check = find_position(map_gen2transc, var_pos)
@@ -1806,16 +1809,18 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
     var_end_check = find_position(map_gen2transc, var_end)
     print('var_pos', var_pos)
 
-    var_next_pos_check = find_position(map_gen2transc, var_next_pos)
+    ##var_next_pos_check = find_position(map_gen2transc, var_next_pos)
 
+    ## don't need swap for reverse strand -- var_start is always < than var_end
     exon_nts = within_exon(var_start, var_end, map_gen2transc)
+    print('exon_nts', exon_nts)
 
     if strand == '+': 
         check_no_anchor = all_var_pos[1:] ## first position in the range is the anchor base
     elif strand == '-':
         check_no_anchor = all_var_pos[:len(all_var_pos)-1] ## last position in the range is the anchor base
 
-    print(check_no_anchor)
+    print('positions no anchor', check_no_anchor)
 
     if intron_end_region == 'donor_end':
 
@@ -1853,7 +1858,6 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
             if var_start_check == True and var_end_check == True and [x for x in check_no_anchor if x in splice_region] != []: ## variant within the exon, but on the splice region -- last 3 nt of the exon (VEP default)
                 insertion_size = len(alt) -1 ## -1 to remove anchor base
 
-
                 if insertion_size % 3 == 0:
                     dna_cons = 'inframe_insertion, splice_region_variant'
                     prot_cons = 'protein_elongation'
@@ -1864,7 +1868,6 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
             ## NOTE: this and next condition to get the forward and reverse strand cases
             elif exon_nts >= 1 and var_end_check == False and var_start_check == True: ## insertion after the last nt in the exon
                 insertion_size = len(alt) -1 ## -1 to remove anchor base
-
 
                 if insertion_size % 3 == 0:
                     dna_cons = 'inframe_insertion, splice_region_variant'
@@ -1903,17 +1906,6 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                     dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_insertion
                     prot_cons = '-'
 
-            
-
-            elif var_pos_check == True and var_next_pos == True and [x for x in check_no_anchor if x in splice_region] != []: ## variant within the exon, but on the splice region -- last 3 nt of the exon (VEP default)
-                insertion_size = len(alt) -1 ## -1 to remove anchor base
-
-                if insertion_size % 3 == 0:
-                    dna_cons = 'inframe_insertion, splice_region_variant'
-                    prot_cons = 'protein_elongation'
-                else: 
-                    dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_insertion
-                    prot_cons = '-'
 
             elif [x for x in check_no_anchor if x in donor_acceptor_positions] != []: ## if it is a deletion and affects the splice site is donor 
                 dna_cons = 'splice_donor_variant'
@@ -1925,6 +1917,9 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                 dna_cons = 'splice_donor_region_variant&intron_variant' 
                 prot_cons = '-'
 
+            elif [x for x in all_var_pos if x in donor_acceptor_positions] != [] and [x for x in all_var_pos if x in splice_donor_acceptor_region] != []: ## if the insertion happens between the donor main site and the splice_donor_region '-- insertion on the 3rd base within intron
+                dna_cons = 'splice_region_variant&intron_variant'
+                prot_cons = '-'
 
 
             elif [x for x in check_no_anchor if x in splice_donor_acceptor_region] != []:
@@ -1955,7 +1950,11 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
         ## deletions
         elif var_type == 'deletion':
 
-            if var_start_check == True and var_end_check == True and [x for x in check_no_anchor if x in splice_region] != []: ## variant within the exon, but on the splice region -- last 3 nt of the exon (VEP default)
+            if [x for x in check_no_anchor if x in donor_acceptor_positions] != []: ## if it is a deletion and affects the splice site is donor 
+                dna_cons = 'splice_donor_variant'
+                prot_cons = '-'
+
+            elif var_start_check == True and var_end_check == True and [x for x in check_no_anchor if x in splice_region] != []: ## variant within the exon, but on the splice region -- last 3 nt of the exon (VEP default)
                 deletion_size = len(ref) -1 ## -1 to remove anchor base
 
                 if deletion_size % 3 == 0: 
@@ -1986,19 +1985,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                     dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_deletion
                     prot_cons = '-'
             
-            elif var_pos_check == True and var_next_pos == True and [x for x in check_no_anchor if x in splice_region] != []: ## variant within the exon, but on the splice region -- last 3 nt of the exon (VEP default)
-                deletion_size = len(ref) -1 ## -1 to remove anchor base
 
-                if deletion_size % 3 == 0:
-                    dna_cons = 'inframe_deletion, splice_region_variant'
-                    prot_cons = 'protein_elongation'
-                else: 
-                    dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_insertion
-                    prot_cons = '-'
-            
-            elif [x for x in check_no_anchor if x in donor_acceptor_positions] != []: ## if it is a deletion and affects the splice site is donor 
-                dna_cons = 'splice_donor_variant'
-                prot_cons = '-'
             
             elif fifthbase in check_no_anchor: 
                 dna_cons = 'splice_donor_5th_base_variant&intron_variant'
