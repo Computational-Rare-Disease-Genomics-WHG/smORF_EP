@@ -1620,7 +1620,7 @@ def map_splice_regions(introns_df, splice_size, intron_exon_size=3, splice_da_si
     return splice_regions_df
 
 
-def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_regions_df, splice_size =8, intron_exon_size=3, splice_da_size=2):
+def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2transc, splice_regions_df, splice_size =8, intron_exon_size=3, splice_da_size=2):
     """ 
         Function to check if a variant crosses exon-intron boundaries.
         # Special case, only required for indels.
@@ -1694,6 +1694,7 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
     ## for splice_region_variant
     ## NOTE: left -- donor; right -- acceptor (foraward strand, reverse otherwise) 
     splice_region = []
+    splice_region_exon_nts = [] ## used for the SNV case, as if a SNV falls into the exon bases of splice region there there is also missense/synonymous annotation
 
     ## Positions between 3-6 bases (VEP default) within the intron
     ## for splice_donor/acceptor_region_variant
@@ -1715,6 +1716,9 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
             splice_region.extend([m for m in range(row.start, row.start+intron_exon_size)]) 
             splice_region.extend([m for m in range(row.end-(splice_size-6)+1, row.end+1)]) ## VEP uses 6th base up to splice region upper range (8bps) as for splice region
 
+            splice_region_exon_nts.extend([m for m in range(row.start, row.start+intron_exon_size)]) 
+            print(splice_region_exon_nts)
+
             fifthbase = row.da_start + 4 ## +4 as da_start is the first base of the intron
 
             splice_donor_acceptor_region.extend([t for t in range(row.da_start+splice_da_size, fifthbase)])
@@ -1728,6 +1732,8 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
 
             splice_region.extend([m for m in range(row.start, row.start+intron_exon_size)]) 
             splice_region.extend([m for m in range(row.end-(splice_size-6)+1, row.end+1)]) ## VEP uses 6th base up to splice region upper range (8bps) as for splice region
+
+            splice_region_exon_nts.extend([m for m in range(row.start, row.start+intron_exon_size)]) 
 
             splice_donor_acceptor_region.extend([t for t in range(row.da_start+splice_da_size, row.end-(splice_size-6)+1)])
 
@@ -1746,6 +1752,8 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
             splice_region.extend([j for j in range(row_a.end-intron_exon_size+1, row_a.end+1)]) 
             print(splice_region) 
 
+            splice_region_exon_nts.extend([j for j in range(row_a.end-intron_exon_size+1, row_a.end+1)])
+
             splice_donor_acceptor_region.extend([t for t in range(fifthbase-1, row_a.da_end-splice_da_size+1)])
             splice_donor_acceptor_region.extend([fifthbase-1]) ## adds 6th base -- default VEP 
             print(splice_donor_acceptor_region)
@@ -1759,6 +1767,8 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
 
             splice_region.extend([j for j in range(row_a.start, row_a.start+(splice_size-6))]) ## VEP uses 6th base up to splice region upper range (8bps) as for splice region
             splice_region.extend([j for j in range(row_a.end-intron_exon_size+1, row_a.end+1)]) 
+
+            splice_region_exon_nts.extend([j for j in range(row_a.end-intron_exon_size+1, row_a.end+1)])
 
             fifthbase = row_a.da_end - 4 ## -4 as da_end is the first base of the intron
 
@@ -1813,14 +1823,27 @@ def check_exon_intron_vars(var_pos, ref, alt, strand, map_gen2transc, splice_reg
                 dna_cons = 'splice_donor_region_variant&intron_variant'
                 prot_cons = '-'
         
-            elif var_pos in splice_region:
-                ## VEP reports: missense_variant&splice_region_variant and splice_region_variant&synonymous_variant
-                ##dna_cons = 'splice_region_variant&intron_variant' ## old line
-               
-                dna_cons = 'missense_variant&splice_region_variant'
-                dna_cons = 'splice_region_variant&synonymous_variant'
+            elif var_pos in splice_region: ## three possibilities
+                ## VEP reports: 
+                # missense_variant&splice_region_variant - if in the exon and changes the aminoacid
+                # splice_region_variant&synonymous_variant - if in the exon and do NOT change the aminoacid
+                # splice_region_variant&intron_variant - if in the intron 
                 
-                prot_cons = '-'
+                if var_pos in splice_region_exon_nts:
+
+                    new_sequence, ref_original, ref_inFile = add_variant_transcriptSeq(seq, start_orf, end_orf, ref, alt, var_pos, map_gen2transc)
+                    prot_cons, change_prot = protein_consequence_transcript(seq, new_sequence, var_pos, map_gen2transc)
+
+                    ## should only report those two annotations
+                    if prot_cons == 'missense_variant':
+                        dna_cons = 'missense_variant&splice_region_variant'
+                    elif prot_cons == 'synonymous_variant':
+                        dna_cons = 'splice_region_variant&synonymous_variant'
+
+                else:
+                    dna_cons = 'splice_region_variant&intron_variant'
+                    prot_cons = '-'
+
             
             elif var_pos not in map_gen2transc.keys():
                 dna_cons = 'intron_variant'
