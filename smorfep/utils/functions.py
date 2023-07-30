@@ -2020,9 +2020,46 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
     ## 2- acceptor splice region variants
     elif intron_end_region == 'acceptor_end':
         if var_type == 'SNV': 
+            print('SNV acceptor')
+            if var_pos in donor_acceptor_positions: ## if it is a deletion and affects the splice site is donor 
+                dna_cons = 'splice_acceptor_variant'
+                prot_cons = '-'
+
+            elif var_pos in splice_donor_acceptor_region:
+                dna_cons = 'splice_acceptor_region_variant&intron_variant'
+                prot_cons = '-'
+        
+            elif var_pos in splice_region: ## three possibilities
+                ## VEP reports: 
+                # missense_variant&splice_region_variant - if in the exon and changes the aminoacid
+                # splice_region_variant&synonymous_variant - if in the exon and do NOT change the aminoacid
+                # splice_region_variant&intron_variant - if in the intron 
+                
+                if var_pos in splice_region_exon_nts:
+
+                    new_sequence, ref_original, ref_inFile = add_variant_transcriptSeq(seq, start_orf, end_orf, ref, alt, var_pos, map_gen2transc)
+                    prot_cons, change_prot = protein_consequence_transcript(seq, new_sequence, var_pos, map_gen2transc)
+
+                    ## should only report those two annotations
+                    if prot_cons == 'missense_variant':
+                        dna_cons = 'missense_variant&splice_region_variant'
+                    elif prot_cons == 'synonymous_variant':
+                        dna_cons = 'splice_region_variant&synonymous_variant'
+
+                else:
+                    dna_cons = 'splice_region_variant&intron_variant'
+                    prot_cons = '-'
+
+            
+            elif var_pos not in map_gen2transc.keys():
+                dna_cons = 'intron_variant'
+                prot_cons = ''
+            
+            else: ## run the deep intron and exon analysis 
+                dna_cons = 'Not_intronic'
+                prot_cons = '-'
             
 
-            pass ## TODO
         elif var_type == 'insertion': 
             pass ## TODO
         elif var_type == 'deletion':
@@ -2055,8 +2092,10 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
         
         return dna_cons, '-', prot_cons, '-', donor_acceptor_positions, splice_region, splice_donor_acceptor_region, fifthbase, intron_end_region
         
+    return dna_cons, '-', prot_cons, '-', donor_acceptor_positions, splice_region, splice_donor_acceptor_region, fifthbase, intron_end_region
 
 
+## OLD code
     # ## 1- var starts in the exon
     # if var_start_check == True:  
     #     print(var_pos, ref, alt)
@@ -2435,5 +2474,4 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
 
     #         ## start within intron block reverse strand --edited 2023-07-05
 
-    return dna_cons, '-', prot_cons, '-', donor_acceptor_positions, splice_region, splice_donor_acceptor_region, fifthbase, intron_end_region
 
