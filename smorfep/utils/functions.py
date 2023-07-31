@@ -2025,10 +2025,7 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
                 dna_cons = 'splice_acceptor_variant'
                 prot_cons = '-'
 
-            # elif var_pos in splice_donor_acceptor_region:
-            #     dna_cons = 'splice_acceptor_region_variant&intron_variant'
-            #     prot_cons = '-'
-        
+
             elif var_pos in splice_region: ## three possibilities
                 ## VEP reports: 
                 # missense_variant&splice_region_variant - if in the exon and changes the aminoacid
@@ -2123,10 +2120,6 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
                 prot_cons = '-'
 
 
-            # elif [x for x in check_no_anchor if x in splice_donor_acceptor_region] != []:
-            #     dna_cons = 'splice_acceptor_region_variant&intron_variant'
-            #     prot_cons = '-'
-        
             elif [x for x in check_no_anchor if x in splice_region] != []:
                 dna_cons = 'splice_region_variant&intron_variant'
                 prot_cons = '-'
@@ -2184,10 +2177,6 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
                     dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_deletion
                     prot_cons = '-'
             
-
-            # elif [x for x in check_no_anchor if x in splice_donor_acceptor_region] != []:
-            #     dna_cons = 'splice_acceptor_region_variant&intron_variant'
-            #     prot_cons = '-'
             
             elif [x for x in check_no_anchor if x in splice_region] != []:
                 dna_cons = 'splice_region_variant&intron_variant'
