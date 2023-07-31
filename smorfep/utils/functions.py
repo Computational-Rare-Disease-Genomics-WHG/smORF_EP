@@ -2020,18 +2020,180 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
     ## 2- acceptor splice region variants
     elif intron_end_region == 'acceptor_end':
         if var_type == 'SNV': 
+            print('SNV acceptor')
+            if var_pos in donor_acceptor_positions: ## if it is a deletion and affects the splice site is donor 
+                dna_cons = 'splice_acceptor_variant'
+                prot_cons = '-'
+
+
+            elif var_pos in splice_region: ## three possibilities
+                ## VEP reports: 
+                # missense_variant&splice_region_variant - if in the exon and changes the aminoacid
+                # splice_region_variant&synonymous_variant - if in the exon and do NOT change the aminoacid
+                # splice_region_variant&intron_variant - if in the intron 
+                
+                if var_pos in splice_region_exon_nts:
+
+                    new_sequence, ref_original, ref_inFile = add_variant_transcriptSeq(seq, start_orf, end_orf, ref, alt, var_pos, map_gen2transc)
+                    prot_cons, change_prot = protein_consequence_transcript(seq, new_sequence, var_pos, map_gen2transc)
+
+                    ## should only report those two annotations
+                    if prot_cons == 'missense_variant':
+                        dna_cons = 'missense_variant&splice_region_variant'
+                    elif prot_cons == 'synonymous_variant':
+                        dna_cons = 'splice_region_variant&synonymous_variant'
+
+                else:
+                    dna_cons = 'splice_region_variant&intron_variant'
+                    prot_cons = '-'
+
+            
+            elif var_pos not in map_gen2transc.keys():
+                dna_cons = 'intron_variant'
+                prot_cons = ''
+            
+            else: ## run the deep intron and exon analysis 
+                dna_cons = 'Not_intronic'
+                prot_cons = '-'
             
 
-            pass ## TODO
         elif var_type == 'insertion': 
-            pass ## TODO
+            if var_start_check == True and var_end_check == True and [x for x in check_no_anchor if x in splice_region] != []: ## variant within the exon, but on the splice region -- last 3 nt of the exon (VEP default)
+                insertion_size = len(alt) -1 ## -1 to remove anchor base
+
+                if insertion_size % 3 == 0:
+                    dna_cons = 'inframe_insertion, splice_region_variant'
+                    prot_cons = 'protein_elongation'
+                else: 
+                    dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_insertion
+                    prot_cons = '-'
+
+            ## NOTE: this and next condition to get the forward and reverse strand cases
+            elif exon_nts >= 1 and var_end_check == False and var_start_check == True: ## insertion after the last nt in the exon
+                insertion_size = len(alt) -1 ## -1 to remove anchor base
+
+                if insertion_size % 3 == 0:
+                    dna_cons = 'inframe_insertion, splice_region_variant'
+                    prot_cons = 'protein_elongation'
+                else: 
+                    dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_insertion
+                    prot_cons = '-'
+
+            elif exon_nts >= 1 and var_end_check == True and var_start_check == False: ## insertion after the last nt in the exon
+                insertion_size = len(alt) -1 ## -1 to remove anchor base
+
+                if insertion_size % 3 == 0:
+                    dna_cons = 'inframe_insertion, splice_region_variant'
+                    prot_cons = 'protein_elongation'
+                else: 
+                    dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_insertion
+                    prot_cons = '-'
+
+            elif var_pos_check == True and var_next_pos == False: 
+                insertion_size = len(alt) -1 ## -1 to remove anchor base
+
+                if insertion_size % 3 == 0:
+                    dna_cons = 'inframe_insertion, splice_region_variant'
+                    prot_cons = 'protein_elongation'
+                else: 
+                    dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_insertion
+                    prot_cons = '-'
+            
+            elif var_pos_check == False and var_next_pos == True: 
+                insertion_size = len(alt) -1 ## -1 to remove anchor base
+
+                if insertion_size % 3 == 0:
+                    dna_cons = 'inframe_insertion, splice_region_variant'
+                    prot_cons = 'protein_elongation'
+                else: 
+                    dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_insertion
+                    prot_cons = '-'
+
+
+            elif [x for x in check_no_anchor if x in donor_acceptor_positions] != []: ## if it is a deletion and affects the splice site is donor 
+                dna_cons = 'splice_acceptor_variant'
+                prot_cons = '-'
+            
+
+            elif [x for x in all_var_pos if x in donor_acceptor_positions] != [] and [x for x in all_var_pos if x in splice_donor_acceptor_region] != []: ## if the insertion happens between the donor main site and the splice_donor_region '-- insertion on the 3rd base within intron
+                dna_cons = 'splice_region_variant&intron_variant'
+                prot_cons = '-'
+
+
+            elif [x for x in check_no_anchor if x in splice_region] != []:
+                dna_cons = 'splice_region_variant&intron_variant'
+                prot_cons = '-'
+
+            
+            elif var_start_check == True and var_end_check == True: ## ## variant fully in the exon run the deep intron and exon analysis 
+                dna_cons = 'Not_intronic'
+                prot_cons = None
+
+            else: 
+                if [x for x in check_no_anchor if x in map_gen2transc.keys()] == []:
+                    dna_cons = 'intron_variant'
+                    prot_cons = ''
+                
+                else:
+                    dna_cons = 'Not_intronic'
+                    prot_cons = None
+
+
+
+
         elif var_type == 'deletion':
             if [x for x in check_no_anchor if x in donor_acceptor_positions] != []: ## if it is a deletion and affects the splice site is donor 
                 dna_cons = 'splice_acceptor_variant'
                 prot_cons = '-'
 
+            elif var_start_check == True and var_end_check == True and [x for x in check_no_anchor if x in splice_region] != []: ## variant within the exon, but on the splice region -- last 3 nt of the exon (VEP default)
+                deletion_size = len(ref) -1 ## -1 to remove anchor base
 
-            pass ## TODO
+                if deletion_size % 3 == 0: 
+                    dna_cons = 'inframe_deletion, splice_region_variant'
+                    prot_cons = 'protein_truncation'
+                else: 
+                    dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_deletion
+                    prot_cons = '-'
+
+            ## NOTE: This and next condition to consider forward and reverse strand
+            elif exon_nts >= 1 and var_end_check == False and var_start_check == True: ## deletion after the last nt in the exon
+                deletion_size = len(ref) -1 ## -1 to remove anchor base
+
+                if deletion_size % 3 == 0: 
+                    dna_cons = 'inframe_deletion, splice_region_variant'
+                    prot_cons = 'protein_truncation'
+                else: 
+                    dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_deletion
+                    prot_cons = '-'
+
+            elif exon_nts >= 1 and var_end_check == True and var_start_check == False: ## insertion after the last nt in the exon
+                deletion_size = len(ref) -1 ## -1 to remove anchor base
+
+                if deletion_size % 3 == 0: 
+                    dna_cons = 'inframe_deletion, splice_region_variant'
+                    prot_cons = 'protein_truncation'
+                else: 
+                    dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_deletion
+                    prot_cons = '-'
+            
+            
+            elif [x for x in check_no_anchor if x in splice_region] != []:
+                dna_cons = 'splice_region_variant&intron_variant'
+                prot_cons = '-'
+
+            elif var_start_check == True and var_end_check == True: ## ## variant fully in the exon run the deep intron and exon analysis 
+                dna_cons = 'Not_intronic'
+                prot_cons = None
+
+            else: 
+                if [x for x in check_no_anchor if x in map_gen2transc.keys()] == []:
+                    dna_cons = 'intron_variant'
+                    prot_cons = ''
+                
+                else:
+                    dna_cons = 'Not_intronic'
+                    prot_cons = None
     
     else: ## variant not in the donor or acceptor splice region
         ## check intron 
@@ -2055,8 +2217,10 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
         
         return dna_cons, '-', prot_cons, '-', donor_acceptor_positions, splice_region, splice_donor_acceptor_region, fifthbase, intron_end_region
         
+    return dna_cons, '-', prot_cons, '-', donor_acceptor_positions, splice_region, splice_donor_acceptor_region, fifthbase, intron_end_region
 
 
+## OLD code
     # ## 1- var starts in the exon
     # if var_start_check == True:  
     #     print(var_pos, ref, alt)
@@ -2435,5 +2599,4 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
 
     #         ## start within intron block reverse strand --edited 2023-07-05
 
-    return dna_cons, '-', prot_cons, '-', donor_acceptor_positions, splice_region, splice_donor_acceptor_region, fifthbase, intron_end_region
 
