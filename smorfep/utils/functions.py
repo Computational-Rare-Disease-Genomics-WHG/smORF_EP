@@ -2227,7 +2227,7 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
                 
             else:
                 dna_cons = 'Not_intronic'
-                prot_cons = None
+                prot_cons = '-'
         else: 
             if [x for x in check_no_anchor if x in map_gen2transc] == []:
                 dna_cons = 'intron_variant'
@@ -2235,8 +2235,8 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
             
             else:
                 dna_cons = 'Not_intronic'
-                prot_cons = None
-                
+                prot_cons = '-'
+
         
     return dna_cons, '-', prot_cons, '-', donor_acceptor_positions, splice_region, splice_donor_acceptor_region, fifthbase, intron_end_region
 
