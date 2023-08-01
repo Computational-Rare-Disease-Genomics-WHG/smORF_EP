@@ -2076,6 +2076,7 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
                 prot_cons = '-'
 
             elif var_start_check == True and var_end_check == True and [x for x in check_no_anchor if x in splice_region] != []: ## variant within the exon, but on the splice region -- last 3 nt of the exon (VEP default)
+
                 insertion_size = len(alt) -1 ## -1 to remove anchor base
 
                 if insertion_size % 3 == 0:
@@ -2128,10 +2129,12 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
 
 
             elif [x for x in check_no_anchor if x in donor_acceptor_positions] != []: ## if it is a deletion and affects the splice site is donor 
+
                 if len([x for x in all_var_pos if x in donor_acceptor_positions]) != len(all_var_pos): ## insertion overlaps, but is before the acceptor splice site - there is at least one nt not within the acceptor main splice site
                     dna_cons = 'splice_region_variant&splice_polypyrimidine_tract_variant&intron_variant'
                 else: 
                     dna_cons = 'splice_acceptor_variant'
+
                 prot_cons = '-'
             
 
@@ -2197,7 +2200,7 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
                     dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_deletion
                     prot_cons = '-'
             
-
+            
             elif [x for x in check_no_anchor if x in splice_region] != []:
                 dna_cons = 'splice_region_variant&intron_variant'
                 prot_cons = '-'
