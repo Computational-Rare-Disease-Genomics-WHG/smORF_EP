@@ -1700,7 +1700,12 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
     ## for splice_donor/acceptor_region_variant
     splice_donor_acceptor_region = []
 
-    ## 5th position within the intron donor side (ONLY donor!)
+    ## Positions between 3-17 bases from the acceptor end of the intron
+    ## Acceptor ONLY
+    polypirimidine_region = []
+
+    ## 5th position within the intron donor side 
+    ## Donor ONLY
     fifthbase = None
 
     intron_end_region = None
@@ -1730,6 +1735,9 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
 
             donor_acceptor_positions.extend([i for i in range(row.da_start, row.da_end+1)])
 
+            polypirimidine_region.extend([j for j in range(row.da_end+1,row.da_end+17)])
+            print(polypirimidine_region)
+
             splice_region.extend([m for m in range(row.start, row.start+intron_exon_size)]) 
             splice_region.extend([m for m in range(row.end-(splice_size-6)+1, row.end+1)]) ## VEP uses 6th base up to splice region upper range (8bps) as for splice region
 
@@ -1747,6 +1755,9 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
 
             donor_acceptor_positions.extend([g for g in range(row_a.da_start, row_a.da_end+1)])
             print(donor_acceptor_positions)
+
+            polypirimidine_region.extend([j for j in range(row.da_start-17, row.da_start)])
+            print(polypirimidine_region)
 
             splice_region.extend([j for j in range(row_a.start, row_a.start+(splice_size-6))]) ## VEP uses 6th base up to splice region upper range (8bps) as for splice region
             splice_region.extend([j for j in range(row_a.end-intron_exon_size+1, row_a.end+1)]) 
@@ -2177,7 +2188,7 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
                     dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_deletion
                     prot_cons = '-'
             
-            
+
             elif [x for x in check_no_anchor if x in splice_region] != []:
                 dna_cons = 'splice_region_variant&intron_variant'
                 prot_cons = '-'
