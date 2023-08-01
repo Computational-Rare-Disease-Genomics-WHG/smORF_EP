@@ -913,6 +913,9 @@ def find_stop_inframe(seq, map_coordinates):
         stop_trios.sort()
         new_stop_index = stop_trios[0]*3 ## gives the index of the first letter on the stop codon
 
+        print(map_coordinates)
+        print(new_stop_index, new_stop_index+3)
+
         return map_coordinates[new_stop_index+3], new_stop_index+3
     
     
@@ -1332,10 +1335,8 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
 
 
             ## Checks the number of stop codons in the sequence
-            if strand == '+':
-                s, s_index = find_stop_inframe(smorf_seq[:len(smorf_seq)-3], map_transc2gen) ## removes last codon and searches for stop codons inframe
-            elif strand == '-':
-                s, s_index = find_stop_inframe(smorf_seq[:len(smorf_seq)-3], map_transc2gen)
+            s, s_index = find_stop_inframe(smorf_seq[:len(smorf_seq)-3], map_transc2gen) ## removes last codon and searches for stop codons inframe
+                
 
         ## smorf with introns
         elif not introns_transcript.empty:
@@ -1347,12 +1348,9 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
             elif strand == '-':
                 map_gen2transc, map_transc2gen = genome2transcript_coords(t_start, smorf_end, strand, introns_transcript)
 
+            ## Check the number of stop codons in the sequence
+            s, s_index = find_stop_inframe(smorf_seq[:len(smorf_seq)-3], map_transc2gen) ## removes last codon and searches for stop codons inframe
 
-            ## Checks the number of stop codons in the sequence
-            if strand == '+':
-                s, s_index = find_stop_inframe(smorf_seq[:len(smorf_seq)-3], map_transc2gen) ## removes last codon and searches for stop codons inframe
-            elif strand == '-':
-                s, s_index = find_stop_inframe(smorf_seq[:len(smorf_seq)-3], map_transc2gen)
 
             ## 1- check introns
             if strand == '+':
