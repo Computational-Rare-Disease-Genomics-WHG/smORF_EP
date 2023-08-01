@@ -1700,7 +1700,12 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
     ## for splice_donor/acceptor_region_variant
     splice_donor_acceptor_region = []
 
-    ## 5th position within the intron donor side (ONLY donor!)
+    ## Positions between 3-17 bases from the acceptor end of the intron
+    ## Acceptor ONLY
+    polypirimidine_region = []
+
+    ## 5th position within the intron donor side 
+    ## Donor ONLY
     fifthbase = None
 
     intron_end_region = None
@@ -1729,6 +1734,10 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
             intron_end_region = 'acceptor_end'
 
             donor_acceptor_positions.extend([i for i in range(row.da_start, row.da_end+1)])
+            print(donor_acceptor_positions)
+
+            polypirimidine_region.extend([j for j in range(row.da_end+1,row.da_end+16)])
+            print(polypirimidine_region)
 
             splice_region.extend([m for m in range(row.start, row.start+intron_exon_size)]) 
             splice_region.extend([m for m in range(row.end-(splice_size-6)+1, row.end+1)]) ## VEP uses 6th base up to splice region upper range (8bps) as for splice region
@@ -1747,6 +1756,9 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
 
             donor_acceptor_positions.extend([g for g in range(row_a.da_start, row_a.da_end+1)])
             print(donor_acceptor_positions)
+
+            polypirimidine_region.extend([j for j in range(row.da_start-17, row.da_start)])
+            print(polypirimidine_region)
 
             splice_region.extend([j for j in range(row_a.start, row_a.start+(splice_size-6))]) ## VEP uses 6th base up to splice region upper range (8bps) as for splice region
             splice_region.extend([j for j in range(row_a.end-intron_exon_size+1, row_a.end+1)]) 
@@ -2058,7 +2070,13 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
             
 
         elif var_type == 'insertion': 
-            if var_start_check == True and var_end_check == True and [x for x in check_no_anchor if x in splice_region] != []: ## variant within the exon, but on the splice region -- last 3 nt of the exon (VEP default)
+
+            if len([x for x in all_var_pos if x in donor_acceptor_positions]) == len(donor_acceptor_positions) and var_pos in donor_acceptor_positions: ## insertion in the middle of the acceptor main site
+                dna_cons = 'splice_acceptor_variant'
+                prot_cons = '-'
+
+            elif var_start_check == True and var_end_check == True and [x for x in check_no_anchor if x in splice_region] != []: ## variant within the exon, but on the splice region -- last 3 nt of the exon (VEP default)
+
                 insertion_size = len(alt) -1 ## -1 to remove anchor base
 
                 if insertion_size % 3 == 0:
@@ -2111,7 +2129,12 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
 
 
             elif [x for x in check_no_anchor if x in donor_acceptor_positions] != []: ## if it is a deletion and affects the splice site is donor 
-                dna_cons = 'splice_acceptor_variant'
+
+                if len([x for x in all_var_pos if x in donor_acceptor_positions]) != len(all_var_pos): ## insertion overlaps, but is before the acceptor splice site - there is at least one nt not within the acceptor main splice site
+                    dna_cons = 'splice_region_variant&splice_polypyrimidine_tract_variant&intron_variant'
+                else: 
+                    dna_cons = 'splice_acceptor_variant'
+
                 prot_cons = '-'
             
 
