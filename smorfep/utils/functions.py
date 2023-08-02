@@ -440,7 +440,7 @@ def add_variant_transcriptSeq(sequence, start, end, ref, alt, position, map_coor
         print('ref allele does not correspond!')
         print('reference genome: ', sequence[variant_index:variant_index+len(ref)])
         print('ref input: ', ref) 
-        print(map_coordinates)
+        ##print(map_coordinates)
         ##print(position) 
         print(sequence)
         return None, sequence[variant_index:variant_index+len(ref)], ref
@@ -1653,7 +1653,7 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
     elif len(ref) < len(alt): ## insertion
         var_type = 'insertion'
         if strand == '+':
-            all_var_pos = [v for v in range(var_pos, var_pos + len(alt) -1)]
+            all_var_pos = [v for v in range(var_pos, var_pos + len(alt))] ## no need for -1, as range is non-inclusive of end pos
             var_next_pos = var_pos+1
         elif strand == '-':
             all_var_pos = [v for v in range(var_pos-(len(alt)-1), var_pos+1)]
@@ -1661,7 +1661,7 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
     elif len(ref) > len(alt): ## deletion
         var_type = 'deletion'
         if strand == '+':
-            all_var_pos = [v for v in range(var_pos, var_pos + len(ref) -1)]
+            all_var_pos = [v for v in range(var_pos, var_pos + len(ref))] ## no need for -1, as range is non-inclusive of end pos
             var_next_pos = var_pos+1
         elif strand == '-':
             all_var_pos = [v for v in range(var_pos - (len(ref)-1), var_pos+1)]
@@ -1720,7 +1720,7 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
             splice_region.extend([m for m in range(row.end-(splice_size-6)+1, row.end+1)]) ## VEP uses 6th base up to splice region upper range (8bps) as for splice region
 
             splice_region_exon_nts.extend([m for m in range(row.start, row.start+intron_exon_size)]) 
-            print(splice_region_exon_nts)
+            ##print(splice_region_exon_nts)
 
             fifthbase = row.da_start + 4 ## +4 as da_start is the first base of the intron
 
@@ -1755,7 +1755,7 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
             donor_acceptor_positions.extend([g for g in range(row_a.da_start, row_a.da_end+1)])
             print(donor_acceptor_positions)
 
-            polypirimidine_region.extend([j for j in range(row.da_start-17, row.da_start)])
+            polypirimidine_region.extend([j for j in range(row_a.da_start-17, row_a.da_start)])
             print(polypirimidine_region)
 
             splice_region.extend([j for j in range(row_a.start, row_a.start+(splice_size-6))]) ## VEP uses 6th base up to splice region upper range (8bps) as for splice region
@@ -1764,10 +1764,8 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
 
             splice_region_exon_nts.extend([j for j in range(row_a.end-intron_exon_size+1, row_a.end+1)])
 
-            splice_donor_acceptor_region.extend([t for t in range(fifthbase-1, row_a.da_end-splice_da_size+1)])
-            splice_donor_acceptor_region.extend([fifthbase-1]) ## adds 6th base -- default VEP 
-            print(splice_donor_acceptor_region)
-
+            splice_donor_acceptor_region.extend([t for t in range(row_a.da_start-(6-splice_da_size), row_a.da_start)]) ## as range is exclusive of end -- reports up to row_a.da_start-1 position
+            ## OK
         
         elif strand == '-':
             print('- donor end')
@@ -1792,6 +1790,7 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
 
     if var_type != 'SNV': ## computations required only for indels
         ## variant start and end coordinates
+        print(all_var_pos)
         var_start = all_var_pos[0]
         var_end = all_var_pos[-1]
         print('var_start', var_start)
@@ -1963,6 +1962,7 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
 
         ## deletions
         elif var_type == 'deletion':
+            print('deletion')
 
             if [x for x in check_no_anchor if x in donor_acceptor_positions] != []: ## if it is a deletion and affects the splice site is donor 
                 dna_cons = 'splice_donor_variant'
