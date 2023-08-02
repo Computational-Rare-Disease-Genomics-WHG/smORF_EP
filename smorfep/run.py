@@ -134,8 +134,8 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
             matching_t, unmatching_t, transcripts_mapping_dictionary = compatibility_smorf_transcript(reference_genome[each_chrom], transcripts_smorf, introns_smorf, smorf_id, smorf_start, smorf_end, smorf_strand)
             ##print(smorf_id)
             ##print(matching_t)
-            print('unmatching')
-            print(unmatching_t)
+            ##print('unmatching')
+            ##print(unmatching_t)
 
             ## update transcripts to run for the smorf - OK
             transcripts_smorf = transcripts_smorf[transcripts_smorf['transcript_id'].apply(lambda x: any(t_id in x for t_id in matching_t))]
