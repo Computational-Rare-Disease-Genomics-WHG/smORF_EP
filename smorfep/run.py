@@ -119,7 +119,7 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
             smorf_strand = smorf_vars_df.iloc[0]['strand']
             ##print(smorf_id, smorf_start, smorf_end, smorf_strand)
 
-            transcripts_smorf = transcripts_chr.loc[(transcripts_chr.start <= smorf_start)]
+            transcripts_smorf = transcripts_chr.loc[(transcripts_chr.start <= smorf_start) & (transcripts_chr.end >= smorf_end) & (transcripts_chr.strand == smorf_strand)  ]
             ## transcript needs to cover the full sequence region
             ## transcript in the same strand
             transcripts_to_check_smorf = transcripts_smorf['transcript_id'].unique()
@@ -134,7 +134,8 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
             matching_t, unmatching_t, transcripts_mapping_dictionary = compatibility_smorf_transcript(reference_genome[each_chrom], transcripts_smorf, introns_smorf, smorf_id, smorf_start, smorf_end, smorf_strand)
             ##print(smorf_id)
             ##print(matching_t)
-            ##print(unmatching_t)
+            print('unmatching')
+            print(unmatching_t)
 
             ## update transcripts to run for the smorf - OK
             transcripts_smorf = transcripts_smorf[transcripts_smorf['transcript_id'].apply(lambda x: any(t_id in x for t_id in matching_t))]
