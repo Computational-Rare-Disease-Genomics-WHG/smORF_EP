@@ -440,9 +440,9 @@ def add_variant_transcriptSeq(sequence, start, end, ref, alt, position, map_coor
         print('ref allele does not correspond!')
         print('reference genome: ', sequence[variant_index:variant_index+len(ref)])
         print('ref input: ', ref) 
-        ##print(map_coordinates)
+        print(map_coordinates)
         ##print(position) 
-        ##print(sequence)
+        print(sequence)
         return None, sequence[variant_index:variant_index+len(ref)], ref
 
     return new_seq, None, None
@@ -913,8 +913,8 @@ def find_stop_inframe(seq, map_coordinates):
         stop_trios.sort()
         new_stop_index = stop_trios[0]*3 ## gives the index of the first letter on the stop codon
 
-        print(map_coordinates)
-        print(new_stop_index, new_stop_index+3)
+        ##print(map_coordinates)
+        ##print(new_stop_index, new_stop_index+3)
 
         return map_coordinates[new_stop_index+3], new_stop_index+3
     
@@ -1309,7 +1309,7 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
         t_start = row.start
         t_end = row.end
         t_strand = row.strand 
-        ##print(t_id)
+        print(t_id)
 
         ## introns for the transcript
         introns_transcript = introns_df[introns_df['transcript_id'] == t_id]
