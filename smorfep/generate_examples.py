@@ -83,7 +83,7 @@ def main():
         iter_seq_left = seq_left[:len(seq_left)-diff] ## left side
         iter_seq_right = seq_right[:len(seq_right)-diff] ## right side
         ##print(iter_seq_left)
-        print(iter_seq_right)
+        ##print(iter_seq_right)
 
         if var_size == 0: ## SNV -- runs only once
             for each_nt_left in range(len(iter_seq_left)-var_size):
@@ -95,9 +95,9 @@ def main():
                 ##print(var_pos_left, ref, alt, var_type)
 
                 ## uncoment next line for SNV
-                ##out_left.write('\n'+chrom+'\t'+str(var_pos_left)+'\t'+ref+'\t'+alt+'\t'+orf_start+'\t'+orf_end+'\t'+strand+'\t'+var_id_left +'\t'+var_type+'\t'+orf_id)
-                ##var_index_left +=1
-                ##var_id_left = 'XXX'+str(var_index_left)
+                out_left.write('\n'+args.chrom+'\t'+str(var_pos_left)+'\t'+ref+'\t'+alt+'\t'+args.orfStart+'\t'+args.orfEnd+'\t'+args.strand+'\t'+var_id_left +'_'+var_type+'\t'+args.orfID)
+                var_index_left +=1
+                var_id_left = 'XXX'+str(var_index_left)
 
 
             for each_nt_right in range(len(iter_seq_right)-var_size):
@@ -109,9 +109,9 @@ def main():
                 alt = choice_excluding(all_nts, ref)
                 var_type = 'SNV'
 
-                ##out_left.write('\n'+chrom+'\t'+str(var_pos_right)+'\t'+ref+'\t'+alt+'\t'+orf_start+'\t'+orf_end+'\t'+strand+'\t'+var_id_right +'\t'+var_type+'\t'+orf_id)
-                ##var_index_right +=1
-                ##var_id_right = 'XXX'+str(var_index_right)
+                out_right.write('\n'+args.chrom+'\t'+str(var_pos_right)+'\t'+ref+'\t'+alt+'\t'+args.orfStart+'\t'+args.orfEnd+'\t'+args.strand+'\t'+var_id_right +'_'+var_type+'\t'+args.orfID)
+                var_index_right +=1
+                var_id_right = 'XXX'+str(var_index_right)
 
 
         else: ## insertion and deletion  
@@ -156,7 +156,7 @@ def main():
                 alt_del = iter_seq_right[each_nt_right]
                 var_type_del = str(var_size) + 'nt_del'
 
-                print(var_pos_right, ref_ins, alt_ins, ref_del, alt_del)
+                ##print(var_pos_right, ref_ins, alt_ins, ref_del, alt_del)
 
 
                 out_right.write('\n'+args.chrom+'\t'+str(var_pos_right)+'\t'+ref_ins+'\t'+alt_ins+'\t'+args.orfStart+'\t'+args.orfEnd+'\t'+args.strand+'\t'+var_id_right +'_'+var_type_ins+'\t'+args.orfID)
