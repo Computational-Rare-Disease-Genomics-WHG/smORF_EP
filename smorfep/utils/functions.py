@@ -1920,7 +1920,7 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
                     prot_cons = '-'
 
 
-            elif [x for x in check_no_anchor if x in donor_acceptor_positions] != []: ## if it is a deletion and affects the splice site is donor 
+            elif [x for x in check_no_anchor if x in donor_acceptor_positions] != []: ## if it is a insertion and affects the splice site is donor 
                 dna_cons = 'splice_donor_variant'
                 prot_cons = '-'
             
