@@ -1972,7 +1972,7 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
                 deletion_size = len(ref) -1 ## -1 to remove anchor base
 
                 if deletion_size % 3 == 0: 
-                    dna_cons = 'inframe_deletion, splice_region_variant'
+                    dna_cons = 'inframe_deletion&splice_region_variant'
                     prot_cons = 'protein_truncation'
                 else: 
                     dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_deletion
@@ -1983,7 +1983,7 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
                 deletion_size = len(ref) -1 ## -1 to remove anchor base
 
                 if deletion_size % 3 == 0: 
-                    dna_cons = 'inframe_deletion, splice_region_variant'
+                    dna_cons = 'inframe_deletion&splice_region_variant'
                     prot_cons = 'protein_truncation'
                 else: 
                     dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_deletion
@@ -1993,7 +1993,7 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
                 deletion_size = len(ref) -1 ## -1 to remove anchor base
 
                 if deletion_size % 3 == 0: 
-                    dna_cons = 'inframe_deletion, splice_region_variant'
+                    dna_cons = 'inframe_deletion&splice_region_variant'
                     prot_cons = 'protein_truncation'
                 else: 
                     dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_deletion
@@ -2171,7 +2171,7 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
                 deletion_size = len(ref) -1 ## -1 to remove anchor base
 
                 if deletion_size % 3 == 0: 
-                    dna_cons = 'inframe_deletion, splice_region_variant'
+                    dna_cons = 'inframe_deletion&splice_region_variant'
                     prot_cons = 'protein_truncation'
                 else: 
                     dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_deletion
@@ -2182,7 +2182,7 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
                 deletion_size = len(ref) -1 ## -1 to remove anchor base
 
                 if deletion_size % 3 == 0: 
-                    dna_cons = 'inframe_deletion, splice_region_variant'
+                    dna_cons = 'inframe_deletion&splice_region_variant'
                     prot_cons = 'protein_truncation'
                 else: 
                     dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_deletion
@@ -2192,7 +2192,7 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
                 deletion_size = len(ref) -1 ## -1 to remove anchor base
 
                 if deletion_size % 3 == 0: 
-                    dna_cons = 'inframe_deletion, splice_region_variant'
+                    dna_cons = 'inframe_deletion&splice_region_variant'
                     prot_cons = 'protein_truncation'
                 else: 
                     dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_deletion
