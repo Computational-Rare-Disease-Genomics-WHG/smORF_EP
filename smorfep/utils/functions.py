@@ -1872,7 +1872,7 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
                 insertion_size = len(alt) -1 ## -1 to remove anchor base
 
                 if insertion_size % 3 == 0:
-                    dna_cons = 'inframe_insertion, splice_region_variant'
+                    dna_cons = 'inframe_insertion&splice_region_variant'
                     prot_cons = 'protein_elongation'
                 else: 
                     dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_insertion
@@ -1883,7 +1883,7 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
                 insertion_size = len(alt) -1 ## -1 to remove anchor base
 
                 if insertion_size % 3 == 0:
-                    dna_cons = 'inframe_insertion, splice_region_variant'
+                    dna_cons = 'inframe_insertion&splice_region_variant'
                     prot_cons = 'protein_elongation'
                 else: 
                     dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_insertion
@@ -1893,7 +1893,7 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
                 insertion_size = len(alt) -1 ## -1 to remove anchor base
 
                 if insertion_size % 3 == 0:
-                    dna_cons = 'inframe_insertion, splice_region_variant'
+                    dna_cons = 'inframe_insertion&splice_region_variant'
                     prot_cons = 'protein_elongation'
                 else: 
                     dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_insertion
@@ -1903,7 +1903,7 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
                 insertion_size = len(alt) -1 ## -1 to remove anchor base
 
                 if insertion_size % 3 == 0:
-                    dna_cons = 'inframe_insertion, splice_region_variant'
+                    dna_cons = 'inframe_insertion&splice_region_variant'
                     prot_cons = 'protein_elongation'
                 else: 
                     dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_insertion
@@ -1913,7 +1913,7 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
                 insertion_size = len(alt) -1 ## -1 to remove anchor base
 
                 if insertion_size % 3 == 0:
-                    dna_cons = 'inframe_insertion, splice_region_variant'
+                    dna_cons = 'inframe_insertion&splice_region_variant'
                     prot_cons = 'protein_elongation'
                 else: 
                     dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_insertion
@@ -2078,7 +2078,7 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
                 insertion_size = len(alt) -1 ## -1 to remove anchor base
 
                 if insertion_size % 3 == 0:
-                    dna_cons = 'inframe_insertion, splice_region_variant'
+                    dna_cons = 'inframe_insertion&splice_region_variant'
                     prot_cons = 'protein_elongation'
                 else: 
                     dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_insertion
@@ -2089,7 +2089,7 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
                 insertion_size = len(alt) -1 ## -1 to remove anchor base
 
                 if insertion_size % 3 == 0:
-                    dna_cons = 'inframe_insertion, splice_region_variant'
+                    dna_cons = 'inframe_insertion&splice_region_variant'
                     prot_cons = 'protein_elongation'
                 else: 
                     dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_insertion
@@ -2099,7 +2099,7 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
                 insertion_size = len(alt) -1 ## -1 to remove anchor base
 
                 if insertion_size % 3 == 0:
-                    dna_cons = 'inframe_insertion, splice_region_variant'
+                    dna_cons = 'inframe_insertion&splice_region_variant'
                     prot_cons = 'protein_elongation'
                 else: 
                     dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_insertion
@@ -2109,7 +2109,7 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
                 insertion_size = len(alt) -1 ## -1 to remove anchor base
 
                 if insertion_size % 3 == 0:
-                    dna_cons = 'inframe_insertion, splice_region_variant'
+                    dna_cons = 'inframe_insertion&splice_region_variant'
                     prot_cons = 'protein_elongation'
                 else: 
                     dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_insertion
@@ -2119,7 +2119,7 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
                 insertion_size = len(alt) -1 ## -1 to remove anchor base
 
                 if insertion_size % 3 == 0:
-                    dna_cons = 'inframe_insertion, splice_region_variant'
+                    dna_cons = 'inframe_insertion&splice_region_variant'
                     prot_cons = 'protein_elongation'
                 else: 
                     dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_insertion
