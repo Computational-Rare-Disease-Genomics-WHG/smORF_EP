@@ -204,7 +204,7 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
         if dna_c == 'Not_intronic':  ## runs if the variant is not intronic
 
             ## this works on the coordinates
-            intron_status = search_introns(transcript_introns_df, variant_pos, ref, alt, strand, donor_acceptor_positions, splice_region, splice_donor_acceptor_region, fifthbase, intron_end_region, splice_site, donor_acceptor_size)
+            ##intron_status = search_introns(transcript_introns_df, variant_pos, ref, alt, strand, donor_acceptor_positions, splice_region, splice_donor_acceptor_region, fifthbase, intron_end_region, splice_site, donor_acceptor_size)
             ## This only checks if the var_pos is within the intron
 
             # if intron_status != 'Not intronic':
