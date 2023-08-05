@@ -204,123 +204,123 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
         if dna_c == 'Not_intronic':  ## runs if the variant is not intronic
 
             ## this works on the coordinates
-            intron_status = search_introns(transcript_introns_df, variant_pos, ref, alt, strand, donor_acceptor_positions, splice_region, splice_donor_acceptor_region, fifthbase, intron_end_region, splice_site, donor_acceptor_size)
+            ##intron_status = search_introns(transcript_introns_df, variant_pos, ref, alt, strand, donor_acceptor_positions, splice_region, splice_donor_acceptor_region, fifthbase, intron_end_region, splice_site, donor_acceptor_size)
             ## This only checks if the var_pos is within the intron
 
-            if intron_status != 'Not intronic':
-                return intron_status, '-', '-', '-'
+            # if intron_status != 'Not intronic':
+            #     return intron_status, '-', '-', '-'
 
             ## 2.5- Check other variant type
             ## variant not in an intron region
-            elif intron_status == 'Not intronic': ##If variant does not fall into an intron we check the protein consequence
-                ## check for all other variants
+            # elif intron_status == 'Not intronic': ##If variant does not fall into an intron we check the protein consequence
+            #     ## check for all other variants
 
-                ## 2.5.1- introduce the variant 
-                new_sequence, ref_original, ref_inFile = add_variant_transcriptSeq(seq, start, end, ref, alt, variant_pos, map_gen2transc)
+            ## 2.5.1- introduce the variant 
+            new_sequence, ref_original, ref_inFile = add_variant_transcriptSeq(seq, start, end, ref, alt, variant_pos, map_gen2transc)
 
-                # ## 2.5.2- Check if allele in the file and in the sequence match
-                # if new_sequence == None:
-                #     return 'wrong_sequence', 'ref_allele_wrong', ref_original, ref_inFile 
+            # ## 2.5.2- Check if allele in the file and in the sequence match
+            # if new_sequence == None:
+            #     return 'wrong_sequence', 'ref_allele_wrong', ref_original, ref_inFile 
 
-                if len(ref) > len(alt): ## deletion
-                    new_sequence = new_sequence.replace('-','') # we need to take the dash out for seq processing 
+            if len(ref) > len(alt): ## deletion
+                new_sequence = new_sequence.replace('-','') # we need to take the dash out for seq processing 
 
-                ## 2.5.3- check start and stop affecting variants
-                
-                ## 2.5.3.1 - start related
-                ## working with positions allows non-canonical starts
-                start_var, len_change, prot_cons, change_prot = check_start_transcript(seq, new_sequence, variant_pos, map_gen2transc)
-                if start_var != None:         
-                    return start_var, len_change, prot_cons, change_prot
-                
-                ## 2.5.3.1 - stop related
-                stop_var, len_change, prot_cons, change_prot = check_stop_transcript(seq, new_sequence, start, end, variant_pos, strand, map_gen2transc, map_transc2gen, extension_seq)
-                if stop_var != None:        
-                    return stop_var, len_change, prot_cons, change_prot
-
-
-                ## 2.5.4 - All other types of variants
-
-                ## 2.5.4.1 - stop gain
-                seq_trios = get_trios(new_sequence)
-                seq_trios.pop()
-
-                ## search if there are stop codons in the sequence, after removing the last codon = region stop
-                matching = [s for s in seq_trios if any(xs in s for xs in stop_codons)] 
+            ## 2.5.3- check start and stop affecting variants
+            
+            ## 2.5.3.1 - start related
+            ## working with positions allows non-canonical starts
+            start_var, len_change, prot_cons, change_prot = check_start_transcript(seq, new_sequence, variant_pos, map_gen2transc)
+            if start_var != None:         
+                return start_var, len_change, prot_cons, change_prot
+            
+            ## 2.5.3.1 - stop related
+            stop_var, len_change, prot_cons, change_prot = check_stop_transcript(seq, new_sequence, start, end, variant_pos, strand, map_gen2transc, map_transc2gen, extension_seq)
+            if stop_var != None:        
+                return stop_var, len_change, prot_cons, change_prot
 
 
-                transcript_var_positon = map_gen2transc[variant_pos]
-                if len(alt) > len(ref): ## insertions 
-                    var_trio = int(transcript_var_positon//3.0 +1)
+            ## 2.5.4 - All other types of variants
+
+            ## 2.5.4.1 - stop gain
+            seq_trios = get_trios(new_sequence)
+            seq_trios.pop()
+
+            ## search if there are stop codons in the sequence, after removing the last codon = region stop
+            matching = [s for s in seq_trios if any(xs in s for xs in stop_codons)] 
+
+
+            transcript_var_positon = map_gen2transc[variant_pos]
+            if len(alt) > len(ref): ## insertions 
+                var_trio = int(transcript_var_positon//3.0 +1)
+            else: 
+                var_trio = int(transcript_var_positon//3.0)
+
+            if matching != [] and seq_trios[var_trio] in stop_codons:
+                first_stop_found = matching[0]
+                index_stop = seq_trios.index(first_stop_found)
+
+                new_seq = new_sequence[:3*(index_stop+1)]
+
+                len_change = len(new_seq) - len(seq)
+
+                prot_cons, change_prot = protein_consequence_transcript(seq, new_seq, variant_pos, map_gen2transc)
+
+                return 'stop_gain', len_change, prot_cons, change_prot
+
+
+            ## 2.5.4.2 - Insertions
+            if len(alt) > len(ref):
+
+                len_change = len(alt) - len(ref)
+
+                ## inframe
+                if len(new_sequence) % 3 == 0 and len_change == 3: 
+
+                    prot_cons, prot_change = protein_consequence_transcript(seq, new_sequence, variant_pos, map_gen2transc)
+
+                    return 'inframe_insertion', len_change, prot_cons, prot_change
+
+
+                ## frameshit insertion
                 else: 
-                    var_trio = int(transcript_var_positon//3.0)
+                    new_seq = frameshift(new_sequence, extension_seq, map_transc2gen)
 
-                if matching != [] and seq_trios[var_trio] in stop_codons:
-                    first_stop_found = matching[0]
-                    index_stop = seq_trios.index(first_stop_found)
-
-                    new_seq = new_sequence[:3*(index_stop+1)]
-
-                    len_change = len(new_seq) - len(seq)
-
-                    prot_cons, change_prot = protein_consequence_transcript(seq, new_seq, variant_pos, map_gen2transc)
-
-                    return 'stop_gain', len_change, prot_cons, change_prot
-
-
-                ## 2.5.4.2 - Insertions
-                if len(alt) > len(ref):
-
-                    len_change = len(alt) - len(ref)
-
-                    ## inframe
-                    if len(new_sequence) % 3 == 0 and len_change == 3: 
-
-                        prot_cons, prot_change = protein_consequence_transcript(seq, new_sequence, variant_pos, map_gen2transc)
-
-                        return 'inframe_insertion', len_change, prot_cons, prot_change
-
-
-                    ## frameshit insertion
+                    if new_seq != None: ## stop found within the transcript
+                        len_change = len(new_seq) - len(seq)
+                        ## protein consequence
+                        prot_cons, change_prot = protein_consequence(seq, new_seq,variant_pos, start, end, strand)
                     else: 
-                        new_seq = frameshift(new_sequence, extension_seq, map_transc2gen)
+                        len_change = 'off_transcript_stop'
+                        prot_cons = '-'
+                        change_prot = '-'
 
-                        if new_seq != None: ## stop found within the transcript
-                            len_change = len(new_seq) - len(seq)
-                            ## protein consequence
-                            prot_cons, change_prot = protein_consequence(seq, new_seq,variant_pos, start, end, strand)
-                        else: 
-                            len_change = 'off_transcript_stop'
-                            prot_cons = '-'
-                            change_prot = '-'
-
-                        return 'frameshift_variant', len_change, prot_cons, change_prot
+                    return 'frameshift_variant', len_change, prot_cons, change_prot
 
 
-                ## 2.5.4.3 - Deletions
-                elif len(ref) > len(alt):
+            ## 2.5.4.3 - Deletions
+            elif len(ref) > len(alt):
 
-                    ## inframe
-                    if len(new_sequence) % 3 == 0: 
-                        len_change = len(new_sequence) - len(seq)
+                ## inframe
+                if len(new_sequence) % 3 == 0: 
+                    len_change = len(new_sequence) - len(seq)
 
-                        prot_cons, prot_change = protein_consequence_transcript(seq, new_sequence, variant_pos, map_gen2transc)
-                        
-                        return 'inframe_deletion', len_change, prot_cons, change_prot
+                    prot_cons, prot_change = protein_consequence_transcript(seq, new_sequence, variant_pos, map_gen2transc)
+                    
+                    return 'inframe_deletion', len_change, prot_cons, change_prot
 
-                    ## frameshift deletion
+                ## frameshift deletion
+                else: 
+                    new_seq = frameshift(new_sequence, extension_seq, map_transc2gen)
+
+                    if new_seq != None: ## stop found within the transcript
+                        len_change = len(new_seq) - len(seq)
+                        prot_cons, change_prot = protein_consequence(seq, new_seq, variant_pos, start, end, strand)
                     else: 
-                        new_seq = frameshift(new_sequence, extension_seq, map_transc2gen)
-
-                        if new_seq != None: ## stop found within the transcript
-                            len_change = len(new_seq) - len(seq)
-                            prot_cons, change_prot = protein_consequence(seq, new_seq, variant_pos, start, end, strand)
-                        else: 
-                            len_change = 'off_transcript_stop'
-                            prot_cons = '-'
-                            change_prot = '-'
-                        
-                        return 'frameshift_variant', len_change, prot_cons, change_prot
+                        len_change = 'off_transcript_stop'
+                        prot_cons = '-'
+                        change_prot = '-'
+                    
+                    return 'frameshift_variant', len_change, prot_cons, change_prot
 
 
             prot_cons, change_prot = protein_consequence_transcript(seq, new_sequence, variant_pos, map_gen2transc)
