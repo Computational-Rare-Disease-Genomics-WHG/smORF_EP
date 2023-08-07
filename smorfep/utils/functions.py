@@ -1807,6 +1807,7 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
         print('var_pos_check', var_pos_check)
         print('var_end_check', var_end_check)
 
+
         var_next_pos_check = find_position(map_gen2transc, var_next_pos)
         print('var_next_pos_check', var_next_pos_check)
 
@@ -2114,10 +2115,6 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
 
         elif var_type == 'insertion': 
             print('acceptor insertion')
-
-            print('check no anchor in splice_region', [x for x in check_no_anchor if x in splice_region])
-            print('check no anchor in splice_region_exon_nts', [x for x in check_no_anchor if x in splice_region_exon_nts])
-            print('splice_region exon nts', splice_region_exon_nts)
 
             if len([x for x in all_var_pos if x in donor_acceptor_positions]) == len(donor_acceptor_positions) and var_pos in donor_acceptor_positions: ## insertion in the middle of the acceptor main site
                 dna_cons = 'splice_acceptor_variant'
