@@ -2072,20 +2072,41 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
         elif var_type == 'insertion': 
             print('acceptor insertion')
 
+            print('check no anchor in splice_region', [x for x in check_no_anchor if x in splice_region])
+            print('check no anchor in splice_region_exon_nts', [x for x in check_no_anchor if x in splice_region_exon_nts])
+            print('splice_region exon nts', splice_region_exon_nts)
+
             if len([x for x in all_var_pos if x in donor_acceptor_positions]) == len(donor_acceptor_positions) and var_pos in donor_acceptor_positions: ## insertion in the middle of the acceptor main site
                 dna_cons = 'splice_acceptor_variant'
                 prot_cons = '-'
 
-            elif var_start_check == True and var_end_check == True and [x for x in check_no_anchor if x in splice_region] != []: ## variant within the exon, but on the splice region -- last 3 nt of the exon (VEP default)
+
+            elif var_start_check == True and var_end_check == True and [x for x in check_no_anchor if x in splice_region_exon_nts] != []: ## variant within the exon, but on the splice region -- last 3 nt of the exon (VEP default)
 
                 insertion_size = len(alt) -1 ## -1 to remove anchor base
 
+                ## XXX Block workign for the forward strand
+                seq_new = seq[map_gen2transc[splice_region_exon_nts[0]]: map_gen2transc[splice_region_exon_nts[-1]+1]]
+                #print(seq_new)
+                seq_aa = get_protein(seq_new) 
+                #print('seq aa', new_seq_aa)
+                seq_change = seq[map_gen2transc[splice_region_exon_nts[0]]:map_gen2transc[var_pos]+1] + alt[1:] + seq[map_gen2transc[var_pos]+1: map_gen2transc[splice_region_exon_nts[-1]+1]]
+                #print(seq_change)
+                seq_change_aa = get_protein(seq_change[:3])  ### collects just the first codon
+                #print('seq_change aa', seq_change_aa)
+
                 if insertion_size % 3 == 0:
-                    dna_cons = 'inframe_insertion&splice_region_variant'
+                    if seq_aa == seq_change_aa: 
+                        dna_cons = 'protein_altering_variant&splice_region_variant'
+                    else: 
+                        dna_cons = 'inframe_insertion&splice_region_variant'
+
                     prot_cons = 'protein_elongation'
                 else: 
                     dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_insertion
                     prot_cons = '-'
+
+
 
             ## NOTE: this and next condition to get the forward and reverse strand cases
             elif exon_nts >= 1 and var_end_check == False and var_start_check == True and strand == '-': ## insertion after the last nt in the exon
