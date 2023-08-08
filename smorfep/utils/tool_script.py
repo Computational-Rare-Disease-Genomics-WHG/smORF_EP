@@ -192,14 +192,11 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
         ## - Use 8bp (VEP standard) for splice-site affecting var
         ## - for the analysis in GEL - Update AggV2; use all intron length to spot variants (also for denovo)  
         
-        ## TODO: We need to check exon-intron crossing variants
-        ## XXX TODO: think on the starting in the intron, but extending to the exon variants !!!!! 
-        ## Check exon-intron crossing variants
-
+        ## Check: exon-intron crossing variants
         dna_c, dna_seq_c, prot_c, prot_seq_c, all_var_pos = check_exon_intron_vars(seq, start, end, variant_pos, ref, alt, strand, map_gen2transc, splice_regions_df)
-        print(' ')
-        print(variant_pos, ref, alt)
-        print(dna_c, dna_seq_c, prot_c, prot_seq_c)
+        ##print(' ')
+        ##print(variant_pos, ref, alt)
+        ## print(dna_c, dna_seq_c, prot_c, prot_seq_c)
 
         if dna_c == 'Not_intronic':  ## runs if the variant is not intronic
 
@@ -281,28 +278,25 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
 
             ## 2.5.4.2 - Insertions
             if len(alt) > len(ref):
-                print('insertion')
+                ##print('insertion')
 
                 len_change = len(alt) - len(ref)
 
                 ## inframe
                 if len(new_sequence) % 3 == 0 and len_change == 3: 
-                    print('here')
 
                     prot_cons, prot_change = protein_consequence_transcript(seq, new_sequence, variant_pos, map_gen2transc)
                     
                     ## all_var_pos compiled all the positions the variant includes
-                    print(all_var_pos)
                     if strand == '+':
                         no_anchor_all_var_pos = all_var_pos[1:]
-                        print('excluded anchor all_var_pos', no_anchor_all_var_pos)
+                        ##print('excluded anchor all_var_pos', no_anchor_all_var_pos)
                     elif strand == '-':
                         no_anchor_all_var_pos = all_var_pos[:len(all_var_pos)]
-                        print('excluded anchor all_var_pos', no_anchor_all_var_pos)
+                        ##print('excluded anchor all_var_pos', no_anchor_all_var_pos)
 
-                    print('splice_region_exon_nts', donor_splice_region_exon) ## splice_region_exon_nts is empty if the var does not fall into it
+                    ##print('splice_region_exon_nts', donor_splice_region_exon) ## splice_region_exon_nts is empty if the var does not fall into it
                     
-                    print([x for x in no_anchor_all_var_pos if x in  donor_splice_region_exon])
                     if [x for x in all_var_pos if x in  donor_splice_region_exon] != []:
                         return 'protein_altering_variant', len_change, prot_cons, prot_change
                     else:
