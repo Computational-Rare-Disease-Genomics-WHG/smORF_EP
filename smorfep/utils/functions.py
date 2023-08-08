@@ -1537,8 +1537,6 @@ def within_exon(start, end, mapgen2transc):
 
     positions_exon = [x for x in range(start, end+1) if x in mapgen2transc.keys()]
 
-    print(len(positions_exon))
-    print(type(len(positions_exon)))
     return len(positions_exon)
 
 
@@ -2005,7 +2003,7 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
 
         ## deletions
         elif var_type == 'deletion':
-            print('deletion')
+            ##print('deletion')
 
             if [x for x in check_no_anchor if x in donor_acceptor_positions] != []: ## if it is a deletion and affects the splice site is donor 
                 dna_cons = 'splice_donor_variant'
