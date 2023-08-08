@@ -2152,21 +2152,27 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
                     dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_insertion
                 prot_cons = '-'
             
+            elif [x for x in check_no_anchor if x in donor_acceptor_positions] != []: ## if it is an insertion and affects the splice site is acceptor
+
+                if len([x for x in all_var_pos if x in donor_acceptor_positions]) != len(all_var_pos): ## insertion overlaps, but is before the acceptor splice site - there is at least one nt not within the acceptor main splice site
+                    dna_cons = 'splice_region_variant&splice_polypyrimidine_tract_variant&intron_variant'
+                else: 
+                    dna_cons = 'splice_acceptor_variant'
+
+                prot_cons = '-'
+            
 
             elif exon_nts >= 1 and var_end_check == False and var_start_check == True and strand == '-': ## insertion after the last nt in the exon
                 print('end false, start true, - strand')
 
                 ## we need to invert as the indexes are strand based
                 exon_codon = seq[map_gen2transc[splice_region_exon_nts[-1]]:map_gen2transc[splice_region_exon_nts[0]]+1]
-                print(exon_codon)
                 seq_aa = get_protein(exon_codon)
-                print(seq_aa)
+
                 ##if var_pos not in splice_region_exon_nts: ## insertion between the last nt of the intron and the first of the exon
                 changed_seq = alt[1:] + exon_codon
                 changed_codon = changed_seq[:3]
-                print(changed_codon)
                 changed_seq_aa = get_protein(changed_codon)
-                print(changed_seq_aa)
 
                 if insertion_size % 3 == 0:
                     if seq_aa != changed_seq_aa:
@@ -2202,22 +2208,12 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
                 else: 
                     dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_insertion
                     prot_cons = '-'
-
-            elif [x for x in check_no_anchor if x in donor_acceptor_positions] != []: ## if it is an insertion and affects the splice site is acceptor
-
-                if len([x for x in all_var_pos if x in donor_acceptor_positions]) != len(all_var_pos): ## insertion overlaps, but is before the acceptor splice site - there is at least one nt not within the acceptor main splice site
-                    dna_cons = 'splice_region_variant&splice_polypyrimidine_tract_variant&intron_variant'
-                else: 
-                    dna_cons = 'splice_acceptor_variant'
-
-                prot_cons = '-'
             
 
             elif [x for x in all_var_pos if x in donor_acceptor_positions] != [] and [x for x in all_var_pos if x in splice_donor_acceptor_region] != []: ## if the insertion happens between the donor main site and the splice_donor_region '-- insertion on the 3rd base within intron
                 print('all_pos -- splice donor_acceptor and splice donor_acceptor_region')
                 dna_cons = 'splice_region_variant&intron_variant'
                 prot_cons = '-'
-
 
 
             elif [x for x in check_no_anchor if x in splice_region] != []:
