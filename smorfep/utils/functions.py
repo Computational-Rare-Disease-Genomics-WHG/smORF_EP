@@ -434,7 +434,6 @@ def add_variant_transcriptSeq(sequence, start, end, ref, alt, position, map_coor
  
         
     else:
-        ## XXX uncomment prints -- TODO
         print('add_variant_transcriptSeq function')
         print(position, ref, alt, start, end)
         print('ref allele does not correspond!')
@@ -856,7 +855,7 @@ def frameshift(seq, transcript_extension, map_coordinates):
 
     seq_len = len(seq)
     difference = seq_len%3 ## -> how many nucleotides it shifts: 0 (inframe), 1 or 2
-    print(difference)
+    ##print(difference)
 
     if difference == 1: ## we need to add 2 base to get new frame
         corrected_seq = seq + transcript_extension[:2]
@@ -2161,7 +2160,7 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
             
 
             elif exon_nts >= 1 and var_end_check == False and var_start_check == True and strand == '-': ## insertion after the last nt in the exon
-                print('end false, start true, - strand')
+                ##print('end false, start true, - strand')
 
                 ## we need to invert as the indexes are strand based
                 exon_codon = seq[map_gen2transc[splice_region_exon_nts[-1]]:map_gen2transc[splice_region_exon_nts[0]]+1]

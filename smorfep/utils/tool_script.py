@@ -50,7 +50,7 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
     ## check if the format is deletion without anchor: 
     check_anchor_nt = check_var_type(ref, alt)
     if check_anchor_nt == 'no_anchor':
-        print('no anchor')
+        ##print('no anchor')
         ## convert to with-anchor-nt format
         variant_pos, ref, alt = add_anchor_nt(variant_pos, ref, alt, ref_sequence)
         ##TODO: Just working for + strand -- Missing the - strand !!!!!
@@ -123,9 +123,9 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
 
 
         ## Variant conversion to reverse strand
-        print('\n')
-        print('original info')
-        print(variant_pos, ref, alt)
+        ##print('\n')
+        ##print('original info')
+        ##print(variant_pos, ref, alt)
         ## pre-process variant on the reverse strand
         if len(ref) == len(alt): ##SNV
             ref = complement_seq(ref)
@@ -139,7 +139,7 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
             ref_allele_sufix = reverse_complement_seq(ref)
             ref = alt + ref_allele_sufix[:-1] ## removes the last nt
             variant_pos = int(variant_pos)+pos_diff+1 ## var pos next position after the deletion section
-            print(alt, ref_allele_sufix, ref, variant_pos)
+            ##print(alt, ref_allele_sufix, ref, variant_pos)
             ## re-defines variant_pos
 
         elif len(ref) < len(alt): ## insertion 
