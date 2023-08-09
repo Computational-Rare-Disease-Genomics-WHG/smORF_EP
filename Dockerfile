@@ -1,20 +1,20 @@
-# The following is a Dockerfile 
-# to run smORF-EP on a Docker container
+# Use the python 3.11.4-slim-bullseye image
+FROM python:3.11.4-slim-bullseye
 
-# Use the python 3.11 image slim-buster
-FROM python:3.11-slim-buster
-
-# Install build dependencies
-RUN apt-get update && apt-get upgrade
+# Install required system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # Add python build tools
 RUN python3 -m pip install --upgrade pip setuptools wheel
 
-# Set the working directory to /app
+# Set the working directory to /smorf-ep
 WORKDIR /smorf-ep
 
-# Copy the current directory contents into the container at /app
-ADD . /smorf-ep
+# Copy the current directory contents into the container at /smorf-ep
+COPY . /smorf-ep
 
 # Run the command to install dependencies
 RUN python3 setup.py install
