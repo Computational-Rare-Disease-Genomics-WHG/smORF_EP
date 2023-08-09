@@ -1,8 +1,8 @@
 # The following is a Dockerfile 
 # to run smORF-EP on a Docker container
 
-# Use the python 3.10 image slim-buster
-FROM python:3.10-slim-buster
+# Use the python 3.11 image slim-buster
+FROM python:3.11-slim-buster
 
 # Install build dependencies
 RUN apt-get update && apt-get upgrade
