@@ -8,7 +8,7 @@
 from smorfep.utils.functions import *
 
 
-def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, strand, ref, alt, variant_pos, map_gen2transc, map_transc2gen, splice_site=8, donor_acceptor_size = 2):
+def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, strand, ref, alt, variant_pos, map_gen2transc, map_transc2gen, splice_site=8, intron_exon_size=3, donor_acceptor_size = 2):
 
     """
         Function that runs the variant consequence check.
@@ -192,16 +192,24 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
         ## - Use 8bp (VEP standard) for splice-site affecting var
         ## - for the analysis in GEL - Update AggV2; use all intron length to spot variants (also for denovo)  
         
-        ## TODO: We need to check exon-intron crossing variants
-        ## XXX TODO: think on the starting in the intron, but extending to the exon variants !!!!! 
-        ## Check exon-intron crossing variants
-
-        dna_c, dna_seq_c, prot_c, prot_seq_c, donor_acceptor_positions, splice_region, splice_donor_acceptor_region, fifthbase, intron_end_region = check_exon_intron_vars(seq, start, end, variant_pos, ref, alt, strand, map_gen2transc, splice_regions_df)
-        print(' ')
-        print(variant_pos, ref, alt)
-        print(dna_c, dna_seq_c, prot_c, prot_seq_c)
+        ## Check: exon-intron crossing variants
+        dna_c, dna_seq_c, prot_c, prot_seq_c, all_var_pos = check_exon_intron_vars(seq, start, end, variant_pos, ref, alt, strand, map_gen2transc, splice_regions_df)
+        ##print(' ')
+        ##print(variant_pos, ref, alt)
+        ## print(dna_c, dna_seq_c, prot_c, prot_seq_c)
 
         if dna_c == 'Not_intronic':  ## runs if the variant is not intronic
+
+            if strand == '+':
+                donor_splice_region_exon = []
+                ## compute the donor regions in the sequence range
+                for index,row in splice_regions_df.iterrows():
+                    donor_splice_region_exon.extend([m for m in range(row.start, row.start+intron_exon_size)]) 
+
+            elif strand == '-':
+                donor_splice_region_exon = []
+                for index,row in splice_regions_df.iterrows():
+                    donor_splice_region_exon.extend([j for j in range(row.end-intron_exon_size+1, row.end+1)])
 
             ## this works on the coordinates
             ##intron_status = search_introns(transcript_introns_df, variant_pos, ref, alt, strand, donor_acceptor_positions, splice_region, splice_donor_acceptor_region, fifthbase, intron_end_region, splice_site, donor_acceptor_size)
@@ -270,6 +278,7 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
 
             ## 2.5.4.2 - Insertions
             if len(alt) > len(ref):
+                ##print('insertion')
 
                 len_change = len(alt) - len(ref)
 
@@ -277,8 +286,21 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
                 if len(new_sequence) % 3 == 0 and len_change == 3: 
 
                     prot_cons, prot_change = protein_consequence_transcript(seq, new_sequence, variant_pos, map_gen2transc)
+                    
+                    ## all_var_pos compiled all the positions the variant includes
+                    if strand == '+':
+                        no_anchor_all_var_pos = all_var_pos[1:]
+                        ##print('excluded anchor all_var_pos', no_anchor_all_var_pos)
+                    elif strand == '-':
+                        no_anchor_all_var_pos = all_var_pos[:len(all_var_pos)]
+                        ##print('excluded anchor all_var_pos', no_anchor_all_var_pos)
 
-                    return 'inframe_insertion', len_change, prot_cons, prot_change
+                    ##print('splice_region_exon_nts', donor_splice_region_exon) ## splice_region_exon_nts is empty if the var does not fall into it
+                    
+                    if [x for x in all_var_pos if x in  donor_splice_region_exon] != []:
+                        return 'protein_altering_variant', len_change, prot_cons, prot_change
+                    else:
+                        return 'inframe_insertion', len_change, prot_cons, prot_change
 
 
                 ## frameshit insertion
