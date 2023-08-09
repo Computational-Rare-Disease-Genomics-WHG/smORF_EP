@@ -1309,7 +1309,7 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
         t_start = row.start
         t_end = row.end
         t_strand = row.strand 
-        print(t_id)
+        ##print(t_id)
 
         ## introns for the transcript
         introns_transcript = introns_df[introns_df['transcript_id'] == t_id]
@@ -1668,7 +1668,7 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
             all_var_pos = [v for v in range(var_pos - (len(ref)-1), var_pos+1)]
             var_next_pos = var_pos-1
 
-    print(var_type)
+    ##print(var_type)
     
     # print('all_var_positions:')
     # print(all_var_pos)
@@ -2071,7 +2071,7 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
     ## 2- acceptor splice region variants
     elif intron_end_region == 'acceptor_end':
         if var_type == 'SNV': 
-            print('SNV acceptor')
+            ##print('SNV acceptor')
             if var_pos in donor_acceptor_positions: ## if it is a deletion and affects the splice site is donor 
                 dna_cons = 'splice_acceptor_variant'
                 prot_cons = '-'
@@ -2095,7 +2095,7 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
                         dna_cons = 'splice_region_variant&synonymous_variant'
 
                 else:
-                    print('splice_region, not exon nts')
+                    ##print('splice_region, not exon nts')
                     dna_cons = 'splice_region_variant&intron_variant'
                     prot_cons = '-'
 
@@ -2209,13 +2209,13 @@ def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, m
             
 
             elif [x for x in all_var_pos if x in donor_acceptor_positions] != [] and [x for x in all_var_pos if x in splice_donor_acceptor_region] != []: ## if the insertion happens between the donor main site and the splice_donor_region '-- insertion on the 3rd base within intron
-                print('all_pos -- splice donor_acceptor and splice donor_acceptor_region')
+                ##print('all_pos -- splice donor_acceptor and splice donor_acceptor_region')
                 dna_cons = 'splice_region_variant&intron_variant'
                 prot_cons = '-'
 
 
             elif [x for x in check_no_anchor if x in splice_region] != []:
-                print('no anchor var pos -- splice region')
+                ##print('no anchor var pos -- splice region')
                 dna_cons = 'splice_region_variant&intron_variant'
                 prot_cons = '-'
 
