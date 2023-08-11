@@ -1617,7 +1617,7 @@ def map_splice_regions(introns_df, splice_size, intron_exon_size=3, splice_da_si
     return splice_regions_df
 
 
-def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2transc, splice_regions_df, splice_size =8, intron_exon_size=3, splice_da_size=2):
+def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2transc, splice_regions_df, splice_size =8, intron_exon_size=3, splice_da_size=2):
     """ 
         Function to check if a variant crosses exon-intron boundaries.
         # Special case, only required for indels.
