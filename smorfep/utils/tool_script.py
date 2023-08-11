@@ -167,17 +167,6 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
                 for index,row in splice_regions_df.iterrows():
                     donor_splice_region_exon.extend([j for j in range(row.end-intron_exon_size+1, row.end+1)])
 
-            ## this works on the coordinates
-            ##intron_status = search_introns(transcript_introns_df, variant_pos, ref, alt, strand, donor_acceptor_positions, splice_region, splice_donor_acceptor_region, fifthbase, intron_end_region, splice_site, donor_acceptor_size)
-            ## This only checks if the var_pos is within the intron
-
-            # if intron_status != 'Not intronic':
-            #     return intron_status, '-', '-', '-'
-
-            ## 2.5- Check other variant type
-            ## variant not in an intron region
-            # elif intron_status == 'Not intronic': ##If variant does not fall into an intron we check the protein consequence
-            #     ## check for all other variants
 
             ## 2.3.1- introduce the variant 
             new_sequence, ref_original, ref_inFile = add_variant_transcriptSeq(seq, start, end, ref, alt, variant_pos, map_gen2transc)
