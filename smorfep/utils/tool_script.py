@@ -53,40 +53,16 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
         ##print('no anchor')
         ## convert to with-anchor-nt format
         variant_pos, ref, alt = add_anchor_nt(variant_pos, ref, alt, ref_sequence)
-        ##TODO: Just working for + strand -- Missing the - strand !!!!!
-
-    ## check sequence length without introns
-    ## -collect introns coordinates that fall within a given range (start, end)
+        ## Checked: varainat reported on the forward strand -- OK
 
     ## introns on the extension -- pre-compute
     if strand == '+':
-        ## check if start is within an intron
-        # start_intron = transcript_introns_df[(transcript_introns_df['start']<= start) & (transcript_introns_df['end']>= start)]
-
-        # if not start_intron.empty:
-        #     return 'wrong_sequence', 'start within intron', transcript_info.transcript_id, '-'
-
-        # ## check if end is within an intron
-        # end_intron = transcript_introns_df[(transcript_introns_df['start']<= end) & (transcript_introns_df['end']>= end)]
-        # if not end_intron.empty:
-        #     return 'wrong_sequence', 'end within intron', transcript_info.transcript_id, '-'
-
         ## smorf start until transcript end
         transcript_introns_df = transcript_introns_df[(transcript_introns_df['start']>= start) & (transcript_introns_df['end']<= t_end)]
         transcript_introns_df_extension = transcript_introns_df[(transcript_introns_df['start']>= end+1) & (transcript_introns_df['end']<=t_end)]
     
 
     elif strand == '-':
-        ## check if start is within an intron
-        # start_intron = transcript_introns_df[(transcript_introns_df['start']<= end) & (transcript_introns_df['end']>= end)]
-        # if not start_intron.empty:
-        #     return 'wrong_sequence', 'start within intron', transcript_info.transcript_id, '-'
-        
-        ## check if end is within an intron
-        # end_intron = transcript_introns_df[(transcript_introns_df['start']<= start) & (transcript_introns_df['end']>= start)]
-        # if not end_intron.empty:
-        #     return 'wrong_sequence', 'end within intron', transcript_info.transcript_id, '-'
-
         ## transcript start until smORF end
         transcript_introns_df =  transcript_introns_df[(transcript_introns_df['start']>= t_start) & (transcript_introns_df['end']<= end)]
         transcript_introns_df_extension = transcript_introns_df[(transcript_introns_df['start']>= t_start) & (transcript_introns_df['end']<=start-1)]
@@ -165,29 +141,8 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
         seq, new_len = remove_introns(introns_smorf, start, end, strand, ref_sequence)
         ## region sequence without introns
 
-        ## 2.2- Check 3nt periodicity - if not multiple of 3: Wrong sequence
-        # if new_len % 3 != 0: 
-        #     return 'wrong_sequence', 'not_multiple_of_3', new_len, '-'
-        
-        # ## check last 3 nts are a stop codon
-        # elif seq[len(seq)-3:len(seq)+1] not in stop_codons:
-        #     return 'wrong_sequence', 'last_trio_not_a_stop', seq[len(seq)-3:len(seq)+1], '-'
-            
-        
-        ## 2.3- Check if there are multiple stop codons -- Wrong sequence
-        ## checks if the sequence is correct and there is not more than one stop codon
-        # else: 
-            # ## seq is updated with introns removal above -- function remove_introns
-            # if strand == '+':
-            #     s, s_index = find_stop_inframe(seq[:len(seq)-3], map_transc2gen) ## removes last codon and searches for stop codons inframe
-            # elif strand == '-':
-            #     s, s_index = find_stop_inframe(seq[:len(seq)-3], map_transc2gen)
 
-            # if s != None: ## Multiple stop codons in the sequence 
-            #     return 'wrong_sequence', 'More_than_one_stop', '-', '-'
-
-
-        ## 2.4 - Check if variant falls into an intron region     
+        ## 2.2 - Check if variant falls into an intron region     
         ## notes:
         ## - Use 8bp (VEP standard) for splice-site affecting var
         ## - for the analysis in GEL - Update AggV2; use all intron length to spot variants (also for denovo)  
@@ -198,6 +153,7 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
         ##print(variant_pos, ref, alt)
         ## print(dna_c, dna_seq_c, prot_c, prot_seq_c)
 
+        ## 2.3 -- not intron related variants
         if dna_c == 'Not_intronic':  ## runs if the variant is not intronic
 
             if strand == '+':
@@ -223,33 +179,30 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
             # elif intron_status == 'Not intronic': ##If variant does not fall into an intron we check the protein consequence
             #     ## check for all other variants
 
-            ## 2.5.1- introduce the variant 
+            ## 2.3.1- introduce the variant 
             new_sequence, ref_original, ref_inFile = add_variant_transcriptSeq(seq, start, end, ref, alt, variant_pos, map_gen2transc)
 
-            # ## 2.5.2- Check if allele in the file and in the sequence match
-            # if new_sequence == None:
-            #     return 'wrong_sequence', 'ref_allele_wrong', ref_original, ref_inFile 
 
             if len(ref) > len(alt): ## deletion
                 new_sequence = new_sequence.replace('-','') # we need to take the dash out for seq processing 
 
-            ## 2.5.3- check start and stop affecting variants
+            ## 2.3.2- check start and stop affecting variants
             
-            ## 2.5.3.1 - start related
+            ## 2.5.2.1 - start related
             ## working with positions allows non-canonical starts
             start_var, len_change, prot_cons, change_prot = check_start_transcript(seq, new_sequence, variant_pos, map_gen2transc)
             if start_var != None:         
                 return start_var, len_change, prot_cons, change_prot
             
-            ## 2.5.3.1 - stop related
+            ## 2.5.2.1 - stop related
             stop_var, len_change, prot_cons, change_prot = check_stop_transcript(seq, new_sequence, start, end, variant_pos, strand, map_gen2transc, map_transc2gen, extension_seq)
             if stop_var != None:        
                 return stop_var, len_change, prot_cons, change_prot
 
 
-            ## 2.5.4 - All other types of variants
+            ## 2.3.3 - All other types of variants
 
-            ## 2.5.4.1 - stop gain
+            ## 2.3.3.1 - stop gain
             seq_trios = get_trios(new_sequence)
             seq_trios.pop()
 
@@ -276,7 +229,7 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
                 return 'stop_gain', len_change, prot_cons, change_prot
 
 
-            ## 2.5.4.2 - Insertions
+            ## 2.3.3.2 - Insertions
             if len(alt) > len(ref):
                 ##print('insertion')
 
@@ -319,7 +272,7 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
                     return 'frameshift_variant', len_change, prot_cons, change_prot
 
 
-            ## 2.5.4.3 - Deletions
+            ## 2.3.3.3 - Deletions
             elif len(ref) > len(alt):
 
                 ## inframe
@@ -344,9 +297,7 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
                     
                     return 'frameshift_variant', len_change, prot_cons, change_prot
 
-
             prot_cons, change_prot = protein_consequence_transcript(seq, new_sequence, variant_pos, map_gen2transc)
-
 
             if prot_cons == 'missense_variant':
                 return 'missense_variant', 0, prot_cons, change_prot
@@ -358,38 +309,16 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
         ## ------- end of sequence with introns check  -------------
 
 
+    ## 3 -- processing for smORFs without introns
+    else: ##  NOTE: if extension are needed we still need to check introns on the extension
 
-    else: ## no introns in the smORF -- if extension are needed we still need to check introns on the extension
-
-        # ## 3.1 - check 3nt periodicity 
-        # if len(seq) % 3 != 0:
-        #     return 'wrong_sequence', 'not_multiple_of_3', len(seq), '-'
-
-        # ## check last 3 nts are a stop codon
-        # elif seq[len(seq)-3:len(seq)+1] not in stop_codons:
-        #     return 'wrong_sequence', 'last_trio_not_a_stop', seq[len(seq)-3:len(seq)+1], '-'
-            
-        
-        # ## 3.2 - check multiple stop codons
-        # else:     ## checks if the sequence is correct and there is not more than one stop codon
-        #     if strand == '+':
-        #         s, s_index = find_stop_inframe(seq[:len(seq)-3], map_transc2gen) ## removes last codon and searches for stop codons inframe
-        #     elif strand == '-':
-        #         s, s_index = find_stop_inframe(seq[:len(seq)-3], map_transc2gen)
-
-        #     if s != None: ## Multiple stop codons in the sequence 
-        #         return 'wrong_sequence', 'More_than_one_stop', '-', '-'
-
-
-        # ## 3.3 - Introduce the variant
+        # ## 3.1 - Introduce the variant
         new_sequence, ref_original, ref_inFile = add_variant(seq, start, end, ref, alt, variant_pos, strand)
-        # if new_sequence == None:
-        #     return 'wrong sequence', 'ref_allele_wrong', ref_original, ref_inFile 
 
         if len(ref) > len(alt): ## deletion
             new_sequence = new_sequence.replace('-','') # we need to take the dash out for seq processing 
             
-        ## 3.4 Start and stop variants
+        ## 3.2 Start and stop variants
 
         if transcript_introns_df_extension.empty: ## no introns on the extension
             ## 3.4.1 - affect start
@@ -397,25 +326,25 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
             if start_var != None:         
                 return start_var, len_change, prot_cons, change_prot
 
-            ## 3.4.2 - affect stop
+            ## 3.2.2 - affect stop
             stop_var, len_change, prot_cons, change_prot = check_stop(seq, new_sequence, start, end, variant_pos, strand, transcript_info, ref_sequence, map_transc2gen)
             if stop_var != None:         
                 return stop_var, len_change, prot_cons, change_prot
         else: 
-            ## 3.4.3 - start related
+            ## 3.2.3 - start related
             start_var, len_change, prot_cons, change_prot = check_start_transcript(seq, new_sequence, variant_pos, map_gen2transc)
             if start_var != None:         
                 return start_var, len_change, prot_cons, change_prot
             
-            ## 3.4.4 - stop related
+            ## 3.2.4 - stop related
             stop_var, len_change, prot_cons, change_prot = check_stop_transcript(seq, new_sequence, start, end, variant_pos, strand, map_gen2transc, map_transc2gen, extension_seq)
             if stop_var != None:        
                 return stop_var, len_change, prot_cons, change_prot
 
   
-        ## 3.5 - all other types of variants
+        ## 3.3 - all other types of variants
         
-        ## 3.5.1 Stop gain - new stop codon before the one in the original seq
+        ## 3.3.1 Stop gain - new stop codon before the one in the original seq
         seq_trios = get_trios(new_sequence)
         
         seq_trios.pop() ## remove the last trio -- conventional stop codon
@@ -453,18 +382,18 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
             return 'stop_gain', len_change, prot_cons, change_prot
 
 
-        ## 3.6 - insetions
+        ## 3.4 - insetions
         if len(ref) < len(alt): 
             len_change = len(alt) - len(ref)
 
-            ## 3.6.1 inframe
+            ## 3.4.1 inframe
             if len(new_sequence) % 3 == 0 and len_change == 3: 
 
                 prot_cons, prot_change = protein_consequence(seq, new_sequence, variant_pos, start, end, strand)
 
                 return 'inframe_insertion', len_change, prot_cons, prot_change
 
-            ## 3.6.2 frameshift insertion
+            ## 3.4.2 frameshift insertion
             else:
                 new_seq = frameshift(new_sequence, extension_seq, map_transc2gen)
 
@@ -479,10 +408,10 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
 
                 return 'frameshift_variant', len_change, prot_cons, change_prot
 
-        ## 3.7 - deletions
+        ## 3.5 - deletions
         elif len(ref) > len(alt): 
 
-            ## 3.7.1 inframe
+            ## 3.5.1 inframe
             if len(new_sequence) % 3 == 0: 
 
                 len_change = len(new_sequence) - len(seq)
@@ -491,7 +420,7 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
 
                 return 'inframe_deletion', len_change, prot_cons, change_prot
 
-            ## 3.7.2 frameshift deletion -- WORKING 2023-01-24
+            ## 3.5.2 frameshift deletion -- WORKING 2023-01-24
             else:
                 new_seq = frameshift(new_sequence, extension_seq, map_transc2gen)
 
@@ -510,8 +439,7 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
                 return 'frameshift_variant', len_change, prot_cons, change_prot
 
 
-
-        ## 3.8 - single nucleotide change
+        ## 3.6 - single nucleotide change
         prot_cons, change_prot = protein_consequence(seq, new_sequence, variant_pos, start, end, strand)
 
         if prot_cons == 'missense_variant':
@@ -519,4 +447,3 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
         elif prot_cons == 'synonymous_variant':
             return 'synonymous_variant', 0, prot_cons, change_prot
 
-     
