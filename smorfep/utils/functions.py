@@ -607,112 +607,6 @@ def read_vep_web(filename):
     
 
 
-
-# ## TODO: update the input variable as output from exon-intron function XXX
-# def search_introns(introns, var_pos, ref, alt, strand, donor_acceptor_positions, splice_region, splice_donor_acceptor_region, fifthbase, intron_end_region, splice_site = 8, donor_acceptor_size = 2): 
-
-#     """
-#         Function to search if the variants are within an intronic region. 
-#         Input: 
-#         - introns = pandas dataframe with the information of the introns formated as gff MANE files
-#         Contains: 
-#               .chr   .source  .type    .start   .end
-#               .col5  .strand  .col7    .ID  .Parent
-#               .gene_id   .transcript_id   .gene_type   .gene_name   .transcript_type 
-#               .transcript_name   .exon_number .exon_id .tag .protein_id  .Dbxref
-#         - var_pos = position of the variant
-#         - ref = reference allele
-#         - alt = alternative allele
-#         - strand 
-#         - splice_site = range considered splice-site within the intron region, both ends
-#                     by defult this value is defined as 8bps as used by VEP.
-#         - donor_acceptor_size = range considered donor or acceptor site within the intron region, by default this value is defined as 2bp as used by VEP.
-
-#         Assumes introns are sequential and do not overlap -- MANE case. Code needs changes otherwise.
-
-#         Return: 
-#         - result = None, intron var, splice-site var
-
-#         splice-site var if fall within 8bases at most from intron start or end 
-#     """
-
-#     result = ""
-
-
-#     ## check if the variant falls into an intron
-#     intron_select_start = introns[(introns.start <= var_pos) & (introns.end >= var_pos)]['start'].tolist()
-#     intron_select_start.sort() ## sorts all the starts for the intervals/introns the variant falls in 
-
-
-#     if len(intron_select_start) == 0: 
-#         result = 'Not intronic' 
-    
-#     else: 
-#         ## if the variant is in the intron, but not within the splice-site
-#         result = 'intron_variant'
-
-#         ## check if affects the splice-sites
-#         ## assumes that it max gets 1 intron as correspondence - NO overlap
-
-#         if strand == '+':
-#             s = intron_select_start[0]
-#             e = introns[introns.start == s]['end'].item()
-
-#             if len(ref) == len(alt):
-#                 all_var_pos = [var_pos]
-#             elif len(ref) > len(alt): ## deletion
-#                 all_var_pos = [i for i in range(var_pos+1, var_pos+len(ref)-1)] ## -1 to remove anchor base
-#             elif len(ref) < len(alt): ## insertion
-#                 all_var_pos = [i for i in range(var_pos+1, var_pos+len(alt)-1)] ## -1 to remove anchor base
-
-
-#             ## if it gets within splice-site size(8bps default) from start of intron: splice donor
-#             if [x for x in all_var_pos if x in donor_acceptor_positions] != []: 
-#                 if intron_end_region == 'acceptor_end':
-#                     result = 'splice_acceptor_variant'
-#                 elif intron_end_region == 'donor_end':
-#                     result = 'splice_donor_variant'
-
-#             elif [x for x in all_var_pos if x in splice_region] != []:  ## splice_site -1 as the first base is s
-#                 result = 'splice_region_variant'
-#             elif [x for x in all_var_pos if x in splice_donor_acceptor_region] != []:
-#                 if intron_end_region == 'acceptor_end':
-#                     result = 'splice_acceptor_region_variant'
-#                 elif intron_end_region == 'donor_end':
-#                     result = 'splice_donor_region_variant'
-#             elif fifthbase in all_var_pos: 
-#                 if intron_end_region == 'acceptor_end':
-#                     result = 'splice_acceptor_region_variant'
-#                 elif intron_end_region == 'donor_end':
-#                     result = 'splice_donor_region_variant'
-
-#         elif strand == '-': 
-#             s = intron_select_start[0] ## end on the intron in the reverse strand
-#             e = introns[introns.start == s]['end'].item() ## start of the intron in the reverse strand
-
-#             if len(ref) == len(alt):
-#                 all_var_pos = [var_pos]
-#             elif len(ref) > len(alt): ## deletion
-#                 all_var_pos = [i for i in range(var_pos-1, var_pos-(len(ref)-1))] ## -1 to remove anchor base
-#             elif len(ref) < len(alt): ## insertion
-#                 all_var_pos = [i for i in range(var_pos-1, var_pos-(len(alt)-1))] ## -1 to remove anchor base
-
-
-#             ## if it gets within splice-site size(8bps default) from start of intron: splice donor
-#             if [x for x in all_var_pos if x in donor_acceptor_positions] != []: 
-#                 result = 'splice_donor_variant'
-            
-#             elif [x for x in all_var_pos if x in donor_acceptor_positions] != []: ## list empty if no overlap -- OK
-#                 result = 'splice_acceptor_variant'
-
-#             elif [x for x in all_var_pos if x in splice_site_acceptor] != []:  ## splice_site -1 as the first base is s
-#                 result = 'splice_region_variant'
-#             elif [x for x in all_var_pos if x in splice_site_donor] != []:
-#                 result = 'splice_region_variant'
-
-#     return result
-
-
 def protein_consequence(seq, new_seq, var_pos, start, end, strand):
     """
         Function that checks the difference between protein sequences, 
@@ -1617,7 +1511,7 @@ def map_splice_regions(introns_df, splice_size, intron_exon_size=3, splice_da_si
     return splice_regions_df
 
 
-def check_exon_intron_vars(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2transc, splice_regions_df, splice_size =8, intron_exon_size=3, splice_da_size=2):
+def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2transc, splice_regions_df, splice_size =8, intron_exon_size=3, splice_da_size=2):
     """ 
         Function to check if a variant crosses exon-intron boundaries.
         # Special case, only required for indels.
