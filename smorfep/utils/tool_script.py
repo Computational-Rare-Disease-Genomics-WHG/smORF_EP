@@ -148,7 +148,7 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
         ## - for the analysis in GEL - Update AggV2; use all intron length to spot variants (also for denovo)  
         
         ## Check: exon-intron crossing variants
-        dna_c, dna_seq_c, prot_c, prot_seq_c, all_var_pos = check_exon_intron_vars(seq, start, end, variant_pos, ref, alt, strand, map_gen2transc, splice_regions_df)
+        dna_c, dna_seq_c, prot_c, prot_seq_c, all_var_pos = check_introns(seq, start, end, variant_pos, ref, alt, strand, map_gen2transc, splice_regions_df)
         ##print(' ')
         ##print(variant_pos, ref, alt)
         ## print(dna_c, dna_seq_c, prot_c, prot_seq_c)
