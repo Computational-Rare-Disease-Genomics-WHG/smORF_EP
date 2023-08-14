@@ -1569,12 +1569,38 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
 
     ## Filter donor and acceptor regions -- should contain the variant position
     ## NOTE: donor and acceptor are mutually exclusive
-    filtered_donor = splice_regions_df[splice_regions_df['splice_region'].str.contains('donor_sr_intron')] ## only donor
-    filtered_donor = filtered_donor[(filtered_donor['start'] <= var_pos) & (filtered_donor['end'] >= var_pos)]
+    filtered_rows = splice_regions_df[splice_regions_df['splice_region'].str.contains('donor_sr_intron')] ## only donor
+    ##filtered_donor = filtered_donor[(filtered_donor['start'] <= var_pos) & (filtered_donor['end'] >= var_pos)]
     ## gets the donor site of interest
 
-    filtered_acceptor = splice_regions_df[splice_regions_df['splice_region'].str.contains('acceptor_sr_intron')] ## only acceptor
-    filtered_acceptor = filtered_acceptor[(filtered_acceptor['start'] <= var_pos) & (filtered_acceptor['end'] >= var_pos)]  
+    if var_type != 'SNV': ## to include exon-intron crossing variants
+        filtered_lines = []
+        for index, row in filtered_rows.iterrows():
+            for pos in all_var_pos:
+                if row['start'] <= pos <= row['end']:
+                    filtered_lines.append(row)
+        
+        filtered_donor = pd.DataFrame(columns=splice_regions_df.columns)
+        filtered_donor = pd.concat([filtered_donor, filtered_rows], ignore_index=True)
+
+    else:
+        filtered_donor = filtered_rows[(filtered_rows['start'] <= var_pos) & (filtered_rows['end'] >= var_pos)]
+
+
+    filtered_rows_ac = splice_regions_df[splice_regions_df['splice_region'].str.contains('acceptor_sr_intron')] ## only acceptor
+    ##filtered_acceptor = filtered_acceptor[(filtered_acceptor['start'] <= var_pos) & (filtered_acceptor['end'] >= var_pos)]  
+    if var_type != 'SNV':
+        filtered_lines_ac = []
+        for index, row in filtered_rows_ac.iterrows():
+            for pos in all_var_pos:
+                if row['start'] <= pos <= row['end']:
+                    filtered_lines_ac.append(row)
+                    break
+
+        filtered_acceptor = pd.DataFrame(columns=splice_regions_df.columns)
+        filtered_acceptor = pd.concat([filtered_acceptor, filtered_rows_ac], ignore_index=True)   
+    else: 
+        filtered_acceptor = filtered_rows_ac[(filtered_rows_ac['start'] <= var_pos) & (filtered_rows_ac['end'] >= var_pos)]  
 
 
     ## save donor and acceptor positions
@@ -1601,6 +1627,8 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
     fifthbase = None
 
     intron_end_region = None
+
+    ##print('donor empty, acceptor empty', filtered_donor.empty, filtered_acceptor.empty)
 
     if not filtered_donor.empty: 
         row = filtered_donor.iloc[0] ## left side
@@ -1676,11 +1704,8 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
 
             splice_donor_acceptor_region.extend([t for t in range(fifthbase+1, row_a.da_end-splice_da_size+1)])
             splice_donor_acceptor_region.extend([fifthbase-1]) ## adds 6th base -- default VEP 
-            
-    ## this condition below will make the function to run search_introns -- TODO: XXX But we are merging with this function XXX 
-    # else: ## variants not crossing the donor or acceptor regions
-    #     return None, '-', None, '-', donor_acceptor_positions, splice_region, splice_donor_acceptor_region, fifthbase, None
 
+    print(intron_end_region)
 
     if var_type != 'SNV': ## computations required only for indels
         ## variant start and end coordinates
@@ -1710,7 +1735,7 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
         elif strand == '-':
             check_no_anchor = all_var_pos[:len(all_var_pos)-1] ## last position in the range is the anchor base
 
-        ##print('positions no anchor', check_no_anchor)
+        print('positions no anchor', check_no_anchor)
 
     ## 1- donor splice region variants
     if intron_end_region == 'donor_end':
@@ -2194,13 +2219,22 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
                 dna_cons = 'Not_intronic'
                 prot_cons = '-'
         else: 
-            if [x for x in check_no_anchor if x in map_gen2transc] == []:
+            if [x for x in all_var_pos if x in map_gen2transc] == []:
+                dna_cons = 'intron_variant'
+                prot_cons = ''
+            elif var_pos not in map_gen2transc.keys():
+                dna_cons = 'intron_variant'
+                prot_cons = ''
+            elif var_next_pos_check == False: ## position after anchor is within the intron
+
                 dna_cons = 'intron_variant'
                 prot_cons = ''
             
             else:
                 dna_cons = 'Not_intronic'
                 prot_cons = '-'
+    
+    print(dna_cons, '-', prot_cons, '-', all_var_pos)
 
     return dna_cons, '-', prot_cons, '-', all_var_pos
 
