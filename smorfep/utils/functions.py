@@ -1580,8 +1580,9 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
                 if row['start'] <= pos <= row['end']:
                     filtered_lines.append(row)
         
+        ## TODO: convert the row to dataframe -- that will be filtered_donor
         filtered_donor = pd.DataFrame(columns=splice_regions_df.columns)
-        filtered_donor = pd.concat([filtered_donor, filtered_rows], ignore_index=True)
+        filtered_donor = pd.concat([filtered_donor, filtered_lines], ignore_index=True)
 
     else:
         filtered_donor = filtered_rows[(filtered_rows['start'] <= var_pos) & (filtered_rows['end'] >= var_pos)]
@@ -1597,11 +1598,16 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
                     filtered_lines_ac.append(row)
                     break
 
+        ## TODO: convert the row to dataframe -- that will be filtered_acceptor
         filtered_acceptor = pd.DataFrame(columns=splice_regions_df.columns)
-        filtered_acceptor = pd.concat([filtered_acceptor, filtered_rows_ac], ignore_index=True)   
+        filtered_acceptor = pd.concat([filtered_acceptor, filtered_lines_ac], ignore_index=True)   
     else: 
         filtered_acceptor = filtered_rows_ac[(filtered_rows_ac['start'] <= var_pos) & (filtered_rows_ac['end'] >= var_pos)]  
 
+    print('all_var_pos', all_var_pos)
+    print('donor and acceptor pds')
+    print(filtered_donor)
+    print(filtered_acceptor)
 
     ## save donor and acceptor positions
     ## for all the donor and acceptor sites per transcript 
@@ -1628,8 +1634,7 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
 
     intron_end_region = None
 
-    ##print('donor empty, acceptor empty', filtered_donor.empty, filtered_acceptor.empty)
-
+    print('donor empty, acceptor empty', filtered_donor.empty, filtered_acceptor.empty)
     if not filtered_donor.empty: 
         row = filtered_donor.iloc[0] ## left side
         if strand == '+':
@@ -2050,7 +2055,7 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
                 #print('seq_change aa', seq_change_aa)
 
                 if insertion_size % 3 == 0:
-                    if seq_aa == seq_change_aa: 
+                    if seq_aa == seq_change_aa and insertion_size == 3: 
                         dna_cons = 'protein_altering_variant&splice_region_variant'
                     else: 
                         dna_cons = 'inframe_insertion&splice_region_variant'
