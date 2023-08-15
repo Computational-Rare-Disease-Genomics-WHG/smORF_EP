@@ -2043,7 +2043,8 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
                 seq_aa = get_protein(seq_new) 
                 seq_changed = seq[map_gen2transc[splice_region_exon_nts[0]]:map_gen2transc[var_pos]+1] + alt[1:] + seq[map_gen2transc[var_pos]+1: map_gen2transc[splice_region_exon_nts[-1]]+1]
                 seq_change_aa = get_protein(seq_changed[:3])  ### collects just the first codon
-                #print('seq_change aa', seq_change_aa)
+                print('seq_aa initial', seq_aa)
+                print('seq_change aa', seq_change_aa)
 
                 if insertion_size % 3 == 0:
                     check_insertion_frame = var_pos+1-splice_region_exon_nts[0] ## +1 so the anchor is removed
