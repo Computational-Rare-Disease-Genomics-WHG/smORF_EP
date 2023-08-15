@@ -38,6 +38,9 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
     t_end = transcript_info.iloc[0].end
     t_strand = transcript_info.iloc[0].strand 
 
+    ## testing print -- variant header
+    print('\n')
+    print(variant_pos, ref, alt)
 
     ## 1 - Get sequence from Ref genome
     ##print(strand)
@@ -225,7 +228,7 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
                 len_change = len(alt) - len(ref)
 
                 ## inframe
-                if len(new_sequence) % 3 == 0 and len_change == 3: 
+                if len(new_sequence) % 3 == 0 and len_change % 3 == 0: 
 
                     prot_cons, prot_change = protein_consequence_transcript(seq, new_sequence, variant_pos, map_gen2transc)
                     
@@ -239,7 +242,8 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
 
                     ##print('splice_region_exon_nts', donor_splice_region_exon) ## splice_region_exon_nts is empty if the var does not fall into it
                     
-                    if [x for x in all_var_pos if x in  donor_splice_region_exon] != []:
+                    if [x for x in all_var_pos if x in  donor_splice_region_exon] != [] and variant_pos in donor_splice_region_exon: ## insertion cross the splice region including the anchor nt
+                        print([x for x in all_var_pos if x in  donor_splice_region_exon])
                         return 'protein_altering_variant', len_change, prot_cons, prot_change
                     else:
                         return 'inframe_insertion', len_change, prot_cons, prot_change
@@ -376,7 +380,7 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
             len_change = len(alt) - len(ref)
 
             ## 3.4.1 inframe
-            if len(new_sequence) % 3 == 0 and len_change == 3: 
+            if len(new_sequence) % 3 == 0 and len_change % 3 == 0: 
 
                 prot_cons, prot_change = protein_consequence(seq, new_sequence, variant_pos, start, end, strand)
 
