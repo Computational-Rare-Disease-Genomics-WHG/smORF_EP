@@ -749,7 +749,7 @@ def frameshift(seq, transcript_extension, map_coordinates):
 
     seq_len = len(seq)
     difference = seq_len%3 ## -> how many nucleotides it shifts: 0 (inframe), 1 or 2
-    ##print(difference)
+    print(difference)
 
     if difference == 1: ## we need to add 2 base to get new frame
         corrected_seq = seq + transcript_extension[:2]
@@ -1786,8 +1786,12 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
 
             insertion_size = len(alt) -1 ## -1 to remove anchor base
 
+            if var_start_check == True and var_pos not in splice_region_exon_nts and var_next_pos in splice_region_exon_nts and strand == '+': ## anchor position is the position before the splice region exonic nts
+                print('first condition - anchor before splice region')
+                dna_cons = 'Not_intronic'
+                prot_cons = None
 
-            if var_start_check == True and var_end_check == True and [x for x in check_no_anchor if x in splice_region_exon_nts] != []: ## variant within the exon, but on the splice region -- last 3 nt of the exon (VEP default)
+            elif var_start_check == True and var_end_check == True and [x for x in check_no_anchor if x in splice_region_exon_nts] != []: ## variant within the exon, but on the splice region -- last 3 nt of the exon (VEP default)
 
                 if insertion_size % 3 == 0:
                     dna_cons = 'inframe_insertion&splice_region_variant'
