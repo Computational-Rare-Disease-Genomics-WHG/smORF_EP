@@ -242,7 +242,8 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
 
                     ##print('splice_region_exon_nts', donor_splice_region_exon) ## splice_region_exon_nts is empty if the var does not fall into it
                     
-                    if [x for x in all_var_pos if x in  donor_splice_region_exon] != []:
+                    if [x for x in all_var_pos if x in  donor_splice_region_exon] != [] and variant_pos in donor_splice_region_exon: ## insertion cross the splice region including the anchor nt
+                        print([x for x in all_var_pos if x in  donor_splice_region_exon])
                         return 'protein_altering_variant', len_change, prot_cons, prot_change
                     else:
                         return 'inframe_insertion', len_change, prot_cons, prot_change
