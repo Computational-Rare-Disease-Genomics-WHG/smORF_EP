@@ -1765,6 +1765,7 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
                         dna_cons = 'splice_region_variant&synonymous_variant'
 
                 else:
+                    print('var_position in splice region and not in the exon nucleotides region')
                     dna_cons = 'splice_region_variant&intron_variant'
                     prot_cons = '-'
 
@@ -1868,6 +1869,7 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
                 prot_cons = '-'
             
             elif var_pos in donor_acceptor_positions and var_next_pos not in donor_acceptor_positions and strand == '+': ## added for the forward strand
+                print('var_pos in donor acceptor positions, and var_nex_pos not in donor acceptor positions and strand +')
                 dna_cons = 'splice_region_variant&intron_variant'
                 prot_cons = '-'
 
@@ -1881,7 +1883,7 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
                 prot_cons = '-'
 
             elif [x for x in all_var_pos if x in donor_acceptor_positions] != [] and [x for x in all_var_pos if x in splice_donor_acceptor_region] != []: ## if the insertion happens between the donor main site and the splice_donor_region '-- insertion on the 3rd base within intron
-                ##print('all position ins donor acceptor and splice fonor acceptor region too and strand +')
+                print('all position ins donor acceptor and splice fonor acceptor region too and strand +')
                 dna_cons = 'splice_region_variant&intron_variant'
                 prot_cons = '-'
             
@@ -1893,7 +1895,7 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
 
         
             elif [x for x in check_no_anchor if x in splice_region] != []:
-                ##print('last splice region condition')
+                print('last splice region condition')
                 dna_cons = 'splice_region_variant&intron_variant'
                 prot_cons = '-'
 
@@ -2030,12 +2032,13 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
             ##print('splice_region exon nts', splice_region_exon_nts)
 
             if len([x for x in all_var_pos if x in donor_acceptor_positions]) == len(donor_acceptor_positions) and var_pos in donor_acceptor_positions: ## insertion in the middle of the acceptor main site
+                print('insertion in the middle of the main splice acceptor site')
                 dna_cons = 'splice_acceptor_variant'
                 prot_cons = '-'
 
 
             elif var_start_check == True and var_end_check == True and [x for x in check_no_anchor if x in splice_region_exon_nts] != [] and strand == '+': ## variant within the exon, but on the splice region -- last 3 nt of the exon (VEP default)
-
+                print('first protein altering condition')
                 seq_new = seq[map_gen2transc[splice_region_exon_nts[0]]: map_gen2transc[splice_region_exon_nts[-1]]+1]
                 seq_aa = get_protein(seq_new) 
                 seq_changed = seq[map_gen2transc[splice_region_exon_nts[0]]:map_gen2transc[var_pos]+1] + alt[1:] + seq[map_gen2transc[var_pos]+1: map_gen2transc[splice_region_exon_nts[-1]]+1]
@@ -2043,15 +2046,15 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
                 #print('seq_change aa', seq_change_aa)
 
                 if insertion_size % 3 == 0:
-                    if seq_aa == seq_change_aa and insertion_size == 3: 
+                    check_insertion_frame = var_pos+1-splice_region_exon_nts[0] ## +1 so the anchor is removed
+                    print(check_insertion_frame)
+                    if check_insertion_frame % 3 == 0: 
                         dna_cons = 'protein_altering_variant&splice_region_variant'
                     else: 
                         dna_cons = 'inframe_insertion&splice_region_variant'
-
-                    prot_cons = 'protein_elongation'
                 else: 
                     dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_insertion
-                    prot_cons = '-'
+                prot_cons = '-'
 
             
             elif var_start_check == True and var_end_check == True and [x for x in check_no_anchor if x in splice_region_exon_nts] != [] and strand == '-':
@@ -2064,8 +2067,19 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
             elif [x for x in check_no_anchor if x in donor_acceptor_positions] != []: ## if it is an insertion and affects the splice site is acceptor
 
                 if len([x for x in all_var_pos if x in donor_acceptor_positions]) != len(all_var_pos): ## insertion overlaps, but is before the acceptor splice site - there is at least one nt not within the acceptor main splice site
-                    dna_cons = 'splice_region_variant&splice_polypyrimidine_tract_variant&intron_variant'
+                    print('variant overlaps splice region ')
+                    if insertion_size % 3 == 0: ## multiple of 3 conditions added on 15-08-2023 working for strand +
+                        print('multiple of 3')
+                        if len([x for x in all_var_pos if x in donor_acceptor_positions]) > 1: ## condition need for splice_polypyrimidine_tract_variant&intron_variant annotation 15-08-2023 working for strand +
+                            dna_cons = 'splice_polypyrimidine_tract_variant&intron_variant'
+                        else:
+                            dna_cons = 'splice_region_variant&splice_polypyrimidine_tract_variant&intron_variant'
+                    else:
+                        print('not multiple of 3')
+                        dna_cons = 'splice_polypyrimidine_tract_variant&intron_variant'
+
                 else: 
+                    print('splice acceptor variant insertion affect the splice site but occurs before')
                     dna_cons = 'splice_acceptor_variant'
 
                 prot_cons = '-'
@@ -2111,22 +2125,81 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
                     prot_cons = '-'
             
             elif var_pos_check == False and var_next_pos_check == True and strand == '+': ## insertion btween last nt in the intron and first of the exon -- forward strand
+                print('insertion on the last intron base and chack protein change, + strand')
+                
                 if insertion_size % 3 == 0:
-                    dna_cons = 'protein_altering_variant&splice_region_variant'
-                    prot_cons = 'protein_elongation'
+                    check_insertion_frame = var_pos+1-splice_region_exon_nts[0] ## +1 so the anchor is removed
+                    print(check_insertion_frame)
+
+                    exon_codon = seq[map_gen2transc[splice_region_exon_nts[0]]:map_gen2transc[splice_region_exon_nts[-1]]+1]
+                    seq_aa = get_protein(exon_codon)
+
+                    ##if var_pos not in splice_region_exon_nts: ## insertion between the last nt of the intron and the first of the exon
+                    changed_seq = alt[1:] + exon_codon
+                    changed_codon = changed_seq[:3]
+                    changed_seq_aa = get_protein(changed_codon)
+
+                    if check_insertion_frame % 3 == 0 and insertion_size > 3:
+                        print('insertion inframe and length >3')
+                        dna_cons = 'protein_altering_variant&splice_region_variant'
+                
+                    elif check_insertion_frame % 3 == 0:
+                        print('inframe insertion')
+                        dna_cons = 'inframe_insertion&splice_region_variant'
+                    
+                    elif insertion_size > 3: 
+                        print('insertion longer than 3nts')
+                        dna_cons = 'protein_altering_variant&splice_region_variant'
+                    else:
+                        print('other condition protein altering')
+                        dna_cons = 'protein_altering_variant&splice_region_variant'
+
                 else: 
                     dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_insertion
-                    prot_cons = '-'
-            
+                prot_cons = '-'
+
+ 
+
+
+                # exon_codon = seq[map_gen2transc[splice_region_exon_nts[0]]:map_gen2transc[splice_region_exon_nts[-1]]+1]
+                # seq_aa = get_protein(exon_codon)
+
+                # ##if var_pos not in splice_region_exon_nts: ## insertion between the last nt of the intron and the first of the exon
+                # changed_seq = alt[1:] + exon_codon
+                # changed_codon = changed_seq[:3]
+                # changed_seq_aa = get_protein(changed_codon)
+
+                # if insertion_size % 3 == 0:
+                #     check_insertion_frame = var_pos+1-splice_region_exon_nts[0] ## +1 so the anchor is removed
+
+                #     if seq_aa != changed_seq_aa:
+                #         if check_insertion_frame % 3 == 0:
+                #             print('check insertion frame')
+                #             dna_cons = 'inframe_insertion&splice_region_variant'
+                #         else:
+                #             dna_cons = 'protein_altering_variant&splice_region_variant'
+                #     else: 
+                #         print('second inframe condition')
+                #         dna_cons = 'inframe_insertion&splice_region_variant'
+                # else: 
+                #     dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_insertion
+                # prot_cons = '-'
+                
 
             elif [x for x in all_var_pos if x in donor_acceptor_positions] != [] and [x for x in all_var_pos if x in splice_donor_acceptor_region] != []: ## if the insertion happens between the donor main site and the splice_donor_region '-- insertion on the 3rd base within intron
-                ##print('all_pos -- splice donor_acceptor and splice donor_acceptor_region')
+                print('all_pos -- splice donor_acceptor and splice donor_acceptor_region')
                 dna_cons = 'splice_region_variant&intron_variant'
                 prot_cons = '-'
 
 
+            elif [x for x in check_no_anchor if x in splice_region] != [] and strand == '+': ## added 15-08-2023
+                print('no anchor var pos -- splice region and strand +')
+                dna_cons = 'splice_region_variant&intron_variant'
+                dna_cons = 'splice_polypyrimidine_tract_variant&intron_variant'
+                prot_cons = '-'
+
             elif [x for x in check_no_anchor if x in splice_region] != []:
-                ##print('no anchor var pos -- splice region')
+                print('no anchor var pos -- splice region')
                 dna_cons = 'splice_region_variant&intron_variant'
                 prot_cons = '-'
 
@@ -2185,6 +2258,7 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
             
             
             elif [x for x in check_no_anchor if x in splice_region] != []:
+                print('no anchor check splice region')
                 dna_cons = 'splice_region_variant&intron_variant'
                 prot_cons = '-'
 
