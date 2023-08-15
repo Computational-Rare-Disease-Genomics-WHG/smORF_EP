@@ -1573,16 +1573,13 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
     ##filtered_donor = filtered_donor[(filtered_donor['start'] <= var_pos) & (filtered_donor['end'] >= var_pos)]
     ## gets the donor site of interest
 
+    filtered_donor = pd.DataFrame(columns=splice_regions_df.columns)
     if var_type != 'SNV': ## to include exon-intron crossing variants
-        filtered_lines = []
         for index, row in filtered_rows.iterrows():
             for pos in all_var_pos:
                 if row['start'] <= pos <= row['end']:
-                    filtered_lines.append(row)
-        
-        ## TODO: convert the row to dataframe -- that will be filtered_donor
-        filtered_donor = pd.DataFrame(columns=splice_regions_df.columns)
-        filtered_donor = pd.concat([filtered_donor, filtered_lines], ignore_index=True)
+                    filtered_donor = pd.DataFrame([row])
+                    break
 
     else:
         filtered_donor = filtered_rows[(filtered_rows['start'] <= var_pos) & (filtered_rows['end'] >= var_pos)]
@@ -1590,17 +1587,13 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
 
     filtered_rows_ac = splice_regions_df[splice_regions_df['splice_region'].str.contains('acceptor_sr_intron')] ## only acceptor
     ##filtered_acceptor = filtered_acceptor[(filtered_acceptor['start'] <= var_pos) & (filtered_acceptor['end'] >= var_pos)]  
+    filtered_acceptor = pd.DataFrame(columns=splice_regions_df.columns)
     if var_type != 'SNV':
-        filtered_lines_ac = []
-        for index, row in filtered_rows_ac.iterrows():
+        for index, row_a in filtered_rows_ac.iterrows():
             for pos in all_var_pos:
-                if row['start'] <= pos <= row['end']:
-                    filtered_lines_ac.append(row)
+                if row_a['start'] <= pos <= row_a['end']:
+                    filtered_acceptor = pd.DataFrame([row_a])
                     break
-
-        ## TODO: convert the row to dataframe -- that will be filtered_acceptor
-        filtered_acceptor = pd.DataFrame(columns=splice_regions_df.columns)
-        filtered_acceptor = pd.concat([filtered_acceptor, filtered_lines_ac], ignore_index=True)   
     else: 
         filtered_acceptor = filtered_rows_ac[(filtered_rows_ac['start'] <= var_pos) & (filtered_rows_ac['end'] >= var_pos)]  
 
