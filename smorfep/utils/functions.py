@@ -1597,11 +1597,6 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
     else: 
         filtered_acceptor = filtered_rows_ac[(filtered_rows_ac['start'] <= var_pos) & (filtered_rows_ac['end'] >= var_pos)]  
 
-    print('all_var_pos', all_var_pos)
-    print('donor and acceptor pds')
-    print(filtered_donor)
-    print(filtered_acceptor)
-
     ## save donor and acceptor positions
     ## for all the donor and acceptor sites per transcript 
     ## for donor/acceptor variants
