@@ -31,6 +31,20 @@ smORF-EP: predicting the effect of variants in small open reading frames.
 
 Docker image is available for this project. 
 
+## Build Docker image
+```
+docker build -t "NAME:Dockerfile" .
+```
+Note: Replace NAME with the docker image name you want. 
+
+Example: 
+```
+docker build -t "smorfepdev:Dockerfile" .
+```
+## Check the docker images built
+```
+docker images
+```
 <br><hr>
 [:arrow_up: Back to top](#smorf-ep)
 
