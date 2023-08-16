@@ -1,3 +1,4 @@
+![logo](https://github.com/Computational-Rare-Disease-Genomics-WHG/smORF_EP/blob/main/support/smorfEPlogo_resized3.png) 
 # smORF-EP
 
 smORF-EP: predicting the effect of variants in small open reading frames.
