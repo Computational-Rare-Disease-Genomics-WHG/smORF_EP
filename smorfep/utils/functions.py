@@ -2,6 +2,8 @@
 
 ## functions used by main script smORF-EP
 
+## VEP annotation matching to VEP v101 -- July 2023
+
 
 from smorfep.utils.genetic_code import * 
 from typing import List, Optional, Dict, Union
@@ -1795,7 +1797,7 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
 
                 if insertion_size % 3 == 0:
                     dna_cons = 'inframe_insertion&splice_region_variant'
-                    prot_cons = 'protein_elongation'
+                    prot_cons = '-'
                 else: 
                     dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_insertion
                     prot_cons = '-'
@@ -1817,7 +1819,7 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
                     else: 
                         dna_cons = 'inframe_insertion&splice_region_variant'
 
-                    prot_cons = 'protein_elongation'
+                    prot_cons = '-'
                 else: 
                     dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_insertion
                     prot_cons = '-'
@@ -1835,7 +1837,7 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
 
                 if insertion_size % 3 == 0:
                     dna_cons = 'inframe_insertion&splice_region_variant'
-                    prot_cons = 'protein_elongation'
+                    prot_cons = '-'
                 else: 
                     dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_insertion
                     prot_cons = '-'
@@ -1844,7 +1846,7 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
 
                 if insertion_size % 3 == 0:
                     dna_cons = 'inframe_insertion&splice_region_variant'
-                    prot_cons = 'protein_elongation'
+                    prot_cons = '-'
                 else: 
                     dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_insertion
                     prot_cons = '-'
@@ -1853,7 +1855,7 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
 
                 if insertion_size % 3 == 0:
                     dna_cons = 'inframe_insertion&splice_region_variant'
-                    prot_cons = 'protein_elongation'
+                    prot_cons = '-'
                 else: 
                     dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_insertion
                     prot_cons = '-'
@@ -1862,7 +1864,7 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
 
                 if insertion_size % 3 == 0:
                     dna_cons = 'inframe_insertion&splice_region_variant'
-                    prot_cons = 'protein_elongation'
+                    prot_cons = '-'
                 else: 
                     dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_insertion
                     prot_cons = '-'
@@ -1931,7 +1933,7 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
 
                 if deletion_size % 3 == 0: 
                     dna_cons = 'inframe_deletion&splice_region_variant'
-                    prot_cons = 'protein_truncation'
+                    prot_cons = '-'
                 else: 
                     dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_deletion
                     prot_cons = '-'
@@ -1942,7 +1944,7 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
 
                 if deletion_size % 3 == 0: 
                     dna_cons = 'inframe_deletion&splice_region_variant'
-                    prot_cons = 'protein_truncation'
+                    prot_cons = '-'
                 else: 
                     dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_deletion
                     prot_cons = '-'
@@ -1952,7 +1954,7 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
 
                 if deletion_size % 3 == 0: 
                     dna_cons = 'inframe_deletion&splice_region_variant'
-                    prot_cons = 'protein_truncation'
+                    prot_cons = '-'
                 else: 
                     dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_deletion
                     prot_cons = '-'
@@ -2115,7 +2117,7 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
                 ##print('end true, start False, - strand')
                 if insertion_size % 3 == 0:
                     dna_cons = 'inframe_insertion&splice_region_variant'
-                    prot_cons = 'protein_elongation'
+                    prot_cons = '-'
                 else: 
                     dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_insertion
                     prot_cons = '-'
@@ -2124,7 +2126,7 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
                 ##print('vas_pos true, var_next false')
                 if insertion_size % 3 == 0:
                     dna_cons = 'inframe_insertion&splice_region_variant'
-                    prot_cons = 'protein_elongation'
+                    prot_cons = '-'
                 else: 
                     dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_insertion
                     prot_cons = '-'
@@ -2235,7 +2237,7 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
 
                 if deletion_size % 3 == 0: 
                     dna_cons = 'inframe_deletion&splice_region_variant'
-                    prot_cons = 'protein_truncation'
+                    prot_cons = '-'
                 else: 
                     dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_deletion
                     prot_cons = '-'
@@ -2246,7 +2248,7 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
 
                 if deletion_size % 3 == 0: 
                     dna_cons = 'inframe_deletion&splice_region_variant'
-                    prot_cons = 'protein_truncation'
+                    prot_cons = '-'
                 else: 
                     dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_deletion
                     prot_cons = '-'
@@ -2256,7 +2258,7 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
 
                 if deletion_size % 3 == 0: 
                     dna_cons = 'inframe_deletion&splice_region_variant'
-                    prot_cons = 'protein_truncation'
+                    prot_cons = '-'
                 else: 
                     dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_deletion
                     prot_cons = '-'
