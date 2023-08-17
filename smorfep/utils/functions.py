@@ -127,7 +127,7 @@ def complement_seq(seq):
     """
         Function to complement the sequence
     """
-    complement = {'A': 'T', 'C': 'G', 'G': 'C', 'T': 'A', 'N': 'N'}}
+    complement = {'A': 'T', 'C': 'G', 'G': 'C', 'T': 'A', 'N': 'N'}
 
     new_seq = ''.join([complement[base] for base in seq])
     
