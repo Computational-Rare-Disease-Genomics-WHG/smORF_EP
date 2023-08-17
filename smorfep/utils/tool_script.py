@@ -159,6 +159,7 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
         ## 2.3 -- not intron related variants
         if dna_c == 'Not_intronic':  ## runs if the variant is not intronic
 
+            ## Computing splice regions coordinates
             if strand == '+':
                 donor_splice_region_exon = []
                 ## compute the donor regions in the sequence range
