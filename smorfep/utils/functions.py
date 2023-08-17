@@ -1803,6 +1803,7 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
                     prot_cons = '-'
 
             elif var_next_pos in splice_region_exon_nts and strand == '+':  ## forward strand working
+                print('var_next_position within splice region exon nts')
 
                 seq_new = seq[map_gen2transc[splice_region_exon_nts[0]]: map_gen2transc[splice_region_exon_nts[-1]]+1]
                 seq_aa = get_protein(seq_new) 
@@ -1825,8 +1826,14 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
                     prot_cons = '-'
 
             elif var_pos_check == True and var_next_pos_check == False and [x for x in check_no_anchor if x in splice_region_exon_nts] == [] and strand == '+': ## insertion after the last exon nt ## forward strand
+                print('var_pos check True, var_next_positio_check False, check_no_anchor within splice region exon')
+
                 if insertion_size % 3 == 0:
-                    dna_cons = 'protein_altering_variant&splice_region_variant'
+                    if insertion_size > 6 : ## longer insertion for some reason where considered inframe insertion rather than proteing altering 
+                        ## TODO: Add condition for in case a stop is found -- it should be then a stop gained
+                        dna_cons = 'inframe_insertion&splice_region_variant'
+                    else:
+                        dna_cons = 'protein_altering_variant&splice_region_variant'
                 else: 
                     dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_insertion
                 prot_cons = '-'
