@@ -159,6 +159,7 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
         ## 2.3 -- not intron related variants
         if dna_c == 'Not_intronic':  ## runs if the variant is not intronic
 
+            ## Computing splice region coordinates
             if strand == '+':
                 donor_splice_region_exon = []
                 ## compute the donor regions in the sequence range
@@ -218,7 +219,7 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
 
                 prot_cons, change_prot = protein_consequence_transcript(seq, new_seq, variant_pos, map_gen2transc)
 
-                return 'stop_gain', len_change, prot_cons, change_prot
+                return 'stop_gained', len_change, prot_cons, change_prot
 
 
             ## 2.3.3.2 - Insertions
@@ -372,7 +373,7 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
             prot_cons, change_prot = protein_consequence(seq, new_seq, variant_pos, start, end, strand)
             
 
-            return 'stop_gain', len_change, prot_cons, change_prot
+            return 'stop_gained', len_change, prot_cons, change_prot
 
 
         ## 3.4 - insetions

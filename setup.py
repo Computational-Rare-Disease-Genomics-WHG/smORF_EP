@@ -49,7 +49,7 @@ with open("requirements.txt", encoding='utf-8') as f:
                 'smorfinit = smorfep.downloader:main',
                 'smorfinput = smorfep.input_generator:main',
                 'checkseq = smorfep.check_ref_seq:main',
-                'exampleWizard = smorfep.generate_examples:main',
+                'examplewizard = smorfep.generate_examples:main',
                 'compare2vep = smorfep.compare2VEP:main'
             ],
         },
