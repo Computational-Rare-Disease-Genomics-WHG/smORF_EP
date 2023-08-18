@@ -1871,19 +1871,17 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
                     if insertion_size > 6 : ## longer insertion for some reason where considered inframe insertion rather than proteing altering 
                         ## TODO: Add condition for in case a stop is found -- it should be then a stop gained
                         
-                        ## Check if there is a stop inframe
-   
+                        ## Check if there is a stop inframe for all the insertion length -- not limited to the first codon as a stop
                         seq_new = seq[:map_gen2transc[splice_region_exon_nts[-1]]+1] ## from begining until the intron
                         seq_insertion = seq_new + alt[1:] ## adds all the alternative without the anchor nt
-                        new_stop = find_stop_inframe_sequence(seq_insertion)
-                        print(new_stop)
+                        find_stop = find_stop_inframe_sequence(seq_insertion)
                         
-                        ## check codon in the 
-
-                        ##TODO: check if this applies if the stop is in the second codon inserted
-
-
-                        dna_cons = 'inframe_insertion&splice_region_variant'
+                        if find_stop == True: ## if the insertion introduces a stop codon
+                            print('stop codon in ')
+                            dna_cons = 'stop_gained&protein_altering_variant&splice_region_variant'
+                        else: 
+                            print('inframe insertion')
+                            dna_cons = 'inframe_insertion&splice_region_variant'
 
                     else:
                         dna_cons = 'protein_altering_variant&splice_region_variant'
