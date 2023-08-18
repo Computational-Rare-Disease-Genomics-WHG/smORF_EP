@@ -1877,10 +1877,8 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
                         find_stop = find_stop_inframe_sequence(seq_insertion)
                         
                         if find_stop == True: ## if the insertion introduces a stop codon
-                            print('stop codon in ')
                             dna_cons = 'stop_gained&protein_altering_variant&splice_region_variant'
                         else: 
-                            print('inframe insertion')
                             dna_cons = 'inframe_insertion&splice_region_variant'
 
                     else:
