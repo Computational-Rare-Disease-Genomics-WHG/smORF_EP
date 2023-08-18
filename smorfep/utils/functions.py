@@ -779,7 +779,6 @@ def find_stop_inframe(seq, map_coordinates):
         Works on genomic coordinates and do not take into account introns.
 
         Input: seq - sequence to be search
-               start_pos - sequence start postion -- for strand '-' is the end coordinate
                map_coordinates - mapping between transcript and genomic coordinates, used to report the genomic 
                         coordinate for the new stop codon inframe
 
@@ -813,6 +812,46 @@ def find_stop_inframe(seq, map_coordinates):
 
         return map_coordinates[new_stop_index+3], new_stop_index+3
     
+    
+def find_stop_inframe_sequence(seq):
+    """
+        Function to find inframe stop codons.
+        Used to check if an insertion adds a stop codon. 
+        check_introns function used this function.
+
+        Works on the input sequence only, computes trios checks if there is a 
+        stop codon in the tios list. 
+
+        NOTE: Does not matter if the last trio has missing nts -- will not influence 
+        the search as it will not match the stop codons. No need to remove it.
+
+        Input: seq - sequence to be search
+
+        output: True if there is a stop codon in the sequence  
+
+    """
+    
+    seq_trios = get_trios(seq)
+
+    stop_trios = []
+    if 'TAG' in seq_trios:
+        indices = [i for i, x in enumerate(seq_trios) if x == 'TAG']
+        stop_trios.extend(indices)
+    if 'TAA' in seq_trios:
+        indices = [i for i, x in enumerate(seq_trios) if x == 'TAA']
+        stop_trios.extend(indices)
+    if 'TGA' in seq_trios:
+        indices = [i for i, x in enumerate(seq_trios) if x == 'TGA']
+        stop_trios.extend(indices)
+    
+    if stop_trios == []: ## no stop  in frame
+        found_stop = False
+    else: 
+        ## as we work in the sequence we want alway the first stop position -> first seq_index on the stops list 
+        stop_trios.sort()
+        found_stop = True
+
+    return found_stop
     
 
 def stop_transcript_search(seq, transcript_extension, map_coordinates):
@@ -1831,7 +1870,21 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
                 if insertion_size % 3 == 0:
                     if insertion_size > 6 : ## longer insertion for some reason where considered inframe insertion rather than proteing altering 
                         ## TODO: Add condition for in case a stop is found -- it should be then a stop gained
+                        
+                        ## Check if there is a stop inframe
+   
+                        seq_new = seq[:map_gen2transc[splice_region_exon_nts[-1]]+1] ## from begining until the intron
+                        seq_insertion = seq_new + alt[1:] ## adds all the alternative without the anchor nt
+                        new_stop = find_stop_inframe_sequence(seq_insertion)
+                        print(new_stop)
+                        
+                        ## check codon in the 
+
+                        ##TODO: check if this applies if the stop is in the second codon inserted
+
+
                         dna_cons = 'inframe_insertion&splice_region_variant'
+
                     else:
                         dna_cons = 'protein_altering_variant&splice_region_variant'
                 else: 
