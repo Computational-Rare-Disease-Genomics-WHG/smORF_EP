@@ -263,11 +263,10 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
                         print([x for x in all_var_pos if x in  donor_splice_region_exon])
                         return 'protein_altering_variant', '-', '-', '-'
                     
-                    elif aminoacid_check: 
-                        print('protein_altering condition 1')
+                    elif aminoacid_check and len_change > 6:  ## XXX: Check if this 6 is a fixed value
                         print([x for x in all_var_pos if x in  donor_splice_region_exon])
                         return 'protein_altering_variant', '-', '-', '-'
-                        
+
                     else:
                         
 
