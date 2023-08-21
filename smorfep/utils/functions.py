@@ -779,7 +779,6 @@ def find_stop_inframe(seq, map_coordinates):
         Works on genomic coordinates and do not take into account introns.
 
         Input: seq - sequence to be search
-               start_pos - sequence start postion -- for strand '-' is the end coordinate
                map_coordinates - mapping between transcript and genomic coordinates, used to report the genomic 
                         coordinate for the new stop codon inframe
 
@@ -813,6 +812,46 @@ def find_stop_inframe(seq, map_coordinates):
 
         return map_coordinates[new_stop_index+3], new_stop_index+3
     
+    
+def find_stop_inframe_sequence(seq):
+    """
+        Function to find inframe stop codons.
+        Used to check if an insertion adds a stop codon. 
+        check_introns function used this function.
+
+        Works on the input sequence only, computes trios checks if there is a 
+        stop codon in the tios list. 
+
+        NOTE: Does not matter if the last trio has missing nts -- will not influence 
+        the search as it will not match the stop codons. No need to remove it.
+
+        Input: seq - sequence to be search
+
+        output: True if there is a stop codon in the sequence  
+
+    """
+    
+    seq_trios = get_trios(seq)
+
+    stop_trios = []
+    if 'TAG' in seq_trios:
+        indices = [i for i, x in enumerate(seq_trios) if x == 'TAG']
+        stop_trios.extend(indices)
+    if 'TAA' in seq_trios:
+        indices = [i for i, x in enumerate(seq_trios) if x == 'TAA']
+        stop_trios.extend(indices)
+    if 'TGA' in seq_trios:
+        indices = [i for i, x in enumerate(seq_trios) if x == 'TGA']
+        stop_trios.extend(indices)
+    
+    if stop_trios == []: ## no stop  in frame
+        found_stop = False
+    else: 
+        ## as we work in the sequence we want alway the first stop position -> first seq_index on the stops list 
+        stop_trios.sort()
+        found_stop = True
+
+    return found_stop
     
 
 def stop_transcript_search(seq, transcript_extension, map_coordinates):
@@ -1831,7 +1870,17 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
                 if insertion_size % 3 == 0:
                     if insertion_size > 6 : ## longer insertion for some reason where considered inframe insertion rather than proteing altering 
                         ## TODO: Add condition for in case a stop is found -- it should be then a stop gained
-                        dna_cons = 'inframe_insertion&splice_region_variant'
+                        
+                        ## Check if there is a stop inframe for all the insertion length -- not limited to the first codon as a stop
+                        seq_new = seq[:map_gen2transc[splice_region_exon_nts[-1]]+1] ## from begining until the intron
+                        seq_insertion = seq_new + alt[1:] ## adds all the alternative without the anchor nt
+                        find_stop = find_stop_inframe_sequence(seq_insertion)
+                        
+                        if find_stop == True: ## if the insertion introduces a stop codon
+                            dna_cons = 'stop_gained&protein_altering_variant&splice_region_variant'
+                        else: 
+                            dna_cons = 'inframe_insertion&splice_region_variant'
+
                     else:
                         dna_cons = 'protein_altering_variant&splice_region_variant'
                 else: 
@@ -2132,8 +2181,15 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
                 print('insertion on the last intron base and chack protein change, + strand')
                 
                 if insertion_size % 3 == 0:
-                    check_insertion_frame = var_pos+1-splice_region_exon_nts[0] ## +1 so the anchor is removed
-                    print(check_insertion_frame)
+                    print(seq)
+                    nt_aa_mapping = nt2aaMAP(seq)
+                    ## as the var_pos is intronic, we search for var_next_pos
+                    next_var_pos_index = map_gen2transc[var_next_pos]
+                    print(next_var_pos_index)
+                    print(seq[next_var_pos_index-1:next_var_pos_index+3])
+                    check_insertion_frame = next_var_pos_index % 3 ## if = 0 --> inframe
+                    ##check_insertion_frame
+
 
                     exon_codon = seq[map_gen2transc[splice_region_exon_nts[0]]:map_gen2transc[splice_region_exon_nts[-1]]+1]
                     seq_aa = get_protein(exon_codon)
@@ -2143,11 +2199,17 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
                     changed_codon = changed_seq[:3]
                     changed_seq_aa = get_protein(changed_codon)
 
-                    if check_insertion_frame % 3 == 0 and insertion_size > 3:
+                    print(seq_aa, changed_seq_aa)
+                    
+
+
+                    if check_insertion_frame == 0 and insertion_size > 3:
                         print('insertion inframe and length >3')
                         dna_cons = 'protein_altering_variant&splice_region_variant'
-                
-                    elif check_insertion_frame % 3 == 0:
+                        if seq_aa != changed_seq_aa:
+                            print('aa not the same')
+
+                    elif check_insertion_frame == 0:
                         print('inframe insertion')
                         dna_cons = 'inframe_insertion&splice_region_variant'
                     
@@ -2307,3 +2369,29 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
     return dna_cons, '-', prot_cons, '-', all_var_pos
 
 
+def check_aa_change(seq, new_sequence, var_pos, map_coordinates):
+    """
+        Function to check the aa changes -- used to distinguish between 
+        protein_altering and inframe_insertion. The condition is if
+        the next position to the variant positon (removes anchor nt). 
+        If aa change --> True
+        In NO aa chenge --> False 
+
+        tool_script used this function
+
+    """
+
+    ## For the aminoacid change report - change
+    nt_aa = nt2aaMAP(seq)  
+    change_index = map_coordinates[var_pos+1] 
+    aa_index = nt_aa[change_index]
+    seq_prot = get_protein(seq)
+    new_seq_prot = get_protein(new_sequence)
+    
+    if seq_prot[aa_index] == new_seq_prot[aa_index]: ## NO aa change
+        return False
+    else: 
+        return True
+
+
+    
