@@ -243,10 +243,35 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
 
                     ##print('splice_region_exon_nts', donor_splice_region_exon) ## splice_region_exon_nts is empty if the var does not fall into it
                     
+                    print('here')
+      
+                    print(seq)
+                    seq_prot = get_protein(seq)
+                    print(seq_prot)
+                    print(new_sequence)
+                    new_seq_prot = get_protein(new_sequence)
+                    print(new_seq_prot)
+
+                    print('')
+                    print('amino acid change check')
+                    aminoacid_check = check_aa_change(seq, new_sequence, variant_pos, map_gen2transc)
+
+
+
                     if [x for x in all_var_pos if x in  donor_splice_region_exon] != [] and variant_pos in donor_splice_region_exon: ## insertion cross the splice region including the anchor nt
+                        print('protein_altering condition 1')
                         print([x for x in all_var_pos if x in  donor_splice_region_exon])
-                        return 'protein_altering_variant', len_change, prot_cons, prot_change
+                        return 'protein_altering_variant', '-', '-', '-'
+                    
+                    elif aminoacid_check: 
+                        print('protein_altering condition 1')
+                        print([x for x in all_var_pos if x in  donor_splice_region_exon])
+                        return 'protein_altering_variant', '-', '-', '-'
+                        
                     else:
+                        
+
+                        print('inframe_insertion')
                         return 'inframe_insertion', len_change, prot_cons, prot_change
 
 
