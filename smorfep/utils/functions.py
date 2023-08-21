@@ -2181,8 +2181,15 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
                 print('insertion on the last intron base and chack protein change, + strand')
                 
                 if insertion_size % 3 == 0:
-                    check_insertion_frame = var_pos+1-splice_region_exon_nts[0] ## +1 so the anchor is removed
-                    print(check_insertion_frame)
+                    print(seq)
+                    nt_aa_mapping = nt2aaMAP(seq)
+                    ## as the var_pos is intronic, we search for var_next_pos
+                    next_var_pos_index = map_gen2transc[var_next_pos]
+                    print(next_var_pos_index)
+                    print(seq[next_var_pos_index-1:next_var_pos_index+3])
+                    check_insertion_frame = next_var_pos_index % 3 ## if = 0 --> inframe
+                    ##check_insertion_frame
+
 
                     exon_codon = seq[map_gen2transc[splice_region_exon_nts[0]]:map_gen2transc[splice_region_exon_nts[-1]]+1]
                     seq_aa = get_protein(exon_codon)
@@ -2192,11 +2199,17 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
                     changed_codon = changed_seq[:3]
                     changed_seq_aa = get_protein(changed_codon)
 
-                    if check_insertion_frame % 3 == 0 and insertion_size > 3:
+                    print(seq_aa, changed_seq_aa)
+                    
+
+
+                    if check_insertion_frame == 0 and insertion_size > 3:
                         print('insertion inframe and length >3')
                         dna_cons = 'protein_altering_variant&splice_region_variant'
-                
-                    elif check_insertion_frame % 3 == 0:
+                        if seq_aa != changed_seq_aa:
+                            print('aa not the same')
+
+                    elif check_insertion_frame == 0:
                         print('inframe insertion')
                         dna_cons = 'inframe_insertion&splice_region_variant'
                     
