@@ -2356,3 +2356,29 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
     return dna_cons, '-', prot_cons, '-', all_var_pos
 
 
+def check_aa_change(seq, new_sequence, var_pos, map_coordinates):
+    """
+        Function to check the aa changes -- used to distinguish between 
+        protein_altering and inframe_insertion. The condition is if
+        the next position to the variant positon (removes anchor nt). 
+        If aa change --> True
+        In NO aa chenge --> False 
+
+        tool_script used this function
+
+    """
+
+    ## For the aminoacid change report - change
+    nt_aa = nt2aaMAP(seq)  
+    change_index = map_coordinates[var_pos+1] 
+    aa_index = nt_aa[change_index]
+    seq_prot = get_protein(seq)
+    new_seq_prot = get_protein(new_sequence)
+    
+    if seq_prot[aa_index] == new_seq_prot[aa_index]: ## NO aa change
+        return False
+    else: 
+        return True
+
+
+    
