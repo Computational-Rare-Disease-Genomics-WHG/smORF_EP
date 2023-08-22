@@ -1869,7 +1869,6 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
 
                 if insertion_size % 3 == 0:
                     if insertion_size > 6 : ## longer insertion for some reason where considered inframe insertion rather than proteing altering 
-                        ## TODO: Add condition for in case a stop is found -- it should be then a stop gained
                         
                         ## Check if there is a stop inframe for all the insertion length -- not limited to the first codon as a stop
                         seq_new = seq[:map_gen2transc[splice_region_exon_nts[-1]]+1] ## from begining until the intron
@@ -2182,13 +2181,16 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
                 
                 if insertion_size % 3 == 0:
                     print(seq)
+
                     nt_aa_mapping = nt2aaMAP(seq)
                     ## as the var_pos is intronic, we search for var_next_pos
-                    next_var_pos_index = map_gen2transc[var_next_pos]
+                    next_var_pos_index = map_gen2transc[var_next_pos] +1 ## +1 as counting in the genome starts at 1 and python 0
                     print(next_var_pos_index)
                     print(seq[next_var_pos_index-1:next_var_pos_index+3])
                     check_insertion_frame = next_var_pos_index % 3 ## if = 0 --> inframe
                     ##check_insertion_frame
+                    print('frame of next position', next_var_pos_index % 3 )
+
 
 
                     exon_codon = seq[map_gen2transc[splice_region_exon_nts[0]]:map_gen2transc[splice_region_exon_nts[-1]]+1]
@@ -2203,19 +2205,14 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
                     
 
 
-                    if check_insertion_frame == 0 and insertion_size > 3:
-                        print('insertion inframe and length >3')
-                        dna_cons = 'protein_altering_variant&splice_region_variant'
-                        if seq_aa != changed_seq_aa:
-                            print('aa not the same')
-
-                    elif check_insertion_frame == 0:
-                        print('inframe insertion')
-                        dna_cons = 'inframe_insertion&splice_region_variant'
-                    
-                    elif insertion_size > 3: 
-                        print('insertion longer than 3nts')
-                        dna_cons = 'protein_altering_variant&splice_region_variant'
+                    if check_insertion_frame == 0: 
+                        if insertion_size > 3: 
+                            print('inframe and >3')
+                            dna_cons = 'protein_altering_variant&splice_region_variant'
+                        else:   
+                            dna_cons = 'inframe_insertion&splice_region_variant'
+                
+                        
                     else:
                         print('other condition protein altering')
                         dna_cons = 'protein_altering_variant&splice_region_variant'
