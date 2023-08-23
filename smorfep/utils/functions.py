@@ -7,9 +7,34 @@
 
 from smorfep.utils.genetic_code import * 
 from typing import List, Optional, Dict, Union
+from itertools import product
 import pandas as pd
 import re
 import os
+
+
+
+def generate_permutations(characters, length):
+    """
+        Function to generate all the permutations of a given length, 
+        given a set of possible characters.
+
+        Returns a list with all the possible permutations
+
+        Note: used to generate all possible insertion cases in the generate examples step
+
+    """
+
+    return [''.join(p) for p in product(characters, repeat=length)]
+
+# # Example usage:
+# characters = ['A', 'T', 'G', 'C']
+# length = 3
+
+# permutations = generate_permutations(characters, length)
+# for perm in permutations:
+#     print(perm)
+
 
 def read_hierarchy(filename) :
     """
