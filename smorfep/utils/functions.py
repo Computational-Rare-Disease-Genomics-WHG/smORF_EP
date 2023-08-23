@@ -1864,7 +1864,6 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
                         dna_cons = 'stop_gained&splice_region_variant'
                     else: 
                         dna_cons = 'inframe_insertion&splice_region_variant'
-
                 else: 
                     dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_insertion
                 prot_cons = '-'
@@ -2144,33 +2143,6 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
                 else: 
                     dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_insertion
                 prot_cons = '-'
-
- 
-
-
-                # exon_codon = seq[map_gen2transc[splice_region_exon_nts[0]]:map_gen2transc[splice_region_exon_nts[-1]]+1]
-                # seq_aa = get_protein(exon_codon)
-
-                # ##if var_pos not in splice_region_exon_nts: ## insertion between the last nt of the intron and the first of the exon
-                # changed_seq = alt[1:] + exon_codon
-                # changed_codon = changed_seq[:3]
-                # changed_seq_aa = get_protein(changed_codon)
-
-                # if insertion_size % 3 == 0:
-                #     check_insertion_frame = var_pos+1-splice_region_exon_nts[0] ## +1 so the anchor is removed
-
-                #     if seq_aa != changed_seq_aa:
-                #         if check_insertion_frame % 3 == 0:
-                #             print('check insertion frame')
-                #             dna_cons = 'inframe_insertion&splice_region_variant'
-                #         else:
-                #             dna_cons = 'protein_altering_variant&splice_region_variant'
-                #     else: 
-                #         print('second inframe condition')
-                #         dna_cons = 'inframe_insertion&splice_region_variant'
-                # else: 
-                #     dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_insertion
-                # prot_cons = '-'
                 
 
             elif [x for x in all_var_pos if x in donor_acceptor_positions] != [] and [x for x in all_var_pos if x in splice_donor_acceptor_region] != []: ## if the insertion happens between the donor main site and the splice_donor_region '-- insertion on the 3rd base within intron
