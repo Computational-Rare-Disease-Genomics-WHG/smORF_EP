@@ -1922,17 +1922,17 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
                 dna_cons = 'splice_donor_variant'
                 prot_cons = '-'
             
-            elif var_pos in donor_acceptor_positions and var_next_pos not in donor_acceptor_positions and strand == '+': ## added for the forward strand
+            elif var_pos in donor_acceptor_positions and var_next_pos not in donor_acceptor_positions: ## added for the forward strand -- Also used for the reverse -- removed strand == '+'
                 print('var_pos in donor acceptor positions, and var_nex_pos not in donor acceptor positions and strand +')
                 dna_cons = 'splice_region_variant&intron_variant'
                 prot_cons = '-'
 
-            ## insertion inframe with fifthbase special case 
 
+            ## insertion inframe with fifthbase special case 
             elif fifthbase in check_no_anchor and insertion_size%3 != 0: 
                 ## For insertions that cross the 5th base VEP annotates with splice_donor_region_variant&intron_variant -- We match 
                 ##dna_cons = 'splice_donor_5th_base_variant&intron_variant'
-                ##print('fifthbase')
+                print('fifthbase insertion not multiple of 3')
                 dna_cons = 'splice_donor_region_variant&intron_variant' 
                 prot_cons = '-'
 
@@ -1943,7 +1943,7 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
             
 
             elif [x for x in check_no_anchor if x in splice_donor_acceptor_region] != []:
-                ##print('second donor region condition')
+                print('second donor region condition')
                 dna_cons = 'splice_donor_region_variant&intron_variant'
                 prot_cons = '-'
 
