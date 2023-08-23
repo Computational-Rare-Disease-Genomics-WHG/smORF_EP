@@ -2163,21 +2163,8 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
             elif exon_nts >= 1 and var_end_check == False and var_start_check == True and strand == '-': ## insertion after the last nt in the exon
                 ##print('end false, start true, - strand')
 
-                ## we need to invert as the indexes are strand based
-                # exon_codon = seq[map_gen2transc[splice_region_exon_nts[-1]]:map_gen2transc[splice_region_exon_nts[0]]+1]
-                # seq_aa = get_protein(exon_codon)
-
-                # ##if var_pos not in splice_region_exon_nts: ## insertion between the last nt of the intron and the first of the exon
-                # changed_seq = alt[1:] + exon_codon
-                # changed_codon = changed_seq[:3]
-                # changed_seq_aa = get_protein(changed_codon)
-
                 if insertion_size % 3 == 0:
                     dna_cons = 'inframe_insertion&splice_region_variant'
-                    # if seq_aa != changed_seq_aa:
-                    #     dna_cons = 'protein_altering_variant&splice_region_variant'
-                    # else: 
-                    #     dna_cons = 'inframe_insertion&splice_region_variant'
                 else: 
                     dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_insertion
                 prot_cons = '-'
@@ -2203,51 +2190,6 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
                 
                 if insertion_size % 3 == 0:
                     dna_cons = 'inframe_insertion&splice_region_variant'
-                    # print(seq)
-
-                    # nt_aa_mapping = nt2aaMAP(seq)
-                    # ##print(nt_aa_mapping)
-                    # ## as the var_pos is intronic, we search for var_next_pos
-                    # next_var_pos_index = map_gen2transc[var_next_pos] +1 ## +1 as counting in the genome starts at 1 and python 0
-                    # print(next_var_pos_index)
-                    # print(seq[next_var_pos_index:next_var_pos_index+3])
-                    # check_insertion_frame = next_var_pos_index%3 ## if = 0 --> inframe
-                    # ##check_insertion_frame
-                    # print('frame of next position', check_insertion_frame)
-                    # if check_insertion_frame == 0: 
-                    #     exon_codon = seq[next_var_pos_index-1:next_var_pos_index-1+3]
-                    # elif check_insertion_frame == 1: 
-                    #     exon_codon = seq[next_var_pos_index-1-1:next_var_pos_index-1+2]
-                    # elif check_insertion_frame == 2: 
-                    #     exon_codon = seq[next_var_pos_index-1-2:next_var_pos_index-1+1]
-                    # print('exon codon', exon_codon)
-
-
-
-                    # exon_codon = seq[map_gen2transc[splice_region_exon_nts[0]]:map_gen2transc[splice_region_exon_nts[-1]]+1]
-                    # seq_aa = get_protein(exon_codon)
-
-                    # ##if var_pos not in splice_region_exon_nts: ## insertion between the last nt of the intron and the first of the exon
-                    # changed_seq = alt[1:] + exon_codon
-                    # changed_codon = changed_seq[:3]
-                    # changed_seq_aa = get_protein(changed_codon)
-
-                    # print(seq_aa, changed_seq_aa)
-        
-
-                    # if check_insertion_frame == 0: 
-                    #     if insertion_size > 3: 
-                    #         print('inframe and >3')
-                    #         dna_cons = 'protein_altering_variant&splice_region_variant'
-                    #     else:   
-                    #         ## inframe condition
-                    #         dna_cons = 'inframe_insertion&splice_region_variant'
-                
-                    # else:
-                    #     print('other condition protein altering')
-                    #     dna_cons = 'protein_altering_variant&splice_region_variant'
-
-
                 else: 
                     dna_cons = 'frameshift_variant&splice_region_variant' ## frameshift_insertion
                 prot_cons = '-'
@@ -2398,29 +2340,6 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
     return dna_cons, '-', prot_cons, '-', all_var_pos
 
 
-def check_aa_change(seq, new_sequence, var_pos, map_coordinates):
-    """
-        Function to check the aa changes -- used to distinguish between 
-        protein_altering and inframe_insertion. The condition is if
-        the next position to the variant positon (removes anchor nt). 
-        If aa change --> True
-        In NO aa chenge --> False 
-
-        tool_script used this function
-
-    """
-
-    ## For the aminoacid change report - change
-    nt_aa = nt2aaMAP(seq)  
-    change_index = map_coordinates[var_pos+1] 
-    aa_index = nt_aa[change_index]
-    seq_prot = get_protein(seq)
-    new_seq_prot = get_protein(new_sequence)
-    
-    if seq_prot[aa_index] == new_seq_prot[aa_index]: ## NO aa change
-        return False
-    else: 
-        return True
 
 
     
