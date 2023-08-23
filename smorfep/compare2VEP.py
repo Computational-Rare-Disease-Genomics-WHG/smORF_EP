@@ -67,6 +67,13 @@ def main():
 
         if compare == consequence: 
             match = 'Same annotation'
+        elif compare == [] and 'protein_altering_variant' in vep_so and 'inframe_insertion' in consequence: ## protein altering annotation exons
+            match = 'Corresponding annotation'
+
+        elif compare == ['splice_region_variant'] and 'protein_altering_variant' in vep_so and 'inframe_insertion' in consequence: ## protein altering annotation introns/intron-exon regions
+            match = 'Corresponding annotation'
+
+
         else: 
             match = 'Diff annotation'
 
@@ -95,6 +102,7 @@ def main():
     missed_annotations = comparison_df[comparison_df.match == 'Diff annotation']
     print('Wrong annotations: ')
     print(missed_annotations) 
+    print(missed_annotations.shape)
 
 
 
