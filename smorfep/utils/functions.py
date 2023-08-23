@@ -2288,13 +2288,14 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
 
             elif [x for x in check_no_anchor if x in splice_region] != [] and strand == '+': ## added 15-08-2023
                 print('no anchor var pos -- splice region and strand +')
-                dna_cons = 'splice_region_variant&intron_variant'
+                ##dna_cons = 'splice_region_variant&intron_variant'
                 dna_cons = 'splice_polypyrimidine_tract_variant&intron_variant'
                 prot_cons = '-'
 
-            elif [x for x in check_no_anchor if x in splice_region] != []:
-                print('no anchor var pos -- splice region')
-                dna_cons = 'splice_region_variant&intron_variant'
+            elif [x for x in check_no_anchor if x in splice_region] != [] and strand == '-': ## edited on the 23-08-2023
+                print('no anchor var pos -- splice region and strand - ')
+                ##dna_cons = 'splice_region_variant&intron_variant'
+                dna_cons = 'splice_polypyrimidine_tract_variant&intron_variant'
                 prot_cons = '-'
 
             
