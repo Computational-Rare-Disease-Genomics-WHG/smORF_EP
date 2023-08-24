@@ -18,14 +18,15 @@ def generate_permutations(characters, length):
     """
         Function to generate all the permutations of a given length, 
         given a set of possible characters.
+        Input: 
+        - characters: list with the possible values for permutations
+        - lenght of the sequence
 
         Returns a list with all the possible permutations
 
-        Note: used to generate all possible insertion cases in the generate examples step
-
     """
+        return [''.join(p) for p in product(characters, repeat=length)]
 
-    return [''.join(p) for p in product(characters, repeat=length)]
 
 # # Example usage:
 # characters = ['A', 'T', 'G', 'C']
@@ -34,6 +35,34 @@ def generate_permutations(characters, length):
 # permutations = generate_permutations(characters, length)
 # for perm in permutations:
 #     print(perm)
+
+
+def generate_permutations_anchorFixed(characters, length, starting_char):
+    """
+        Function to generate the permutations of a given length, starting with a specific character  
+        for a given a set of possible characters.
+
+        Input:
+        - characters: list with the possible values for permutations
+        - lenght of the sequence
+        - starting_char: used to filter and keep only permutations starting with a given character 
+
+        Returns a list with all the possible permutations that start with starting_char
+
+        Note: used to generate the possible insertion cases for each given anchor nucleotide -- generate examples step
+
+    """
+
+    return [''.join(p) for p in product(characters, repeat=length) if p[0] == starting_char]
+
+# Example usage:
+characters = ['A', 'T', 'G', 'C']
+length = 3
+starting_letter = 'A'
+
+permutations = generate_permutations_anchorFixed(characters, length, starting_letter)
+for perm in permutations:
+    print(perm)
 
 
 def read_hierarchy(filename) :
