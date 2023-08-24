@@ -24,8 +24,11 @@ def generate_permutations(characters, length):
 
         Returns a list with all the possible permutations
 
+        Note: Used for the examples all permutations for insertions case -- generate_examples.py
+        We could use the fixed anchor function, or use this one and add the anchor before -- Used
+
     """
-        return [''.join(p) for p in product(characters, repeat=length)]
+    return [''.join(p) for p in product(characters, repeat=length)]
 
 
 # # Example usage:
@@ -49,7 +52,7 @@ def generate_permutations_anchorFixed(characters, length, starting_char):
 
         Returns a list with all the possible permutations that start with starting_char
 
-        Note: used to generate the possible insertion cases for each given anchor nucleotide -- generate examples step
+        Note: Useful if we want to consider a first fixed nucleotide (anchor nucleotide)
 
     """
 
