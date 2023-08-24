@@ -55,14 +55,14 @@ def generate_permutations_anchorFixed(characters, length, starting_char):
 
     return [''.join(p) for p in product(characters, repeat=length) if p[0] == starting_char]
 
-# Example usage:
-characters = ['A', 'T', 'G', 'C']
-length = 3
-starting_letter = 'A'
+## Testing Block:
+# characters = ['A', 'T', 'G', 'C']
+# length = 3
+# starting_letter = 'A'
 
-permutations = generate_permutations_anchorFixed(characters, length, starting_letter)
-for perm in permutations:
-    print(perm)
+# permutations = generate_permutations_anchorFixed(characters, length, starting_letter)
+# for perm in permutations:
+#     print(perm)
 
 
 def read_hierarchy(filename) :
