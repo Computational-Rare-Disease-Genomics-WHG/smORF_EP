@@ -63,11 +63,18 @@ def main():
     seq_right = get_sequence(args.intronEnd-args.intronNts-1, args.intronEnd+args.exonNts-1+args.indelMaxSize, '+', ref)
 
     ## output open and header
-    out_left = open(args.outputfile+'_donor.vcf', 'w')
-    out_left.write('chrm\tvar_pos\tref\talt\tstart\tend\tstrand\tvar_id\tsmorf_id')
-    
-    out_right = open(args.outputfile+'_acceptor.vcf', 'w')
-    out_right.write('chrm\tvar_pos\tref\talt\tstart\tend\tstrand\tvar_id\tsmorf_id')
+    if args.strand == '+':
+        out_left = open(args.outputfile+'_donor.vcf', 'w')
+        out_left.write('chrm\tvar_pos\tref\talt\tstart\tend\tstrand\tvar_id\tsmorf_id')
+        
+        out_right = open(args.outputfile+'_acceptor.vcf', 'w')
+        out_right.write('chrm\tvar_pos\tref\talt\tstart\tend\tstrand\tvar_id\tsmorf_id')
+    elif args.strand == '-':
+        out_right = open(args.outputfile+'_donor.vcf', 'w')
+        out_right.write('chrm\tvar_pos\tref\talt\tstart\tend\tstrand\tvar_id\tsmorf_id')
+        
+        out_left = open(args.outputfile+'_acceptor.vcf', 'w')
+        out_left.write('chrm\tvar_pos\tref\talt\tstart\tend\tstrand\tvar_id\tsmorf_id')
 
     var_index_left = 1
     var_id_left = 'XXX'+str(var_index_left)
