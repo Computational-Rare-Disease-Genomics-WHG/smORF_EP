@@ -5,6 +5,7 @@ smORF-EP: predicting the effect of variants in small open reading frames.
 
 
 - [smROF-EP Overview](#smorf-ep-overview)
+- [How to cite](#how-to-cite)
 - [Docker image](#docker-image)
 - [Requirements](#requirements)
 - [Install smORF-EP](#install-smorf-ep)
@@ -13,10 +14,21 @@ smORF-EP: predicting the effect of variants in small open reading frames.
 - [Run smORF-EP](#run-smorf-ep)
 - [Input and output](#intput-and-output)
 - [Annotations description](#annotations-description)
-- [How to cite](#how-to-cite)
+- [Caveats](#caveats)
 
 
 # smORF-EP overview
+
+
+<br><hr>
+[:arrow_up: Back to top](#smorf-ep)
+
+
+# How to cite
+
+
+<br><hr>
+[:arrow_up: Back to top](#smorf-ep)
 
 
 # Docker image
@@ -197,15 +209,19 @@ The file maps per transcript ID the transcripts that are excluded from analysis 
 # Annotations description
 
 
+
+| Annotation        | Description| 
+| :---------------- | :--------- | 
+
+
+
 <br><hr>
 [:arrow_up: Back to top](#smorf-ep)
 
 
-# How to cite
+# Caveats
 
-<!-- 
-'smORF-EP: predicting the effect of variants in small open reading frames'
--->
+
 
 <br><hr>
 [:arrow_up: Back to top](#smorf-ep)
