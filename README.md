@@ -29,7 +29,7 @@ smORF-EP: predicting the effect of variants in small open reading frames.
 
 # Docker image
 
-Docker image is available for this project. 
+The simplest way to install and run smORF-EP is using out Docker image. 
 
 ## Build Docker image
 ```
@@ -41,7 +41,7 @@ Example:
 ```
 docker build -t "smorfepdev:Dockerfile" .
 ```
-## Check the docker images built
+## Check the Docker image built sucessfully
 ```
 docker images
 ```
@@ -51,7 +51,7 @@ docker images
 
 # Requirements
 
-## Python libraries used
+## Python libraries
 
 requirements.txt file provides the dependencies for smORF-EP.
 
@@ -122,7 +122,7 @@ smorfinit --all --ref_link https://ftp.ncbi.nlm.nih.gov/genomes/refseq/vertebrat
 ```
 
 
-## Download refernce genome only
+## Download reference genome only
 
 Example (download reference version GCF_000001405.39_GRCh38.p13): 
 
