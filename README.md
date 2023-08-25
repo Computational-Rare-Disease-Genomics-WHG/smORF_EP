@@ -4,7 +4,7 @@
 smORF-EP: predicting the effect of variants in small open reading frames.
 
 
-- [How to cite](#how-to-cite)
+- [smROF-EP Overview](#smorf-ep-overview)
 - [Docker image](#docker-image)
 - [Requirements](#requirements)
 - [Install smORF-EP](#install-smorf-ep)
@@ -13,18 +13,10 @@ smORF-EP: predicting the effect of variants in small open reading frames.
 - [Run smORF-EP](#run-smorf-ep)
 - [Input and output](#intput-and-output)
 - [Annotations description](#annotations-description)
+- [How to cite](#how-to-cite)
 
 
-
-
-# How to cite
-
-<!-- 
-'smORF-EP: predicting the effect of variants in small open reading frames'
--->
-
-<br><hr>
-[:arrow_up: Back to top](#smorf-ep)
+# smORF-EP overview
 
 
 # Docker image
@@ -33,14 +25,10 @@ The simplest way to install and run smORF-EP is using out Docker image.
 
 ## Build Docker image
 ```
-docker build -t "NAME:Dockerfile" .
+docker build -t "smorfepdev:Dockerfile" 
 ```
-Note: Replace NAME with the docker image name you want. 
+Where 'smorfepdev' is the docker image name.
 
-Example: 
-```
-docker build -t "smorfepdev:Dockerfile" .
-```
 ## Check the Docker image built sucessfully
 ```
 docker images
@@ -168,14 +156,12 @@ Example:
 ```
 smorfep -r <path_to_ref_genome/>ref_genome/ -t <path_to_transcriptCoord_file/transcriptCoord.tsv> -i <path_to_transcriptCoord_file/introns.tsv> -f <variants_file>.tsv -o <outputname.tsv>
 ```
-**-r**: reference genome repository, where the sequences per chromosome are stored.
-**-t**: file with the transcripts coordiantes (start and end).
-**-i**: file with the introns coordinates for the transcripts in the study.
-**-f**: input file with the variants and respective smORF region (see Input(#input)).
-**-o**: output file (see Output(#output)). 
+**-r**: reference genome repository, where the sequences per chromosome are stored. <br />
+**-t**: file with the transcripts coordiantes (start and end). <br />
+**-i**: file with the introns coordinates for the transcripts in the study. <br />
+**-f**: input file with the variants and respective smORF region (see Input(#input)). <br />
+**-o**: output file (see Output(#output)). <br />
 
-Note: 
-Add path before input and output filename for scpecific locations.
 
 <br><hr>
 [:arrow_up: Back to top](#smorf-ep)
@@ -210,6 +196,16 @@ The file maps per transcript ID the transcripts that are excluded from analysis 
 
 # Annotations description
 
+
+<br><hr>
+[:arrow_up: Back to top](#smorf-ep)
+
+
+# How to cite
+
+<!-- 
+'smORF-EP: predicting the effect of variants in small open reading frames'
+-->
 
 <br><hr>
 [:arrow_up: Back to top](#smorf-ep)
