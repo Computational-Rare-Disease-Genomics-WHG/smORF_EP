@@ -212,6 +212,14 @@ The file maps per transcript ID the transcripts that are excluded from analysis 
 
 | Annotation        | Description| 
 | :---------------- | :--------- | 
+| missense_variant   |   |
+| inframe_insertion  |   |
+| inframe_deletion   |   |
+| frameshift_variant |   |
+|                   |   |
+|                   |   |
+|                   |   |
+|                   |   |
 
 
 
