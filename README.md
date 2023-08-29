@@ -208,6 +208,7 @@ The file maps per transcript ID the transcripts that are excluded from analysis 
 
 # Annotations description
 
+Annotations provided by smORF-EP follow the same standard of VEP.
 
 
 | Annotation        | Description| 
@@ -215,12 +216,20 @@ The file maps per transcript ID the transcripts that are excluded from analysis 
 | missense_variant   |   |
 | inframe_insertion  |   |
 | inframe_deletion   |   |
-| frameshift_variant |   |
-|                   |   |
-|                   |   |
-|                   |   |
-|                   |   |
+| frameshift_variant             |   |
+| stop_gained        |   |
+| start_lost                  | variant that affects the start codon and the reference sequence has a canonical start 'ATG'   |
+| start_variant                  | variant that affects the start codon and the reference sequence has a non-canonical start   |
+| splice_donor_variant                  |   |
+| splice_donor_5th_base_variant  |   |
+| splice_donor_region_variant                  |   |
+| splice_acceptor_variant                  |   |
+| splice_region_variant                  |   |
+| intron_variant                  |   |
+| splice_polypyrimidine_tract_variant                  |   |
+| synonymous_variant   |   |
 
+Note: 
 
 
 <br><hr>
@@ -228,8 +237,11 @@ The file maps per transcript ID the transcripts that are excluded from analysis 
 
 
 # Caveats
+<!--
+- Tested on 10 replicas for variants within exon-intron boundaries (forawrd and reverse strand, donor and acceptor sites)
+-Teste on insertions crosisng exon-intron boundaries: all permutations of 6nts (forawrd and reverse strand, donor and acceptor sites)
 
-
+-->
 
 <br><hr>
 [:arrow_up: Back to top](#smorf-ep)
