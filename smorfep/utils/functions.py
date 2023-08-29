@@ -773,7 +773,7 @@ def protein_consequence_transcript(seq, new_seq, var_pos, map_coordinates):
 
         return consequence, change
 
-    else: ## insertions/delitions -- The protein sequence is fixed, so frameshift does not apply at this level
+    else: ## insertions/deletions -- The protein sequence is fixed, so frameshift does not apply at this level
         change = len(new_prot) - len(prot_seq)
         if change > 0: 
             consequence = 'protein_elongation'
@@ -1861,11 +1861,17 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
                     new_sequence, ref_original, ref_inFile = add_variant_transcriptSeq(seq, start_orf, end_orf, ref, alt, var_pos, map_gen2transc)
                     prot_cons, change_prot = protein_consequence_transcript(seq, new_sequence, var_pos, map_gen2transc)
 
+                    print('prot_cons', prot_cons)
                     ## should only report those two annotations
                     if prot_cons == 'missense_variant':
                         dna_cons = 'missense_variant&splice_region_variant'
                     elif prot_cons == 'synonymous_variant':
                         dna_cons = 'splice_region_variant&synonymous_variant'
+                    elif prot_cons == 'proteing_trunctation':
+                        dna_cons = 'stop_gained&splice_region_variant'
+                    elif prot_cons == 'protein_elongation':
+                        pass
+                    
 
                 else:
                     print('var_position in splice region and not in the exon nucleotides region')
@@ -2070,7 +2076,10 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
                         dna_cons = 'missense_variant&splice_region_variant'
                     elif prot_cons == 'synonymous_variant':
                         dna_cons = 'splice_region_variant&synonymous_variant'
-
+                    elif prot_cons == 'proteing_trunctation':
+                        dna_cons = 'stop_gained&splice_region_variant'
+                    elif prot_cons == 'protein_elongation':
+                        pass
                 else:
                     ##print('splice_region, not exon nts')
                     dna_cons = 'splice_region_variant&intron_variant'
