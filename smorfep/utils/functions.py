@@ -1867,12 +1867,9 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
                         dna_cons = 'missense_variant&splice_region_variant'
                     elif prot_cons == 'synonymous_variant':
                         dna_cons = 'splice_region_variant&synonymous_variant'
-                    elif prot_cons == 'proteing_trunctation':
+                    elif prot_cons == 'protein_truncation':
                         dna_cons = 'stop_gained&splice_region_variant'
-                    elif prot_cons == 'protein_elongation':
-                        pass
                     
-
                 else:
                     print('var_position in splice region and not in the exon nucleotides region')
                     dna_cons = 'splice_region_variant&intron_variant'
@@ -2076,10 +2073,9 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
                         dna_cons = 'missense_variant&splice_region_variant'
                     elif prot_cons == 'synonymous_variant':
                         dna_cons = 'splice_region_variant&synonymous_variant'
-                    elif prot_cons == 'proteing_trunctation':
+                    elif prot_cons == 'protein_truncation':
                         dna_cons = 'stop_gained&splice_region_variant'
-                    elif prot_cons == 'protein_elongation':
-                        pass
+
                 else:
                     ##print('splice_region, not exon nts')
                     dna_cons = 'splice_region_variant&intron_variant'
