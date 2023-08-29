@@ -213,21 +213,28 @@ Annotations provided by smORF-EP follow the same standard of VEP.
 
 | Annotation        | Description| 
 | :---------------- | :--------- | 
-| missense_variant   |   |
-| inframe_insertion  |   |
-| inframe_deletion   |   |
-| frameshift_variant             |   |
-| stop_gained        |   |
-| start_lost                  | variant that affects the start codon and the reference sequence has a canonical start 'ATG'   |
-| start_variant                  | variant that affects the start codon and the reference sequence has a non-canonical start   |
-| splice_donor_variant                  |   |
-| splice_donor_5th_base_variant  |   |
-| splice_donor_region_variant                  |   |
-| splice_acceptor_variant                  |   |
-| splice_region_variant                  |   |
-| intron_variant                  |   |
-| splice_polypyrimidine_tract_variant                  |   |
-| synonymous_variant   |   |
+| missense_variant   | Variant that changes one or more bases and results in a change in the amino acid sequence, however, the lentght is preserved  |
+| inframe_insertion  | Inframe non synonymous variant that inserts bases  |
+| inframe_deletion  | Inframe non synonymous variant that deletes bases  |
+| frameshift_variant  | Variant which disrupts the translational reading frame, as the number of inserted or deleted nucleotides is not multiple of three  |
+| stop_lost   | Variant changing at least one base of the terminatior codon (stop), leading to transcript elongation   |
+| stop_gained   | Variant changing at least one base of the terminatior codon (stop), leading to transcript shortening   |
+| stop_retained_variant  | Variant changing at least one base of the terminatior codon (stop), but the terminator remains  |
+| start_lost   | Variant that affects the start codon and the reference sequence has a canonical start 'ATG'   |
+| start_variant   | Variant that affects the start codon and the reference sequence has a non-canonical start   |
+| start_retained_variant  | Variant changing at least one base of the start codon, but the start remains  |
+| splice_donor_variant  | Variant that changes the 2 base region at the 5'end of the intron   |
+| splice_donor_5th_base_variant  | Variant that changes the 5th base after the start of the intron  |
+| splice_donor_region_variant   | Variant that changes between 3-6th bases after the splice junction on the 5'end    |
+| splice_acceptor_variant     | Variant that changes the 2 base region at the 3'end of the intron  |
+| splice_region_variant       | Variant that changes one of these regions: (i) 1-3 bases of the exon next to the splice donor/acceptor region, or (ii) 3-8 bases of the intron   |
+| intron_variant  | Variant occurring within an intron  |
+| splice_polypyrimidine_tract_variant   | Variant falling in the polypyrimidine tract at 3' end of intron between 17 and 3 bases from the end of the intron |
+| synonymous_variant   | Variant that does not change the encoding amino acid  |
+
+<!--
+|   |   |
+-->
 
 Note: 
 
