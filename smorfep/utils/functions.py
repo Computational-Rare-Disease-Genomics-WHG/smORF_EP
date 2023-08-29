@@ -1861,7 +1861,6 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
                     new_sequence, ref_original, ref_inFile = add_variant_transcriptSeq(seq, start_orf, end_orf, ref, alt, var_pos, map_gen2transc)
                     prot_cons, change_prot = protein_consequence_transcript(seq, new_sequence, var_pos, map_gen2transc)
 
-                    print('prot_cons', prot_cons)
                     ## should only report those two annotations
                     if prot_cons == 'missense_variant':
                         dna_cons = 'missense_variant&splice_region_variant'
