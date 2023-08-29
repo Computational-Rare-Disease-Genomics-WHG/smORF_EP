@@ -228,8 +228,11 @@ The file maps per transcript ID the transcripts that are excluded from analysis 
 
 
 # Caveats
+<!--
+- Tested on 10 replicas for variants within exon-intron boundaries (forawrd and reverse strand, donor and acceptor sites)
+-Teste on insertions crosisng exon-intron boundaries: all permutations of 6nts (forawrd and reverse strand, donor and acceptor sites)
 
-
+-->
 
 <br><hr>
 [:arrow_up: Back to top](#smorf-ep)
