@@ -36,6 +36,7 @@ def generate_igv_files(smorf_vars_filename, all_smorfs_coordinates_filename, var
 
     """
 
+    ## 1 - Compile input files for igv-reports
     ## read variants to a pandas dataframe
     variants_df = read_variants_file(smorf_vars_filename, '\t', 0)
 
@@ -62,9 +63,27 @@ def generate_igv_files(smorf_vars_filename, all_smorfs_coordinates_filename, var
     ## Add clinvar annotations to INFO column
     ##CLNSIG=Pathogenic;CLNREVSTAT=criteria_provided,_single_submitter
 
+    ## 2 - compile the BED file with the target smORF info
+    ## NOTE: considers the start and end positions in the vairants-smORF file
+    ## BED file with no header
+    ##     18	47808957	47930659	SMAD2	2	-
+    ## TODO: Check to include introns in the smORF track
 
-    ## compile the overlapping smorfs file
-    
+    ##check first line in the variants-smorf df
+
+
+    smorf_chrom = 
+    smorf_start = 
+    smorf_end = 
+    smorf_score = 
+    smorf_strand = 
+
+
+
+
+
+    ## 3 - compile the overlapping smorfs file
+
 
     return None
 
