@@ -4,6 +4,10 @@
 
 ## script to generate the viewing files 
 
+## NOTE 1: input filenames for igc-reports are manually set in the code: Lines 
+## NOTE 2: flanking size used to compute the overlaping smORFs is manually defined in Line 
+
+
 import argparse 
 import datetime
 import numpy
@@ -88,7 +92,8 @@ def generate_igv_files(smorf_vars_filename, all_smorfs_coordinates_filename, var
 
 
     ## 3 - compile the overlapping smorfs file
-    extended_overlap_size = 1000 ## NOTE: This means 500 bases each end are considered for the extended overlap
+    ## NOTE: To add a flanking region edit next line
+    extended_overlap_size = 0 ##1000 ## NOTE: This means 500 bases each end are considered for the extended overlap
 
     extended_min = smorf_start - extended_overlap_size/2 
     extended_max = smorf_end - extended_overlap_size/2
@@ -96,9 +101,16 @@ def generate_igv_files(smorf_vars_filename, all_smorfs_coordinates_filename, var
     ## open other smORFs coordinates files 
     smorfs_set_df = read_file(all_smorfs_coordinates_filename, '\t', None)
     smorfs_set_df.columns = ['chr','start','end','id','score','strand']
+    ##print(smorfs_set_df)
+    
+    ## filtering
+    ## TODO: allow with and without prefix crm column
+    smorfs_set_df = smorfs_set_df[smorfs_set_df['chr'] == 'chr'+str(smorf_chrom)] ## filter per chromosome
+    overlap_left_df = smorfs_set_df[(smorfs_set_df['start'] <= extended_min) & (smorfs_set_df['end'] <= extended_max)] ## overlap a region on the left end
+    overlap_right_df = smorfs_set_df[(smorfs_set_df['start'] >= extended_min) & (smorfs_set_df['end'] <= extended_max)] ## overlap a region on the right end
+    overlap_full_within_df = smorfs_set_df[(smorfs_set_df['start'] >= extended_min) & (smorfs_set_df['end'] <= extended_max)] ## overlapping smORFs fully within the range of main smorf
+    overlap_full_over_df  = smorfs_set_df[(smorfs_set_df['start'] <= extended_min) & (smorfs_set_df['end'] >= extended_max)] ## overlapping smORFs are larger than the main smorf
     print(smorfs_set_df)
-
-
 
 
     return None
