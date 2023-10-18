@@ -75,8 +75,8 @@ def generate_igv_files(smorf_vars_filename, all_smorfs_coordinates_filename, var
     ##print(first_line)
 
     smorf_chrom = first_line['chrm']
-    smorf_start = first_line['start']
-    smorf_end = first_line['end']
+    smorf_start = int(first_line['start'])
+    smorf_end = int(first_line['end'])
     smorf_id = first_line['smorf_id']
     smorf_score = '-'
     smorf_strand = first_line['strand']
@@ -84,12 +84,21 @@ def generate_igv_files(smorf_vars_filename, all_smorfs_coordinates_filename, var
     smorf_bed = open(smorf_filename,'w')
     smorf_bed.write(str(smorf_chrom)+'\t'+str(smorf_start)+'\t'+str(smorf_end)+'\t'+smorf_id+'\t'+str(smorf_score)+'\t'+smorf_strand)
     smorf_bed.close()
-
-
-
+    ## STEP -2 OK
 
 
     ## 3 - compile the overlapping smorfs file
+    extended_overlap_size = 1000 ## NOTE: This means 500 bases each end are considered for the extended overlap
+
+    extended_min = smorf_start - extended_overlap_size/2 
+    extended_max = smorf_end - extended_overlap_size/2
+
+    ## open other smORFs coordinates files 
+    smorfs_set_df = read_file(all_smorfs_coordinates_filename, '\t', None)
+    smorfs_set_df.columns = ['chr','start','end','id','score','strand']
+    print(smorfs_set_df)
+
+
 
 
     return None
@@ -142,15 +151,14 @@ def main():
 
     parser = argparse.ArgumentParser(description='Script to generate an interactive report for specific smORFs')
 
-    parser.add_argument('-v','--varsFsFile', metavar='\b', required=True, type=str, help='variants filename')
-    parser.add_argument('-s','--smorfFile', metavar='\b', required=True, type=str, help='smorf-variants filename')
+    parser.add_argument('-v','--varsFile', metavar='\b', required=True, type=str, help='variants filename')
     parser.add_argument('-a','--allsmORFsFile', metavar='\b', type=str, help='all smorfs to compare filename')
 
     parser.add_argument('-o', '--outputfile', metavar='\b', type=str, help='output filename prefix. Default format: .html')
 
     args = parser.parse_args()
 
-    run_igv_reports(args.varsFsFile, args.smorfFile, args.allsmORFsFile)
+    run_igv_reports(args.varsFile, args.allsmORFsFile)
 
 
 
