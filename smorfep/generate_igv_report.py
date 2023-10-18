@@ -6,6 +6,7 @@
 
 import argparse 
 import datetime
+import numpy
 
 from smorfep.utils.functions import *
 
@@ -35,14 +36,41 @@ def generate_igv_files(smorf_vars_filename, all_smorfs_coordinates_filename, var
 
     """
 
-    
+    ## read variants to a pandas dataframe
+    variants_df = read_variants_file(smorf_vars_filename, '\t', 0)
 
+    print(variants_df)
+
+    ## create VCF file df - CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
+    column_vcf = ['CHRM','POS', 'ID', 'REF','ALT','QUAL','FILTER','INFO']
+    vcf_output_df = pd.DataFrame(data=None, columns=column_vcf)
+    ##print(vcf_output_df)
+
+    vcf_output_df['CHRM'] = 'chr'+variants_df['chrm'].astype(str)
+    vcf_output_df['POS'] = variants_df['var_pos']
+    vcf_output_df['ID'] = variants_df['var_id']
+    vcf_output_df['REF'] = variants_df['ref']
+    vcf_output_df['ALT'] = variants_df['alt']
+    vcf_output_df['QUAL'] = '.'
+    vcf_output_df['FILTER'] = '.'
+    vcf_output_df['INFO'] = 'PRED_EFFECT='+variants_df['DNA_consequence']+';SMORF='+variants_df['smorf_id']+';'
+
+    print(vcf_output_df)
+
+
+
+    ## Add clinvar annotations to INFO column
+    ##CLNSIG=Pathogenic;CLNREVSTAT=criteria_provided,_single_submitter
+
+
+    ## compile the overlapping smorfs file
+    
 
     return None
 
 
 
-def run_igv_reports(smorf_vars_filename, all_smorfs_coordinates_filename, outputname = None, clinvar_filename= None):
+def run_igv_reports(smorf_vars_filename, all_smorfs_coordinates_filename, clinvar_filename= None, outputname = None):
     """
         Function that runs the igv-reports generation.
 
@@ -50,10 +78,10 @@ def run_igv_reports(smorf_vars_filename, all_smorfs_coordinates_filename, output
         - smorf_vars_filename = output files rerported by smORF-EP 
         - all_smorfs_coordinates_filename = File with all the smORFs in the dataset analysed. 
             This file is used to check the smORFs overlapping the target smORF
-        - outputname = user defined name for the output file (if not defined it is set to 'report_<toady_date>.html')
         - clinvar_filename = clinvar annotaitons file. In case the variant has annotated significance, it will be presented in the report.
             Two Clinvar information fields are collected: CLNSIG and CLNREVSTAT.
-
+        - outputname = user defined name for the output file (if not defined it is set to 'report_<toady_date>.html')
+        
         output: 
         html file with interactive report for a given smORF
 
@@ -72,6 +100,7 @@ def run_igv_reports(smorf_vars_filename, all_smorfs_coordinates_filename, output
     
 
     ## 1 - generate the input files used by igv-ºreports library
+    generate_igv_files(smorf_vars_filename, all_smorfs_coordinates_filename, var_filename, smorf_filename, overlap_filename)
 
 
     os.system('create_report '+ var_filename + ' --flanking '+str(flanking_size)+' --info-columns PRED_EFFECT SMORF CLNSIG CLNREVSTAT --tracks '+smorf_filename+' '+var_filename+' '+overlap_filename+' --output ' +outputfilename)
@@ -86,12 +115,15 @@ def main():
 
     parser = argparse.ArgumentParser(description='Script to generate an interactive report for specific smORFs')
 
-
+    parser.add_argument('-v','--varsFsFile', metavar='\b', required=True, type=str, help='variants filename')
     parser.add_argument('-s','--smorfFile', metavar='\b', required=True, type=str, help='smorf-variants filename')
-    parser.add_argument('-a','--allsmORFsFile', metavar='\b', required=True, type=int, help='all smorfs to compare filename')
+    parser.add_argument('-a','--allsmORFsFile', metavar='\b', type=str, help='all smorfs to compare filename')
+
     parser.add_argument('-o', '--outputfile', metavar='\b', type=str, help='output filename prefix. Default format: .html')
 
     args = parser.parse_args()
+
+    run_igv_reports(args.varsFsFile, args.smorfFile, args.allsmORFsFile)
 
 
 
