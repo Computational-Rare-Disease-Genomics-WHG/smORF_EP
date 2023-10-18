@@ -9,10 +9,36 @@ import datetime
 
 from smorfep.utils.functions import *
 
-def generate_igv_files(smorf_vars_filename, all_smorfs_coordinates_filename, outputname = None, clinvar_filename= None):
+def generate_igv_files(smorf_vars_filename, all_smorfs_coordinates_filename, var_filename = 'variants.vcf',smorf_filename='main_smorf.bed', overlap_filename='overlap.bed', clinvar_filename= None):
     """
-        Function that runs the 
+        Function that runs generates the three input files used by igv-reports from 2 mandatory and o
+        
+        Input:
+        - smorf_vars_filename = output files rerported by smORF-EP 
+        - all_smorfs_coordinates_filename = File with all the smORFs in the dataset analysed. 
+            This file is used to check the smORFs overlapping the target smORF
+        - var_filename = outputname of the variants VCF file. By default: 'variants.vcf'.
+        - smorf_filename = outputname of the target smORF BED file. By default: 'main_smorf.bed'.
+        - overlap_filename = outputname of the other smORFs that overlapt the target smORf region (+/- 1000 bases). 
+            By default: 'overlap.bed'.
+        - clinvar_filename = clinvar annotaitons file. In case the variant has annotated significance, it will be presented in the report.
+            Two Clinvar information fields are collected: CLNSIG and CLNREVSTAT.
+
+        Output: 
+        - var_file (var_filename): File with the variants information to be shown in the igv report: 
+            Chromosome, position, ref_allele, alt_allele, var_ID, predicted effect in the target smORF, target smORF, 
+            clinical significance (CLNSIG), and clinical significance revision status (CNLREVSTAT). 
+            These two last details are from ClinVar (if the variant is not found in ClinVar, these fields will contain '-';
+            if the ClinVar file is not provided these fields will be filled with 'NA')
+        - smorf_file (smorf_filename): File with the coordinates of the target smORF in BED format.
+        - overlap_file (overlap_filename): File with the coordinates of other smORFs that overlap the target smORF region
+
     """
+
+    
+
+
+    return None
 
 
 
