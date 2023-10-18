@@ -114,10 +114,11 @@ def run_igv_reports(smorf_vars_filename, all_smorfs_coordinates_filename, clinva
     """
 
     ## 0 - Variables setup
+    ## NOTE: Variables named manually -- to change edit the next 3 lines
     var_filename = 'variants.vcf'
     smorf_filename = 'main_smorf.bed'
     overlap_filename = 'overlap.bed'
-    flanking_size = 1000
+    flanking_size = 1000 ## NOTE: Flanking size = 1000 means -500 from the first variant position and up to +500 after the last variant position
     if outputname == None: ## default name
         now = datetime.datetime.now().strftime('%Y-%m-%d')
         outputfilename = 'report_'+now+'.html'
