@@ -58,10 +58,11 @@ def generate_igv_files(smorf_vars_filename, all_smorfs_coordinates_filename, var
 
     print(vcf_output_df)
 
-
-
+    ## TODO: Add ClinVar annotations
     ## Add clinvar annotations to INFO column
     ##CLNSIG=Pathogenic;CLNREVSTAT=criteria_provided,_single_submitter
+
+
 
     ## 2 - compile the BED file with the target smORF info
     ## NOTE: considers the start and end positions in the vairants-smORF file
@@ -70,13 +71,19 @@ def generate_igv_files(smorf_vars_filename, all_smorfs_coordinates_filename, var
     ## TODO: Check to include introns in the smORF track
 
     ##check first line in the variants-smorf df
+    first_line = variants_df.iloc[0,:]
+    ##print(first_line)
 
+    smorf_chrom = first_line['chrm']
+    smorf_start = first_line['start']
+    smorf_end = first_line['end']
+    smorf_id = first_line['smorf_id']
+    smorf_score = '-'
+    smorf_strand = first_line['strand']
 
-    smorf_chrom = 
-    smorf_start = 
-    smorf_end = 
-    smorf_score = 
-    smorf_strand = 
+    smorf_bed = open(smorf_filename,'w')
+    smorf_bed.write(str(smorf_chrom)+'\t'+str(smorf_start)+'\t'+str(smorf_end)+'\t'+smorf_id+'\t'+str(smorf_score)+'\t'+smorf_strand)
+    smorf_bed.close()
 
 
 
