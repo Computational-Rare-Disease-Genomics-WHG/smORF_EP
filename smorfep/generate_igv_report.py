@@ -104,7 +104,7 @@ def generate_igv_files(smorf_vars_filename, all_smorfs_coordinates_filename, var
     ##print(smorfs_set_df)
     
     ## filtering
-    ## TODO: allow with and without prefix crm column
+    ## TODO: allow with and without prefix chrm column
     smorfs_set_df = smorfs_set_df[smorfs_set_df['chr'] == 'chr'+str(smorf_chrom)] ## filter per chromosome
     overlap_left_df = smorfs_set_df[(smorfs_set_df['start'] <= extended_min) & (smorfs_set_df['end'] >= extended_min) & (smorfs_set_df['end'] <= extended_max)] ## overlap a region on the left end
     overlap_right_df = smorfs_set_df[(smorfs_set_df['start'] >= extended_min) & (smorfs_set_df['start'] <= extended_max) & (smorfs_set_df['end'] <= extended_max)] ## overlap a region on the right end
