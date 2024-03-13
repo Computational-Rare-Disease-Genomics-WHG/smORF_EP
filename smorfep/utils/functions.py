@@ -2291,4 +2291,60 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
 
 
 
-    
+# def compute_start_end_coordinate(transcript_annotations): 
+#     """
+#     Function to compute the start and end coordinates of a combination of intervals.
+#     Used for computing the start and end coordinate of genomic regions (e.g., 5'UTR, CDS, 3'UTR)
+#     from .gff format files (as GENCODE).
+
+#     Input: 
+#     - transcript_annotations- pandas dataframe with the annotations for a given transcript
+
+#     Output: 
+#     (1) When annotations are available, the output has 3 ranges: 5'UTR, CDS, and 3'UTR.
+#     (2) When annotations are NOT available, the output returns 'NA' in the undefined types.
+#     """
+
+#     ## select the section we want in the dataframe
+#     ## five_prime_UTR
+#     ## CDS
+#     ## three_prime_UTR
+
+#     ## if one is empty - Nothing
+#     ## else
+#     ## select stat minimum of start column and max from end column
+#     ## output intervals
+
+
+
+
+
+
+#     #return fiveprime_coord, cds_coord, threeprime_cood
+
+
+
+def check_frame(smorf_start_coord, cds_start_coord):
+    """
+    Computes the difference between the smORF start and CDS sctart to determine if the 
+    smORF start is in frame with the CDS start. 
+    Input:
+    - smorf_start_coord
+    - CDS_start_coord
+
+    Output: 
+    - "inframe" - if the smorf and CDS start are in the same frame
+    - "+1" - if smORF and CDS start are shifter of one position
+    - "+2" - if smORF and CDS start are shifter of two positions
+    """
+
+
+    starts_difference = smorf_start_coord - cds_start_coord
+    frame = starts_difference%3 ## -> how many nucleotides it shifts: 0 (inframe), 1 or 2
+
+    if frame == 0: 
+        return "inframe"
+    elif frame in [-1, 1]:
+        return "+1"
+    elif frame in [-2, 2]:
+        return "+2"
