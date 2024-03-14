@@ -2291,36 +2291,55 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
 
 
 
-# def compute_start_end_coordinate(transcript_annotations): 
-#     """
-#     Function to compute the start and end coordinates of a combination of intervals.
-#     Used for computing the start and end coordinate of genomic regions (e.g., 5'UTR, CDS, 3'UTR)
-#     from .gff format files (as GENCODE).
+def compute_start_end_coordinate(transcript_annotations): 
+    """
+    Function to compute the start and end coordinates of a combination of intervals.
+    Used for computing the start and end coordinate of genomic regions (e.g., 5'UTR, CDS, 3'UTR)
+    from .gff format files (as GENCODE).
 
-#     Input: 
-#     - transcript_annotations- pandas dataframe with the annotations for a given transcript
+    Input: 
+    - transcript_annotations- pandas dataframe with the annotations for a given transcript
 
-#     Output: 
-#     (1) When annotations are available, the output has 3 ranges: 5'UTR, CDS, and 3'UTR.
-#     (2) When annotations are NOT available, the output returns 'NA' in the undefined types.
-#     """
+    Output: 
+    (1) When annotations are available, the output has 3 ranges: 5'UTR, CDS, and 3'UTR.
+    (2) When annotations are NOT available, the output returns 'NA' in the undefined types.
+    """
 
-#     ## select the section we want in the dataframe
-#     ## five_prime_UTR
-#     ## CDS
-#     ## three_prime_UTR
+    ## select the section we want in the dataframe
+    ## five_prime_UTR
+    ## CDS
+    ## three_prime_UTR
 
-#     ## if one is empty - Nothing
-#     ## else
-#     ## select stat minimum of start column and max from end column
-#     ## output intervals
+    print("input transcript df in function")
+    print(transcript_annotations)
+    
+    if 'CDS' in transcript_annotations['type'].unique(): ## we can have CDS or exon annotation
+    
+        ## annotates the sections in the file -- exons/CDS are used to check if the smORF is inframe with the coding region
+        cds_df = transcript_annotations[transcript_annotations['type'] =='CDS']
+        print(cds_df)
+    else: 
+        ## annotates the sections in the file -- exons/CDS are used to check if the smORF is inframe with the coding region
+        cds_df = transcript_annotations[transcript_annotations['type'] =='exon']
+        print(cds_df)
 
+    fiveprime_df = transcript_annotations[transcript_annotations['type'] == 'five_prime_UTR']
+    print(fiveprime_df.shape)
 
+    threeprime_df = transcript_annotations[transcript_annotations['type'] == 'three_prime_UTR']
+    print(threeprime_df.shape)
 
+    if cds_df.shape[0] == 1: ## single line: 
+        cds_coord = str(cds_df['start'].iloc[0])+'-'+str(cds_df['end'].iloc[0])
+    else: 
+        pass
+        ## TODO
+    #cds_start = int(min())
 
+    
 
-
-#     #return fiveprime_coord, cds_coord, threeprime_cood
+    return fiveprime_df, cds_df, threeprime_df
+    ##return fiveprime_coord, cds_coord, threeprime_cood
 
 
 
