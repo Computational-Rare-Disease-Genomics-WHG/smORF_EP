@@ -2296,7 +2296,12 @@ def compute_start_end_coordinate(transcript_annotations):
     Function to compute the start and end coordinates of a combination of intervals.
     Used for computing the start and end coordinate of genomic regions (e.g., 5'UTR, CDS, 3'UTR)
     from .gff format files (as GENCODE).
-
+    
+    Note 1: It assumes there is always at least one region (CDS/exon) per transcript.
+    Note 2 : If no five_prime and/or three_prime annotations, it returns None as coordinates for those
+        regions.
+    
+    
     Input: 
     - transcript_annotations- pandas dataframe with the annotations for a given transcript
 
@@ -2313,6 +2318,7 @@ def compute_start_end_coordinate(transcript_annotations):
     print("input transcript df in function")
     print(transcript_annotations)
     
+    ## split the three regions per type
     if 'CDS' in transcript_annotations['type'].unique(): ## we can have CDS or exon annotation
     
         ## annotates the sections in the file -- exons/CDS are used to check if the smORF is inframe with the coding region
@@ -2324,22 +2330,47 @@ def compute_start_end_coordinate(transcript_annotations):
         print(cds_df)
 
     fiveprime_df = transcript_annotations[transcript_annotations['type'] == 'five_prime_UTR']
-    print(fiveprime_df.shape)
+    print(fiveprime_df)
 
     threeprime_df = transcript_annotations[transcript_annotations['type'] == 'three_prime_UTR']
-    print(threeprime_df.shape)
+    print(threeprime_df)
 
+    ## test block - uncomment for prints
+    # print(cds_df['start'])
+    # print(cds_df['end'])
+    # print(fiveprime_df['start'])
+    # print(fiveprime_df['end'])
+    # print(threeprime_df['start'])
+    # print(threeprime_df['end'])
+
+    ## for each region compute the start and end
     if cds_df.shape[0] == 1: ## single line: 
         cds_coord = str(cds_df['start'].iloc[0])+'-'+str(cds_df['end'].iloc[0])
     else: 
-        pass
-        ## TODO
-    #cds_start = int(min())
+        cds_start = min(cds_df['start'])
+        cds_end = max(cds_df['end'])
+        cds_coord = str(cds_start) +'-'+str(cds_end)
 
-    
+    if fiveprime_df.empty:
+        fiveprime_coord = None
+    elif fiveprime_df.shape[0] == 1: ## single line: 
+        fiveprime_coord = str(fiveprime_df['start'].iloc[0])+'-'+str(fiveprime_df['end'].iloc[0])
+    else: 
+        fiveprime_start = min(fiveprime_df['start'])
+        fiveprime_end = max(cds_df['end'])
+        fiveprime_coord = str(fiveprime_start) +'-'+str(fiveprime_end)
 
-    return fiveprime_df, cds_df, threeprime_df
-    ##return fiveprime_coord, cds_coord, threeprime_cood
+
+    if threeprime_df.empty:
+        threeprime_coord = None
+    elif threeprime_df.shape[0] == 1: ## single line: 
+        threeprime_coord = str(threeprime_df['start'].iloc[0])+'-'+str(threeprime_df['end'].iloc[0])
+    else: 
+        threeprime_start = min(threeprime_df['start'])
+        threeprime_end = max(threeprime_df['end'])
+        threeprime_coord = str(threeprime_start) +'-'+str(threeprime_end)
+
+    return fiveprime_coord, cds_coord, threeprime_coord
 
 
 
