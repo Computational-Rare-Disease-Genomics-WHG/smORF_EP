@@ -81,16 +81,8 @@ print("gene_ids:", len(gencode_transcripts['gene_id'].unique()))
 print("much smaller than transcript ids number")
 
 
-
-## TODO: Add 5'UTR, CDS and 3'UTR columns to transcript df - default value = 0
+## NEW BLOCK - March 2024
 print("new block")
-
-
-## TODO: Editing here
-# print(gencode["type"].unique())
-# test_5utr = gencode[gencode.type == 'five_prime_UTR']
-# for index, row in test_5utr.iterrows():
-#     print(row.info)
 
 ## Keep only CDS, exon, 5'UTR and 3'UTR annotations
 gencode_new = gencode[gencode.type != 'transcript']
@@ -99,7 +91,7 @@ gencode_new = gencode_new[gencode_new.type != 'stop_codon']
 gencode_new = gencode_new[gencode_new.type != 'stop_codon_redefined_as_selenocysteine']
 ##print(gencode_new['type'].unique())
 
-## TODO: format info 
+## format info 
 ## filter to transcript 
 ## run compute start and end function
 gencode_new['new_info'] = gencode_new['info'].str.split(';transcript_name').str[0] ## 0 as we keep the first half
@@ -117,20 +109,31 @@ gencode_new = gencode_new.drop(columns='new_info')
 for i in ['ID', 'transcript_id', 'transcript_type']: ## we match per transcript ID and the remaining information is already in the gencode_transcriptd DF
     gencode_new[i] = gencode_new[i].str.split('=').str[1]
 
-## collect the unique ids for the transcripts
-transcript_ids_list = list(gencode_transcripts['ID'])
-print(transcript_ids_list)
 
-##for each_id in transcript_ids_list
-transcript_df = gencode_new[gencode_new['transcript_id'] == "ENST00000379410.8"] ## "ENST00000456328.2"]
-
-cds_df, fiveprime_df, threeprime_df = compute_start_end_coordinate(transcript_df)
-
+## add new columns for the coordinates of CDS/exon, 5'UTR and 3'UTR
 print(gencode_transcripts.columns)
-gencode_transcripts['CDS_exon'] = 'ND'
+gencode_transcripts['CDS/exon'] = 'ND'
 gencode_transcripts['five_prime'] = 'ND'
 gencode_transcripts['three_prime'] = 'ND'
 print(gencode_transcripts.columns)
+
+## collect the unique ids for the transcripts
+transcript_ids_list = list(gencode_transcripts['ID'])
+transcript_ids_list = ["ENST00000456328.2"]
+print(transcript_ids_list)
+
+##for each_id in transcript_ids_list
+for each_id_t in transcript_ids_list:
+    transcript_df = gencode_new[gencode_new['transcript_id'] == each_id_t] ## "ENST00000456328.2"]
+
+    cds_coord, fiveprime_coord, threeprime_coord = compute_start_end_coordinate(transcript_df)
+
+    ## only adds the coordinates to the dataframe when all the 3 regions are defined
+    if cds_coord != None and fiveprime_coord != None and threeprime_coord != None: 
+        print('all 3 defined')
+    else: 
+        print('not all 3 defined')
+
 
 ## write transcripts to file
 gencode_transcripts.to_csv(output_transcript_coord, sep='\t', lineterminator='\n', index=False)
