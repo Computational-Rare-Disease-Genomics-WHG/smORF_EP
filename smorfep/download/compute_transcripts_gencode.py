@@ -126,10 +126,11 @@ transcript_df = gencode_new[gencode_new['transcript_id'] == "ENST00000379410.8"]
 
 cds_df, fiveprime_df, threeprime_df = compute_start_end_coordinate(transcript_df)
 
-print(cds_df.columns)
-
-
-
+print(gencode_transcripts.columns)
+gencode_transcripts['CDS_exon'] = 'ND'
+gencode_transcripts['five_prime'] = 'ND'
+gencode_transcripts['three_prime'] = 'ND'
+print(gencode_transcripts.columns)
 
 ## write transcripts to file
 gencode_transcripts.to_csv(output_transcript_coord, sep='\t', lineterminator='\n', index=False)
