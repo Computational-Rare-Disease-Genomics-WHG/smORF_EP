@@ -127,7 +127,7 @@ for each_id_t in transcript_ids_list:
     transcript_df = gencode_new[gencode_new['transcript_id'] == each_id_t] ## "ENST00000456328.2"]
 
     cds_coord, fiveprime_coord, threeprime_coord = compute_start_end_coordinate(transcript_df)
-    print(cds_coord,fiveprime_coord,threeprime_coord, transcript_df['transcript_type',0])
+    print(cds_coord,fiveprime_coord,threeprime_coord, transcript_df['transcript_type'])
 
     ## only adds the coordinates to the dataframe when all the 3 regions are defined
     if cds_coord != None and fiveprime_coord != None and threeprime_coord != None: 
