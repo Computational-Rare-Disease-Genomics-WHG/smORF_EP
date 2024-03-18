@@ -131,9 +131,13 @@ for each_id_t in transcript_ids_list:
 
     ## only adds the coordinates to the dataframe when all the 3 regions are defined
     if cds_coord != None and fiveprime_coord != None and threeprime_coord != None: 
-        print('all 3 defined')
-    else: 
-        print('not all 3 defined')
+        ##print('all 3 defined')
+        ## add coordinates to the specific line
+        line_index = gencode_transcripts.index[gencode['ID'] == each_id_t]
+        print(line_index)
+        print(gencode_transcripts[line_index])
+        
+
 
 
 ## write transcripts to file

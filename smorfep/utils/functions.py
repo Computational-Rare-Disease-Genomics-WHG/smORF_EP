@@ -2315,25 +2315,25 @@ def compute_start_end_coordinate(transcript_annotations):
     ## CDS
     ## three_prime_UTR
 
-    print("input transcript df in function")
-    print(transcript_annotations)
+    ##print("input transcript df in function")
+    ##print(transcript_annotations)
     
     ## split the three regions per type
     if 'CDS' in transcript_annotations['type'].unique(): ## we can have CDS or exon annotation
     
         ## annotates the sections in the file -- exons/CDS are used to check if the smORF is inframe with the coding region
         cds_df = transcript_annotations[transcript_annotations['type'] =='CDS']
-        print(cds_df)
+        ##print(cds_df)
     else: 
         ## annotates the sections in the file -- exons/CDS are used to check if the smORF is inframe with the coding region
         cds_df = transcript_annotations[transcript_annotations['type'] =='exon']
-        print(cds_df)
+        ##print(cds_df)
 
     fiveprime_df = transcript_annotations[transcript_annotations['type'] == 'five_prime_UTR']
-    print(fiveprime_df)
+    ##print(fiveprime_df)
 
     threeprime_df = transcript_annotations[transcript_annotations['type'] == 'three_prime_UTR']
-    print(threeprime_df)
+    ##print(threeprime_df)
 
     ## test block - uncomment for prints
     # print(cds_df['start'])
