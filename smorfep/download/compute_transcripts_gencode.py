@@ -77,8 +77,8 @@ for i in ['ID', 'gene_id', 'gene_type', 'transcript_type']:
 print(gencode_transcripts.shape[0], 'transcripts')
 
 gene_ids_list = gencode_transcripts['gene_id'].unique()
-print("gene_ids:", len(gencode_transcripts['gene_id'].unique()))
-print("much smaller than transcript ids number")
+##print("gene_ids:", len(gencode_transcripts['gene_id'].unique()))
+##print("much smaller than transcript ids number")
 
 
 ## NEW BLOCK - March 2024
@@ -111,22 +111,23 @@ for i in ['ID', 'transcript_id', 'transcript_type']: ## we match per transcript 
 
 
 ## add new columns for the coordinates of CDS/exon, 5'UTR and 3'UTR
-print(gencode_transcripts.columns)
+##print(gencode_transcripts.columns)
 gencode_transcripts['CDS/exon'] = 'ND'
 gencode_transcripts['five_prime'] = 'ND'
 gencode_transcripts['three_prime'] = 'ND'
-print(gencode_transcripts.columns)
+##print(gencode_transcripts.columns)
 
 ## collect the unique ids for the transcripts
 transcript_ids_list = list(gencode_transcripts['ID'])
-transcript_ids_list = ["ENST00000456328.2"]
-print(transcript_ids_list)
+transcript_ids_list = ["ENST00000503789.5"]
+##print(transcript_ids_list)
 
 ##for each_id in transcript_ids_list
 for each_id_t in transcript_ids_list:
     transcript_df = gencode_new[gencode_new['transcript_id'] == each_id_t] ## "ENST00000456328.2"]
 
     cds_coord, fiveprime_coord, threeprime_coord = compute_start_end_coordinate(transcript_df)
+    print(cds_coord,fiveprime_coord,threeprime_coord, transcript_df['transcript_type',0])
 
     ## only adds the coordinates to the dataframe when all the 3 regions are defined
     if cds_coord != None and fiveprime_coord != None and threeprime_coord != None: 
