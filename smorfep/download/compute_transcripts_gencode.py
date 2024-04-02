@@ -82,7 +82,7 @@ gene_ids_list = gencode_transcripts['gene_id'].unique()
 
 
 ## NEW BLOCK - March 2024
-print("new block")
+##print("new block")
 
 ## Keep only CDS, exon, 5'UTR and 3'UTR annotations
 gencode_new = gencode[gencode.type != 'transcript']
@@ -119,23 +119,34 @@ gencode_transcripts['three_prime'] = 'ND'
 
 ## collect the unique ids for the transcripts
 transcript_ids_list = list(gencode_transcripts['ID'])
-transcript_ids_list = ["ENST00000503789.5"]
+## test block
+##transcript_ids_list = ["ENST00000503789.5"] ## example CDS and 5'UTR only
+##transcript_ids_list = ["ENST00000464036.5"] ## example with all the 3 annotations
 ##print(transcript_ids_list)
 
 ##for each_id in transcript_ids_list
 for each_id_t in transcript_ids_list:
     transcript_df = gencode_new[gencode_new['transcript_id'] == each_id_t] ## "ENST00000456328.2"]
+    ##print(transcript_df)
 
-    cds_coord, fiveprime_coord, threeprime_coord = compute_start_end_coordinate(transcript_df)
-    print(cds_coord,fiveprime_coord,threeprime_coord, transcript_df['transcript_type'])
+    fiveprime_coord, cds_coord, threeprime_coord = compute_start_end_coordinate(transcript_df)
+    ##print(cds_coord,fiveprime_coord,threeprime_coord, transcript_df['transcript_type'])
 
     ## only adds the coordinates to the dataframe when all the 3 regions are defined
     if cds_coord != None and fiveprime_coord != None and threeprime_coord != None: 
         ##print('all 3 defined')
         ## add coordinates to the specific line
-        line_index = gencode_transcripts.index[gencode['ID'] == each_id_t]
-        print(line_index)
-        print(gencode_transcripts[line_index])
+        rowIndex = int(gencode_transcripts.index[gencode_transcripts['ID'] == each_id_t].tolist()[0])
+        # print(gencode_transcripts.index[gencode_transcripts['ID'] == each_id_t])
+        # print(rowIndex)
+        # print(type(rowIndex))
+        # print(gencode_transcripts.columns)
+        # print(gencode_transcripts.loc[rowIndex])
+        # print('\n', cds_coord, fiveprime_coord, threeprime_coord) 
+        gencode_transcripts.at[rowIndex, 'CDS/exon'] = cds_coord
+        gencode_transcripts.at[rowIndex, 'five_prime'] = fiveprime_coord
+        gencode_transcripts.at[rowIndex, 'three_prime'] = threeprime_coord
+        ##print(gencode_transcripts.loc[rowIndex])
         
 
 
