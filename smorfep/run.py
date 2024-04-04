@@ -85,6 +85,8 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
     variants_no_annotation = 0
 
     ## 4- Check variant effect per transcript
+
+    ## runs per chromosome
     for each_chrom in all_chromosomes: ## runs per chromosome
         ## TODO: OPTIMIZE --> allow cache freeing after each chromosome -- remove chromosome from the ref_genome dictionary
 
@@ -95,6 +97,7 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
         ## transcripts and introns in the chromosome
         transcripts_chr = transcripts_df.loc[transcripts_df['chr'] == 'chr'+str(each_chrom)]
         introns_chr = introns_df.loc[introns_df['chr'] == 'chr'+str(each_chrom)]
+
         ## TODO: OPTIMIZE --> allow cache freeing after each chromosome -- remove chromosome from the ref_genome dictionary
         
         ## per smORF
@@ -119,7 +122,7 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
             smorf_strand = smorf_vars_df.iloc[0]['strand']
             ##print(smorf_id, smorf_start, smorf_end, smorf_strand)
 
-            transcripts_smorf = transcripts_chr.loc[(transcripts_chr.start <= smorf_start) & (transcripts_chr.end >= smorf_end) & (transcripts_chr.strand == smorf_strand)  ]
+            transcripts_smorf = transcripts_chr.loc[(transcripts_chr.start <= smorf_start) & (transcripts_chr.end >= smorf_end) & (transcripts_chr.strand == smorf_strand)]
             ## transcript needs to cover the full sequence region
             ## transcript in the same strand
             transcripts_to_check_smorf = transcripts_smorf['transcript_id'].unique()
@@ -142,6 +145,7 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
             ## same for the introns 
             introns_smorf = introns_smorf[introns_smorf['transcript_id'].apply(lambda x: any(t_id in x for t_id in matching_t))]
 
+    
             if excluded_blank: 
                 unmatching_t.to_csv(excluded_transc_filename, sep='\t', lineterminator='\n', index=False, header=True)
 
@@ -165,6 +169,7 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
 
                     ## run tool per transcript
                     for each_t in matching_t:
+
                         ## transcript info
                         this_transcript = transcripts_smorf[transcripts_smorf['transcript_id'] == each_t]
                         ##print(this_transcript)
@@ -179,6 +184,13 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
 
                         ##transc2gen mapping for this transcript
                         map_transc2gen = transcripts_mapping_dictionary[each_t][1]
+
+                        ## Added April 2024
+                        ## Check smORF type per transcript
+                        ## runs only for the compatible transcripts per smORF
+                        smorf_type_transcript = smorf_type_frame_dist(smorf_start, smorf_end, smorf_strand, this_transcript)
+                        ##print(smorf_type_transcript)
+    
 
                         ## row_t is the info about the transctipt
                         consequence, change, prot_cons, prot_change = tool(
@@ -212,8 +224,11 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
                             'strand' : variants_df.iloc[index]['strand'],
                             'var_id' : variants_df.iloc[index]['var_id'],
                             'smorf_id': variants_df.iloc[index]['smorf_id'], 
+                            'smorf_type': smorf_type_transcript.smorf_type.item(),
                             'transcript_id' : each_t, 
                             'transcript_type' : this_transcript.iloc[0].transcript_type,
+                            'frame': smorf_type_transcript.frame.item(),
+                            'sstart-cstart' : smorf_type_transcript.cds_dist.item(),
                             'DNA_consequence' : consequence,
                             'DNA_seq' : change,
                             'prot_consequence' : prot_cons,
