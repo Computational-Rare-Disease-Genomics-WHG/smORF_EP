@@ -42,12 +42,6 @@ gencode = gencode[gencode.chr != 'chrM']
 ## they have different formating than others and we are not able to split in the same way
 gencode = gencode[gencode.type != 'gene']
 
-## 2 - transcripts save transcripts coordinates
-gencode_transcripts = gencode[gencode.type == 'transcript']
-##print(gencode_transcripts.shape)
-## total transcripts: 251 236
-## transcripts no MT: 251 199
-
 ## NOTE: compute the 5'utr, cds, and 3'utr is not possible here as the transcript ID is not fetched yet
 ## we can't use the gene ID as is shared sometimes by multiple transcripts
 
@@ -56,98 +50,100 @@ gencode_transcripts = gencode[gencode.type == 'transcript']
 
 ## As we want just: ID, gene_id, transcript_id and transcript_type
 ## we remove everything after, so the last column is the same.
-gencode_transcripts['new_info'] = gencode_transcripts['info'].str.split(';transcript_name').str[0] ## 0 as we keep the first half
+gencode['new_info'] = gencode['info'].str.split(';transcript_name').str[0] ## 0 as we keep the first half
 ## remove info column -- repeated info
-gencode_transcripts = gencode_transcripts.drop(columns='info')
+gencode = gencode.drop(columns='info')
 
-gencode_transcripts[['ID', 'Parent', 'gene_id', 'transcript_id', 'gene_type' , 'gene_name', 'transcript_type']] = gencode_transcripts['new_info'].str.split(';',expand=True)
+gencode[['ID', 'Parent', 'gene_id', 'transcript_id', 'gene_type' , 'gene_name', 'transcript_type']] = gencode['new_info'].str.split(';',expand=True)
 
-gencode_transcripts = gencode_transcripts.drop(columns=['Parent', 'transcript_id','gene_name'])
+gencode = gencode.drop(columns=['Parent','gene_name']) ## don't drop transcipt_id as cds and other elements have their typre prefix
 ## NOTE: transcript_id is removed as we are saving per transcript, so the ID column is the same as transcript_id
 ## NOTE2: We keep gene type now as there is differnce in CDS and exon, if case of pesudogene there are only exon annotations
 
 ## remove info column -- repeated info
-gencode_transcripts = gencode_transcripts.drop(columns='new_info')
+gencode = gencode.drop(columns='new_info')
 
 ## remove prefix on the split columns 
-for i in ['ID', 'gene_id', 'gene_type', 'transcript_type']: 
-    gencode_transcripts[i] = gencode_transcripts[i].str.split('=').str[1]
+for i in ['ID', 'gene_id', 'gene_type', 'transcript_id', 'transcript_type']: 
+    gencode[i] = gencode[i].str.split('=').str[1]
+
+## 2 - transcripts save transcripts coordinates
+gencode_transcripts = gencode[gencode.type == 'transcript']
+##print(gencode_transcripts.shape)
+## total transcripts: 251 236
+## transcripts no MT: 251 199
+
 
 ##print(gencode_transcripts)
 print(gencode_transcripts.shape[0], 'transcripts')
 
-gene_ids_list = gencode_transcripts['gene_id'].unique()
-##print("gene_ids:", len(gencode_transcripts['gene_id'].unique()))
-##print("much smaller than transcript ids number")
-
-
 ## NEW BLOCK - March 2024
 ##print("new block")
 
-## Keep only CDS, exon, 5'UTR and 3'UTR annotations
-gencode_new = gencode[gencode.type != 'transcript']
-gencode_new = gencode_new[gencode_new.type != 'start_codon']
-gencode_new = gencode_new[gencode_new.type != 'stop_codon']
-gencode_new = gencode_new[gencode_new.type != 'stop_codon_redefined_as_selenocysteine']
-##print(gencode_new['type'].unique())
-
-## format info 
-## filter to transcript 
-## run compute start and end function
-gencode_new['new_info'] = gencode_new['info'].str.split(';transcript_name').str[0] ## 0 as we keep the first half
-## remove info column -- repeated info
-gencode_new = gencode_new.drop(columns='info')
-
-gencode_new[['ID', 'Parent', 'gene_id', 'transcript_id', 'gene_type' , 'gene_name', 'transcript_type']] = gencode_new['new_info'].str.split(';',expand=True)
-
-gencode_new = gencode_new.drop(columns=['Parent', 'gene_type', 'gene_name','gene_id', 'gene_type']) ## here we need to keep transcript_id as the ID will be different for non-"transcipt" annotations
-## remove info column -- repeated info
-gencode_new = gencode_new.drop(columns='new_info')
-##print(gencode_new.shape) ## Not empty
-
-## remove prefix on the split columns 
-for i in ['ID', 'transcript_id', 'transcript_type']: ## we match per transcript ID and the remaining information is already in the gencode_transcriptd DF
-    gencode_new[i] = gencode_new[i].str.split('=').str[1]
-
-
 ## add new columns for the coordinates of CDS/exon, 5'UTR and 3'UTR
-##print(gencode_transcripts.columns)
-gencode_transcripts['CDS/exon'] = 'ND'
-gencode_transcripts['five_prime'] = 'ND'
-gencode_transcripts['three_prime'] = 'ND'
-##print(gencode_transcripts.columns)
+gencode_transcripts.loc[:, ['CDS/exon', 'five_prime', 'three_prime']] = 'ND'
 
-## collect the unique ids for the transcripts
-transcript_ids_list = list(gencode_transcripts['ID'])
-## test block
-##transcript_ids_list = ["ENST00000503789.5"] ## example CDS and 5'UTR only
-##transcript_ids_list = ["ENST00000464036.5"] ## example with all the 3 annotations
-##print(transcript_ids_list)
+## Keep only CDS, exon, 5'UTR and 3'UTR annotations
+gencode_filtered = gencode[gencode['type'].isin(['CDS','five_prime_UTR', 'three_prime_UTR'])]
+##print(gencode_filtered['type'].unique())
+##print(gencode_filtered)
 
-##for each_id in transcript_ids_list
-for each_id_t in transcript_ids_list:
-    transcript_df = gencode_new[gencode_new['transcript_id'] == each_id_t] ## "ENST00000456328.2"]
-    ##print(transcript_df)
+grouped_df = gencode_filtered.groupby('transcript_id')
 
-    fiveprime_coord, cds_coord, threeprime_coord = compute_start_end_coordinate(transcript_df)
-    ##print(cds_coord,fiveprime_coord,threeprime_coord, transcript_df['transcript_type'])
+# Define the types you want to check for
+types_to_check = {'CDS', 'five_prime_UTR', 'three_prime_UTR'}
 
-    ## only adds the coordinates to the dataframe when all the 3 regions are defined
-    if cds_coord != None and fiveprime_coord != None and threeprime_coord != None: 
-        ##print('all 3 defined')
-        ## add coordinates to the specific line
-        rowIndex = int(gencode_transcripts.index[gencode_transcripts['ID'] == each_id_t].tolist()[0])
-        # print(gencode_transcripts.index[gencode_transcripts['ID'] == each_id_t])
-        # print(rowIndex)
-        # print(type(rowIndex))
-        # print(gencode_transcripts.columns)
-        # print(gencode_transcripts.loc[rowIndex])
-        # print('\n', cds_coord, fiveprime_coord, threeprime_coord) 
+trasncripts_processed = 1
+# Filter groups that have all three types
+groups_with_all_types = []
+for group_name, group_data in grouped_df:
+    if set(group_data['type']) == types_to_check:
+        groups_with_all_types.append(group_name)
+        ## make the computations directly
+        fiveprime_coord, cds_coord, threeprime_coord = compute_start_end_coordinate(group_data)
+        ##print(cds_coord,fiveprime_coord,threeprime_coord, transcript_df['transcript_type'])
+
+        rowIndex = int(gencode_transcripts.index[gencode_transcripts['ID'] == group_name].tolist()[0])
         gencode_transcripts.at[rowIndex, 'CDS/exon'] = cds_coord
         gencode_transcripts.at[rowIndex, 'five_prime'] = fiveprime_coord
         gencode_transcripts.at[rowIndex, 'three_prime'] = threeprime_coord
         ##print(gencode_transcripts.loc[rowIndex])
-        
+    
+    if trasncripts_processed%10000 ==0:
+        print(trasncripts_processed, 'transcripts processed')
+    trasncripts_processed+= 1
+
+# Print the groups that have all three types
+print("Groups with all three types:", len(groups_with_all_types))
+
+
+
+# trasncripts_processed = 1
+# for each_id_t in transcript_ids_list:
+
+#     ## check if the transcript is a lnRNA - those do not have 5'UTr, CDS, 3'UTR annotations
+#     transc_type = gencode_new[gencode_new['transcript_id'] == each_id_t]['transcript_type'].iloc[0]
+
+#     transcript_df = gencode_new[gencode_new['transcript_id'] == each_id_t] ## "ENST00000456328.2"]
+#     ##print(transcript_df)
+#     ##print(transcript_df['type'].unique())
+#     regions_transc = transcript_df['type'].unique()
+#     ## NOTE: To check, next line is case sensitive 
+#     if 'three_prime_UTR' in regions_transc and 'five_prime_UTR' in regions_transc: 
+
+#         fiveprime_coord, cds_coord, threeprime_coord = compute_start_end_coordinate(transcript_df)
+#         ##print(cds_coord,fiveprime_coord,threeprime_coord, transcript_df['transcript_type'])
+
+#         ## only adds the coordinates to the dataframe when all the 3 regions are defined
+#         if cds_coord != None and fiveprime_coord != None and threeprime_coord != None: 
+#             ##print('all 3 defined')
+#             ## add coordinates to the specific line
+#             rowIndex = int(gencode_transcripts.index[gencode_transcripts['ID'] == each_id_t].tolist()[0])
+#             gencode_transcripts.at[rowIndex, 'CDS/exon'] = cds_coord
+#             gencode_transcripts.at[rowIndex, 'five_prime'] = fiveprime_coord
+#             gencode_transcripts.at[rowIndex, 'three_prime'] = threeprime_coord
+#             ##print(gencode_transcripts.loc[rowIndex])
+            
 
 
 
