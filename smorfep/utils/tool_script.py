@@ -39,8 +39,8 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
     t_strand = transcript_info.iloc[0].strand 
 
     ## testing print -- variant header
-    print('\n')
-    print(variant_pos, ref, alt)
+    # print('\n')
+    # print(variant_pos, ref, alt)
 
     ## 1 - Get sequence from Ref genome
     ##print(strand)
@@ -248,7 +248,7 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
 
                     ##print('splice_region_exon_nts', donor_splice_region_exon) ## splice_region_exon_nts is empty if the var does not fall into it
                 
-                    print('inframe_insertion')
+                    ##print('inframe_insertion')
                     return 'inframe_insertion', len_change, prot_cons, prot_change
 
 
