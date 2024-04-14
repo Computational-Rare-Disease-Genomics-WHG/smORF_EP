@@ -11,6 +11,7 @@ from itertools import product
 import pandas as pd
 import re
 import os
+from intervaltree import Interval, IntervalTree
 
 
 
@@ -808,7 +809,7 @@ def frameshift(seq, transcript_extension, map_coordinates):
 
     seq_len = len(seq)
     difference = seq_len%3 ## -> how many nucleotides it shifts: 0 (inframe), 1 or 2
-    print(difference)
+    ##print(difference)
 
     if difference == 1: ## we need to add 2 base to get new frame
         corrected_seq = seq + transcript_extension[:2]
@@ -2135,19 +2136,19 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
             elif [x for x in check_no_anchor if x in donor_acceptor_positions] != []: ## if it is an insertion and affects the splice site is acceptor
 
                 if len([x for x in all_var_pos if x in donor_acceptor_positions]) != len(all_var_pos): ## insertion overlaps, but is before the acceptor splice site - there is at least one nt not within the acceptor main splice site
-                    print('variant overlaps splice region ')
+                    ##print('variant overlaps splice region ')
                     if insertion_size % 3 == 0: ## multiple of 3 conditions added on 15-08-2023 working for strand +
-                        print('multiple of 3')
+                        ##print('multiple of 3')
                         if len([x for x in all_var_pos if x in donor_acceptor_positions]) > 1: ## condition need for splice_polypyrimidine_tract_variant&intron_variant annotation 15-08-2023 working for strand +
                             dna_cons = 'splice_polypyrimidine_tract_variant&intron_variant'
                         else:
                             dna_cons = 'splice_region_variant&splice_polypyrimidine_tract_variant&intron_variant'
                     else:
-                        print('not multiple of 3')
+                        ##print('not multiple of 3')
                         dna_cons = 'splice_polypyrimidine_tract_variant&intron_variant'
 
                 else: 
-                    print('splice acceptor variant insertion affect the splice site but occurs before')
+                    ##print('splice acceptor variant insertion affect the splice site but occurs before')
                     dna_cons = 'splice_acceptor_variant'
             
 
@@ -2177,7 +2178,7 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
 
             
             elif var_pos_check == False and var_next_pos_check == True and strand == '+': ## insertion btween last nt in the intron and first of the exon -- forward strand
-                print('insertion on the last intron base and chack protein change, + strand')
+                ##print('insertion on the last intron base and chack protein change, + strand')
                 
                 if insertion_size % 3 == 0:
                     dna_cons = 'inframe_insertion&splice_region_variant'
@@ -2187,18 +2188,18 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
 
 
             elif [x for x in all_var_pos if x in donor_acceptor_positions] != [] and [x for x in all_var_pos if x in splice_donor_acceptor_region] != []: ## if the insertion happens between the donor main site and the splice_donor_region '-- insertion on the 3rd base within intron
-                print('all_pos -- splice donor_acceptor and splice donor_acceptor_region')
+                ##print('all_pos -- splice donor_acceptor and splice donor_acceptor_region')
                 dna_cons = 'splice_region_variant&intron_variant'
 
 
             elif [x for x in check_no_anchor if x in splice_region] != [] and strand == '+': ## added 15-08-2023
-                print('no anchor var pos -- splice region and strand +')
+                ##print('no anchor var pos -- splice region and strand +')
                 ##dna_cons = 'splice_region_variant&intron_variant'
                 dna_cons = 'splice_polypyrimidine_tract_variant&intron_variant'
 
 
             elif [x for x in check_no_anchor if x in splice_region] != [] and strand == '-': ## edited on the 23-08-2023
-                print('no anchor var pos -- splice region and strand - ')
+                ##print('no anchor var pos -- splice region and strand - ')
                 ##dna_cons = 'splice_region_variant&intron_variant'
                 dna_cons = 'splice_polypyrimidine_tract_variant&intron_variant'
 
@@ -2250,7 +2251,7 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
             
             
             elif [x for x in check_no_anchor if x in splice_region] != []:
-                print('no anchor check splice region')
+                ##print('no anchor check splice region')
                 dna_cons = 'splice_region_variant&intron_variant'
 
 
@@ -2284,7 +2285,7 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
             else:
                 dna_cons = 'Not_intronic'
     
-    print(dna_cons, '-', prot_cons, '-', all_var_pos)
+    ##print(dna_cons, '-', prot_cons, '-', all_var_pos)
 
     return dna_cons, '-', prot_cons, '-', all_var_pos
 
@@ -2338,9 +2339,10 @@ def check_frame(smorf_start_coord, cds_start_coord):
     - CDS_start_coord
 
     Output: 
-    - "inframe" - if the smorf and CDS start are in the same frame
-    - "+1" - if smORF and CDS start are shifter of one position
-    - "+2" - if smORF and CDS start are shifter of two positions
+    Returns the smorf_frame (see description below) and the difference between start coordinates
+    - 0 = if the smorf and CDS start are in the same frame
+    - 1 = if smORF and CDS start are shifted of one position
+    - 2 = if smORF and CDS start are shifted of two positions
     """
 
 
@@ -2348,8 +2350,151 @@ def check_frame(smorf_start_coord, cds_start_coord):
     frame = starts_difference%3 ## -> how many nucleotides it shifts: 0 (inframe), 1 or 2
 
     if frame == 0: 
-        return "inframe"
+        smorf_frame = 0
     elif frame in [-1, 1]:
-        return "+1"
+        smorf_frame = 1
     elif frame in [-2, 2]:
-        return "+2"
+        smorf_frame = 2
+    
+    return smorf_frame, starts_difference
+
+
+def is_in_interval(value, start_invterval, end_interval):
+    return start_invterval <= value <= end_interval
+
+
+def find_type(smorf_start, smorf_end, cds_start, cds_end, utr5_start, utr5_end, utr3_start, utr3_end):
+    """
+    Function to assess the type of smORF with relation to a transcript. 
+    Input: 
+    - smORF start and end coordinates
+    - CDS interval
+    - 5'UTR interval
+    - 3'UTR interval
+
+    Returns the type of smORF. 
+    - uORF = smORF start and end within 5'UTR
+    - overlap_uORF = smORF crosses 5'UTR and CDS
+    - dORF = smORF start and end within 3'UTR
+    - overlap_dORF = smORF crosses CDS and 3'UTR
+    - intORF = smORF start and end within the CDS
+    - alt_ORF = smORF start within 5'UTR and ends within 3'UTR
+
+    """
+    
+    overlaps_cds_start = is_in_interval(smorf_start, cds_start, cds_end)
+    overlaps_utr5_start = is_in_interval(smorf_start, utr5_start, utr5_end)
+    overlaps_utr3_start = is_in_interval(smorf_start, utr3_start, utr3_end)
+    
+    overlaps_cds_end = is_in_interval(smorf_start, cds_start, cds_end)
+    overlaps_utr5_end = is_in_interval(smorf_start, utr5_start, utr5_end)
+    overlaps_utr3_end = is_in_interval(smorf_start,utr3_start, utr3_end)
+
+    # print(overlaps_cds_start, overlaps_utr5_start, overlaps_utr3_start)
+    # print(overlaps_cds_end, overlaps_utr5_end, overlaps_utr3_end)
+
+    
+    start_region = ""
+    end_region = ""
+    
+    ## check region smORF start
+    if overlaps_cds_start:
+        start_region = "CDS"
+    elif overlaps_utr5_start:
+        start_region = "5'UTR"
+    elif overlaps_utr3_start:
+        start_region = "3'UTR"
+    else:
+        start_region = "Unknown"
+    
+    ## check region smORF end
+    if overlaps_cds_end:
+        end_region = "CDS"
+    elif overlaps_utr5_end:
+        end_region = "5'UTR"
+    elif overlaps_utr3_end:
+        end_region = "3'UTR"
+    else:
+        end_region = "Unknown"
+
+    # print(smorf_start, smorf_end)
+    # print(start_region, end_region)
+
+    ## Assigning type
+    if start_region == "5'UTR" and end_region == "5'UTR":
+        smorf_type = 'uORF'
+    elif start_region == "3'UTR" and end_region == "3'UTR":
+        smorf_type = 'dORF'
+    elif start_region == "CDS" and end_region == "CDS":
+        smorf_type = 'intORF'
+    ## +strand    
+    elif start_region == "3'UTR" and end_region == "CDS":
+        smorf_type = 'overlap_dORF'
+    elif start_region == "5'UTR" and end_region == "CDS":
+        smorf_type = 'overlap_uORF'
+    elif start_region == "5'UTR" and end_region == "3'UTR":
+        smorf_type = 'altORF'
+    ## ' strand
+    elif start_region == "CDS" and end_region == "3'UTR":
+        smorf_type = 'overlap_dORF'
+    elif start_region == "CDS" and end_region == "5'UTR":
+        smorf_type = 'overlap_uORF'
+    elif start_region == "3'UTR" and end_region == "5'UTR":
+        smorf_type = 'altORF'       
+    
+
+    #   - uORF = smORF start and end within 5'UTR
+    # - overlap_uORF = smORF crosses 5'UTR and CDS
+    # - dORF = smORF start and end within 3'UTR
+    # - overlap_dORF = smORF crosses CDS and 3'UTR
+    # - intORF = smORF start and end within the CDS
+    # - alt_ORF 
+    return smorf_type
+    
+
+
+
+## applied only for transcript with CDS, 5'UTR and 3'UTR annotations
+def smorf_type_frame_dist(smorf_start, smorf_end, smorf_strand, transcripts_smORF):
+    """
+    Function to compute the smORF type per trancript, the frame with relation to the annotated CDS in the transcript, 
+    and the distance between smORF start and CDS start
+    
+    Returns as dictionary with transcript_id as key and the smORF type, as it is run per smORF.
+    """
+
+    smorf_type_frame_cdsdist_df = pd.DataFrame(data=None, columns=['transcript_id','smorf_type','frame','cds_dist'])
+
+    for index, row in transcripts_smORF.iterrows(): 
+
+        if smorf_strand == '+':
+            smorf_frame, diff = check_frame(smorf_start, int(row['CDS/exon'].split('-')[0]))
+        elif smorf_strand == '-':
+            smorf_frame, diff = check_frame(smorf_end, int(row['CDS/exon'].split('-')[1]))
+
+        
+        
+        cds_start = int(row['CDS/exon'].split('-')[0])
+        cds_end = int(row['CDS/exon'].split('-')[1])
+        utr5_start = int(row['five_prime'].split('-')[0])
+        utr5_end = int(row['five_prime'].split('-')[1])
+        utr3_start = int(row['three_prime'].split('-')[0])
+        utr3_end = int(row['three_prime'].split('-')[1])
+
+        smorf_type = find_type(smorf_start, smorf_end, cds_start, cds_end, utr5_start, utr5_end, utr3_start, utr3_end)
+
+        new_line = pd.DataFrame(
+            {
+            'transcript_id' : row.transcript_id, 
+            'smorf_type' : smorf_type,
+            'frame' : smorf_frame,
+            'cds_dist' : diff
+            }, index=[index]
+        )
+
+        smorf_type_frame_cdsdist_df = pd.concat([smorf_type_frame_cdsdist_df, new_line])
+
+
+
+    return smorf_type_frame_cdsdist_df
+
