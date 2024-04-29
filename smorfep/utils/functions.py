@@ -2498,3 +2498,49 @@ def smorf_type_frame_dist(smorf_start, smorf_end, smorf_strand, transcripts_smOR
 
     return smorf_type_frame_cdsdist_df
 
+
+
+# Define function to extract specific values
+def extract_info(info_string, key):
+    pairs = [pair.split('=') for pair in info_string.split(';')]
+    for pair in pairs:
+        if pair[0] == key:
+            return pair[1]
+    return None
+
+
+## clinVar variants do not have strand associated
+def read_clinvar_file(clinvar_filename, chrm, region_start, region_end):
+    """
+    Function to open and read the clinvarfile into a dataframe, fitlering for the variants within a given region (e.g., smORF).
+
+    Input: 
+    - clinvar filename - assumed the VCF file downloaded via FTP 
+    - chromosome of interest
+    - region of interest start coordinate
+    - region of interest end coordinate
+
+    Output: 
+    pandas dataframe with the variants within the region of interest
+    Info: chromosome, position, CLNSIG, CLNREVSAT
+
+    Note:
+    Annotations are filtered and kept only the ones with the following CLNREVSTAT flags: 
+    - 'criteria_provided,_multiple_submitters,_no_conflicts'
+    - 'reviewed_by_expert_panel'
+    - 'practice_guideline
+    
+    """
+    raw_file = pd.read_csv(clinvar_filename, sep='\t', comment='#', lineterminator='\n')
+    raw_file.columns = ['CHROM', 'POS', 'ID', 'REF', 'ALT', 'QUAL', 'FILTER', 'INFO']
+    ##print(raw_file)
+
+    region_vars_clinvar = raw_file[raw_file['CHROM']==chrm]
+    region_vars_clinvar = region_vars_clinvar[(region_vars_clinvar['POS'] >= region_start) & (region_vars_clinvar['POS']<= region_end)]
+    region_vars_clinvar['CLNSIG'] = region_vars_clinvar['INFO'].apply(lambda x: extract_info(x, 'CLNSIG'))
+    region_vars_clinvar['CLNREVSTAT'] = region_vars_clinvar['INFO'].apply(lambda x: extract_info(x, 'CLNREVSTAT'))
+    region_vars_clinvar = region_vars_clinvar.drop(columns=['INFO']) ## drop old info column
+    ##print(region_vars_clinvar)
+
+
+    return region_vars_clinvar
