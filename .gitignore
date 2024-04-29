@@ -9,7 +9,6 @@ get_transcripts_GENCODE.sh
 
 
 # Byte-compiled / optimized / DLL files
-__init__.py
 __pycache__/
 *.py[cod]
 *$py.class
