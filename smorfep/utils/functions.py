@@ -229,7 +229,7 @@ def get_sequence(start, end, strand, ref):
 
     ## .upper needed so the sequence is all capital letters. Ref contains lowercase letters 
     if strand == '+':
-        seq = ref[start-1:end].upper() 
+        seq = ref[start:end].upper()  ## with -1 before was adding an extra nt at the begining of the sequence (not part of it)
 
     elif strand == '-':
         seq = reverse_complement_seq(ref[start-1:end].upper())
@@ -271,6 +271,7 @@ def get_protein(sequence):
     """
 
     trios = get_trios(sequence)
+    print(trios)
     prot = ''
 
     for each in trios:
@@ -809,7 +810,7 @@ def frameshift(seq, transcript_extension, map_coordinates):
 
     seq_len = len(seq)
     difference = seq_len%3 ## -> how many nucleotides it shifts: 0 (inframe), 1 or 2
-    ##print(difference)
+    print(difference)
 
     if difference == 1: ## we need to add 2 base to get new frame
         corrected_seq = seq + transcript_extension[:2]
@@ -2467,7 +2468,7 @@ def smorf_type_frame_dist(smorf_start, smorf_end, smorf_strand, transcripts_smOR
 
     smorf_type_frame_cdsdist_df = pd.DataFrame(data=None, columns=['transcript_id','smorf_type','frame','cds_dist'])
 
-    print(smorf_type_frame_cdsdist_df.head) 
+    ##print(smorf_type_frame_cdsdist_df.head) 
     for index, row in transcripts_smORF.iterrows(): 
 
         if row['CDS/exon'] != 'ND':
