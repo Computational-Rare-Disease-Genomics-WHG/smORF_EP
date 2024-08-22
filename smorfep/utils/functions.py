@@ -229,7 +229,7 @@ def get_sequence(start, end, strand, ref):
 
     ## .upper needed so the sequence is all capital letters. Ref contains lowercase letters 
     if strand == '+':
-        seq = ref[start:end].upper()  ## with -1 before was adding an extra nt at the begining of the sequence (not part of it)
+        seq = ref[start:end].upper()  ## Note 2024-08-21: removed "start-1" --> it was adding an extra nt at the begining of the sequence (not part of it)
 
     elif strand == '-':
         seq = reverse_complement_seq(ref[start-1:end].upper())
