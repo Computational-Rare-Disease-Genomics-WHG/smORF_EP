@@ -297,7 +297,7 @@ def main():
     if os.path.exists(args.transcripts_filename):
         print('transcripts coordinates file available')
     else: 
-        print('introns not transcript coordinates file NOT available\n')
+        print('transcript coordinates file NOT available\n')
         print('RUN: smorfinit --transcripts --transc_link <link>\n')
         print('This command generates both transcript and introns files')
         sys.exit(1)
