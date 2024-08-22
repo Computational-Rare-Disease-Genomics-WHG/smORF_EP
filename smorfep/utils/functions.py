@@ -2465,23 +2465,35 @@ def smorf_type_frame_dist(smorf_start, smorf_end, smorf_strand, transcripts_smOR
 
     smorf_type_frame_cdsdist_df = pd.DataFrame(data=None, columns=['transcript_id','smorf_type','frame','cds_dist'])
 
+    print(smorf_type_frame_cdsdist_df.head) 
     for index, row in transcripts_smORF.iterrows(): 
 
-        if smorf_strand == '+':
-            smorf_frame, diff = check_frame(smorf_start, int(row['CDS/exon'].split('-')[0]))
-        elif smorf_strand == '-':
-            smorf_frame, diff = check_frame(smorf_end, int(row['CDS/exon'].split('-')[1]))
+        if row['CDS/exon'] != 'ND':
 
-        
-        
-        cds_start = int(row['CDS/exon'].split('-')[0])
-        cds_end = int(row['CDS/exon'].split('-')[1])
-        utr5_start = int(row['five_prime'].split('-')[0])
-        utr5_end = int(row['five_prime'].split('-')[1])
-        utr3_start = int(row['three_prime'].split('-')[0])
-        utr3_end = int(row['three_prime'].split('-')[1])
+            if smorf_strand == '+':
+                smorf_frame, diff = check_frame(smorf_start, int(row['CDS/exon'].split('-')[0]))
+            elif smorf_strand == '-':
+                smorf_frame, diff = check_frame(smorf_end, int(row['CDS/exon'].split('-')[1]))
 
-        smorf_type = find_type(smorf_start, smorf_end, cds_start, cds_end, utr5_start, utr5_end, utr3_start, utr3_end)
+            
+            
+            cds_start = int(row['CDS/exon'].split('-')[0])
+            cds_end = int(row['CDS/exon'].split('-')[1])
+            utr5_start = int(row['five_prime'].split('-')[0])
+            utr5_end = int(row['five_prime'].split('-')[1])
+            utr3_start = int(row['three_prime'].split('-')[0])
+            utr3_end = int(row['three_prime'].split('-')[1])
+
+            smorf_type = find_type(smorf_start, smorf_end, cds_start, cds_end, utr5_start, utr5_end, utr3_start, utr3_end)
+        
+        else:
+            if row.transcript_type == 'lncRNA': 
+                smorf_type = 'ncRNA-ORF'
+            else: 
+                smorf_type = '-'
+                
+            smorf_frame = '-'
+            diff = '-'
 
         new_line = pd.DataFrame(
             {
@@ -2510,6 +2522,12 @@ def extract_info(info_string, key):
 
 
 ## clinVar variants do not have strand associated
+
+##Our analysis - Filtering done when sleecting the variants within the smORF regions
+    # Annotations are filtered and kept only the ones with the following CLNREVSTAT flags: 
+    # - 'criteria_provided,_multiple_submitters,_no_conflicts'
+    # - 'reviewed_by_expert_panel'
+    # - 'practice_guideline'
 def read_clinvar_file(clinvar_filename, chrm, region_start, region_end):
     """
     Function to open and read the clinvarfile into a dataframe, fitlering for the variants within a given region (e.g., smORF).
@@ -2524,13 +2542,8 @@ def read_clinvar_file(clinvar_filename, chrm, region_start, region_end):
     pandas dataframe with the variants within the region of interest
     Info: chromosome, position, CLNSIG, CLNREVSAT
 
-    Note:
-    Annotations are filtered and kept only the ones with the following CLNREVSTAT flags: 
-    - 'criteria_provided,_multiple_submitters,_no_conflicts'
-    - 'reviewed_by_expert_panel'
-    - 'practice_guideline
-    
     """
+
     raw_file = pd.read_csv(clinvar_filename, sep='\t', comment='#', lineterminator='\n')
     raw_file.columns = ['CHROM', 'POS', 'ID', 'REF', 'ALT', 'QUAL', 'FILTER', 'INFO']
     ##print(raw_file)
