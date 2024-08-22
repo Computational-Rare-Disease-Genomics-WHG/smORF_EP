@@ -818,6 +818,8 @@ def frameshift(seq, transcript_extension, map_coordinates):
     elif difference == 2: ## we need to add 1 base to get new frame 
         corrected_seq = seq + transcript_extension[:1]
         transcript_extension = transcript_extension[1:]
+    elif difference == 0: ## inframe
+        corrected_seq = seq
 
     new_seq, new_stop = stop_transcript_search(corrected_seq, transcript_extension, map_coordinates)
 
