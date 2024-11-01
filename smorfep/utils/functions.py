@@ -810,7 +810,7 @@ def frameshift(seq, transcript_extension, map_coordinates):
 
     seq_len = len(seq)
     difference = seq_len%3 ## -> how many nucleotides it shifts: 0 (inframe), 1 or 2
-    print(difference)
+    print('frameshift', difference)
 
     if difference == 1: ## we need to add 2 base to get new frame
         corrected_seq = seq + transcript_extension[:2]
