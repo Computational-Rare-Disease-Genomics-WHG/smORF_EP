@@ -232,7 +232,7 @@ def get_sequence(start, end, strand, ref):
         seq = ref[start:end].upper()  ## Note 2024-08-21: removed "start-1" --> it was adding an extra nt at the begining of the sequence (not part of it)
 
     elif strand == '-':
-        seq = reverse_complement_seq(ref[start:end].upper())## Note 2024-11-01: removed "start-1" --> it was adding an extra nt at the begining of the sequence (not part of it)
+        seq = reverse_complement_seq(ref[start-1:end].upper())
     ## upper to have all capital letters needed for protein sequence
     
     return seq
@@ -810,7 +810,7 @@ def frameshift(seq, transcript_extension, map_coordinates):
 
     seq_len = len(seq)
     difference = seq_len%3 ## -> how many nucleotides it shifts: 0 (inframe), 1 or 2
-    print('frameshift', difference)
+    print(difference)
 
     if difference == 1: ## we need to add 2 base to get new frame
         corrected_seq = seq + transcript_extension[:2]
