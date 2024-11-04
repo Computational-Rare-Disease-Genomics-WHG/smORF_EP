@@ -135,6 +135,7 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
 
     ## 2 - Processing presence of introns in the smORF
     if not introns_smorf.empty:  ## if there are introns in the smORF range
+        print('smORF with introns')
 
         ## map the splice regions in the smorf
         splice_regions_df = map_splice_regions(introns_smorf, splice_site)
@@ -153,6 +154,7 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
         ## Check: exon-intron crossing variants
         try: 
             dna_c, dna_seq_c, prot_c, prot_seq_c, all_var_pos = check_introns(seq, start, end, variant_pos, ref, alt, strand, map_gen2transc, splice_regions_df)
+
         except UnboundLocalError:
             print('no dna_cons')
             print(variant_pos, ref, alt, strand)
@@ -192,7 +194,7 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
             if start_var != None:         
                 return start_var, len_change, prot_cons, change_prot
             
-            ## 2.5.2.1 - stop related
+            ## 2.5.2.2 - stop related
             stop_var, len_change, prot_cons, change_prot = check_stop_transcript(seq, new_sequence, start, end, variant_pos, strand, map_gen2transc, map_transc2gen, extension_seq)
             if stop_var != None:        
                 return stop_var, len_change, prot_cons, change_prot
