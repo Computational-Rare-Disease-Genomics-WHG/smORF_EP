@@ -170,6 +170,7 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
 
                     ## run tool per transcript
                     for each_t in matching_t:
+                        print(each_t)
 
                         ## transcript info
                         this_transcript = transcripts_smorf[transcripts_smorf['transcript_id'] == each_t]
