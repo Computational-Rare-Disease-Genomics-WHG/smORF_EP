@@ -181,6 +181,8 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
 
             ## 2.3.1- introduce the variant 
             new_sequence, ref_original, ref_inFile = add_variant_transcriptSeq(seq, start, end, ref, alt, variant_pos, map_gen2transc)
+            if new_sequence == None: 
+                return 'Reference_mismatch', 'ref_genome:'+ str(ref_original), 'reference_given' + str(ref_inFile), '-'
 
 
             if len(ref) > len(alt): ## deletion
@@ -312,6 +314,9 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
 
         # ## 3.1 - Introduce the variant
         new_sequence, ref_original, ref_inFile = add_variant(seq, start, end, ref, alt, variant_pos, strand)
+        if new_sequence == None: 
+            return 'Reference_mismatch', 'ref_genome:'+ str(ref_original), 'reference_given' + str(ref_inFile), '-'
+
 
         if len(ref) > len(alt): ## deletion
             new_sequence = new_sequence.replace('-','') # we need to take the dash out for seq processing 
