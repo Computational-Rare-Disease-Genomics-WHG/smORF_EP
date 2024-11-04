@@ -113,6 +113,7 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
 
         ## itarete per smorf ID
         for smorf_id in list_smorfs:
+            print(smorf_id)
             smorf_vars_df = small_df[small_df['smorf_id'] == smorf_id]
             ##print(smorf_vars_df)
 
