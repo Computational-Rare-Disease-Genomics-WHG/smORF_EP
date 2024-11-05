@@ -77,11 +77,11 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
 
     ## 2- Import introns 
     introns_df = read_file(introns_filename, '\t', 0) ## computed at the begining of the script
-    print(introns_df.shape)
-    ## controls for duplicates if any
+    ##print(introns_df.shape)
+    ## controls for duplicates if any - Added on 2024-11-05 - OK
     introns_df = introns_df.drop_duplicates()
-    print('shape after removing duplicates')
-    print(introns_df.shape)
+    ##print('shape after removing duplicates')
+    ##print(introns_df.shape)
     print('introns ready')
     print('')
 
