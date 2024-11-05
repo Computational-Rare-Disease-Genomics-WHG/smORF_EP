@@ -271,7 +271,8 @@ def get_protein(sequence):
     """
 
     trios = get_trios(sequence)
-    print(trios)
+    ##print(trios)
+    
     prot = ''
 
     for each in trios:
