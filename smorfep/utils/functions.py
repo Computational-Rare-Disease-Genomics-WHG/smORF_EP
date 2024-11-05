@@ -232,7 +232,7 @@ def get_sequence(start, end, strand, ref):
         seq = ref[start:end].upper()  ## Note 2024-08-21: removed "start-1" --> it was adding an extra nt at the begining of the sequence (not part of it)
 
     elif strand == '-':
-        seq = reverse_complement_seq(ref[start-1:end].upper())
+        seq = reverse_complement_seq(ref[start:end].upper())
     ## upper to have all capital letters needed for protein sequence
     
     return seq
@@ -1303,22 +1303,32 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
         t_id = row.transcript_id
         t_start = row.start
         t_end = row.end
-        t_strand = row.strand 
-        ##print(t_id)
+        ##t_strand = row.strand 
 
         ## introns for the transcript
         introns_transcript = introns_df[introns_df['transcript_id'] == t_id]
         ## from this point on we use introns_transcript to filter to work on the transcript introns only
         ##print(introns_transcript)
 
+        ## introns only within the smORF
+        introns_smorf = introns_transcript[(introns_transcript['start']>= smorf_start) & (introns_transcript['end']<= smorf_end)]
+
+        ## collect the introns also until the end of the transcript - Used in case of protein elongation.
         if strand == '+':
             introns_transcript = introns_transcript[(introns_transcript['start']>= smorf_start) & (introns_transcript['end']<= t_end)]
 
         elif strand == '-':
             introns_transcript = introns_transcript[(introns_transcript['start']>= t_start) & (introns_transcript['end']<= smorf_end)]
 
+        ##print('introns transcript')
+        ##print(introns_transcript)
+        ##print('introns smORF')
+        ##print(introns_smorf)
+
+
         ## smorf without introns
-        if introns_transcript.empty:
+        #if introns_transcript.empty:
+        if introns_smorf.empty:
             smorf_seq = get_sequence(smorf_start, smorf_end, strand, ref_sequence)
             smorf_len = len(smorf_seq)
 
@@ -1334,8 +1344,9 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
                 
 
         ## smorf with introns
-        elif not introns_transcript.empty:
-            smorf_seq, smorf_len = remove_introns(introns_transcript, smorf_start, smorf_end, strand, ref_sequence)
+        ##elif not introns_transcript.empty:
+        elif not introns_smorf.empty:
+            smorf_seq, smorf_len = remove_introns(introns_smorf, smorf_start, smorf_end, strand, ref_sequence)
 
             ## compute coordinates map 
             if strand == '+':
@@ -1398,7 +1409,7 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
         
 
         ## 2- check 3nt periodicity
-        elif smorf_len % 3 != 0: 
+        if smorf_len % 3 != 0: 
             new_row = pd.DataFrame({
                 'smorf_id':[smorf_id],
                 'transcript_id':[t_id], 
@@ -1409,7 +1420,7 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
 
 
         ## 3- Last trio is not a stop
-        elif smorf_seq[len(smorf_seq)-3:len(smorf_seq)+1] not in stop_codons:
+        if smorf_seq[len(smorf_seq)-3:len(smorf_seq)+1] not in stop_codons:
             last_codon = smorf_seq[len(smorf_seq)-3:len(smorf_seq)+1]
             new_row = pd.DataFrame({
                 'smorf_id':[smorf_id],
@@ -1421,7 +1432,7 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
 
         
         ## 4- check multiple stop codons
-        elif s != None: ## Multiple stop codons in the sequence 
+        if s != None: ## Multiple stop codons in the sequence 
             new_row = pd.DataFrame({
                 'smorf_id':[smorf_id],
                 'transcript_id': [t_id], 
