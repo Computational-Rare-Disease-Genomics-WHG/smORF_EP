@@ -144,6 +144,8 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
         ## 2.1- Get sequence without introns
         seq, new_len = remove_introns(introns_smorf, start, end, strand, ref_sequence)
         ## region sequence without introns
+        print(introns_smorf)
+        print(seq)
 
 
         ## 2.2 - Check if variant falls into an intron region     
@@ -259,6 +261,8 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
                 ## frameshit insertion
                 else: 
                     new_seq = frameshift(new_sequence, extension_seq, map_transc2gen)
+                    print(new_sequence)
+                    print(new_seq)
 
                     if new_seq != None: ## stop found within the transcript
                         len_change = len(new_seq) - len(seq)
