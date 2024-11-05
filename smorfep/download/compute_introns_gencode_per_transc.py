@@ -194,6 +194,10 @@ try:
 
             header = False
 
+            ## added on 2024-11-05 - TODO: uncomment and test
+            ## remove the trancript from the dataframe - free space
+            ##transcripts_chr = transcripts_chr[transcripts_chr['transcript_id'] != each]
+
 except ValueError:  ## made to catch the error -- see comments bellow
     print(each)
     print(num_exons)
@@ -213,7 +217,7 @@ except ValueError:  ## made to catch the error -- see comments bellow
     ## ValueError: can only convert an array of size 1 to a Python scalar """
 
 
-print(introns_df.shape)
+##print(introns_df.shape)
 #all_t_introns = introns_df['transcript_id'].unique()
 #print(len(all_t_introns))
 
