@@ -119,23 +119,26 @@ def gencode_from_file_gff3(filename):
     Output:
     - by default '.tsv' files: gff3 with single header (_columnNames.tsv file); transcripts start and end (transcriptCoord_<date>.tsv);
         introns coordinates (_introns_<date>.tsv). 
+
+    NOTE: this writes the outputs in the directory/folder the script is launched. 
     """
 
     now = datetime.datetime.now().strftime('%Y-%m-%d')
 
-    prefix = filename.strip('.gff3') 
-    extension = '.tsv' 
+    extension = '.gff3' 
+    prefix = filename.replace('.gff3', '') 
+    print(prefix)
     # Pre-process gff3 file - single header  
     ##print(outputname, outputname_unconpress, prefix)
-    os.system('preprocess_gff.py transcripts/'+filename+ ' transcripts/'+prefix+'_columnNames'+extension)
+    os.system('preprocess_gff.py '+filename+ ' '+prefix+'_columnNames'+extension)
     ##print('preprocess_gff.py transcripts/'+outputname_unconpress+ ' transcripts/'+prefix+'_columnNames'+extension)
 
     # transcript coordinates (15.seconds M1 ship)
-    os.system('compute_transcripts_gencode.py transcripts/'+prefix+'_columnNames'+extension+ ' transcripts/'+prefix+'_transcriptCoord_'+now+'.tsv')
+    os.system('compute_transcripts_gencode.py '+prefix+'_columnNames'+extension+ ' '+prefix+'_transcriptCoord_'+now+'.tsv')
     ##print('compute_transcripts_gencode.py transcripts/'+prefix+'_columnNames'+extension+ ' transcripts/'+prefix+'_transcriptCoord_'+now+'.tsv')
 
     # intron coordinates
-    os.system('compute_introns_gencode_per_transc.py transcripts/'+prefix+'_columnNames'+extension+ ' transcripts/'+prefix+'_introns_'+now+'.tsv')
+    os.system('compute_introns_gencode_per_transc.py '+prefix+'_columnNames'+extension+ ' '+prefix+'_introns_'+now+'.tsv')
     ##print('compute_introns_gencode_per_transc.py transcripts/'+prefix+'_columnNames'+extension+ ' transcripts/'+prefix+'_introns_'+now+'.tsv')
 
     print("Done")
@@ -166,11 +169,11 @@ def main():
         parser.add_argument('--ref_link', required=True, type=str, help='reference genome link')
 
     elif '--transcripts' in sys.argv: 
-        parser.add_argument('--transc_lf', help='transcripts link or filename', action='store_true')
+        parser.add_argument('--transc_lf', required=True, type=str, help='transcripts link or filename')
         
     elif '--all' in sys.argv: 
         parser.add_argument('--ref_link', required=True, type=str, help='reference genome link')
-        parser.add_argument('--transc_lf', required=True, type=str, help='transcripts link or filename', action='store_true')
+        parser.add_argument('--transc_lf', required=True, type=str, help='transcripts link or filename')
 
 
     args = parser.parse_args()
