@@ -127,7 +127,6 @@ def gencode_from_file_gff3(filename):
 
     extension = '.gff3' 
     prefix = filename.replace('.gff3', '') 
-    print(prefix)
     # Pre-process gff3 file - single header  
     ##print(outputname, outputname_unconpress, prefix)
     os.system('preprocess_gff.py '+filename+ ' '+prefix+'_columnNames'+extension)
