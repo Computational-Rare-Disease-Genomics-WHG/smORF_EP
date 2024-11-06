@@ -76,6 +76,7 @@ def download_gencode(transc_link):
 
     # 2- Download GENCODE
     ##url = 'https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/gencode.v41.annotation.gff3.gz'
+    
     outputname = transc_link.split('/')[-1] 
     outputname_unconpress = outputname.replace('.gz', '')
     extension = '.' + outputname_unconpress.split('.')[-1]
@@ -108,6 +109,39 @@ def download_gencode(transc_link):
     print("Done")
 
 
+def gencode_from_file_gff3(filename):
+    """
+    Function to compute the transcripts and introns file from an input file.
+
+    Input:
+    - filename of the GFF3 file to process.
+
+    Output:
+    - by default '.tsv' files: gff3 with single header (_columnNames.tsv file); transcripts start and end (transcriptCoord_<date>.tsv);
+        introns coordinates (_introns_<date>.tsv). 
+    """
+
+    now = datetime.datetime.now().strftime('%Y-%m-%d')
+
+    prefix = filename.strip('.gff3') 
+    extension = '.tsv' 
+    # Pre-process gff3 file - single header  
+    ##print(outputname, outputname_unconpress, prefix)
+    os.system('preprocess_gff.py transcripts/'+filename+ ' transcripts/'+prefix+'_columnNames'+extension)
+    ##print('preprocess_gff.py transcripts/'+outputname_unconpress+ ' transcripts/'+prefix+'_columnNames'+extension)
+
+    # transcript coordinates (15.seconds M1 ship)
+    os.system('compute_transcripts_gencode.py transcripts/'+prefix+'_columnNames'+extension+ ' transcripts/'+prefix+'_transcriptCoord_'+now+'.tsv')
+    ##print('compute_transcripts_gencode.py transcripts/'+prefix+'_columnNames'+extension+ ' transcripts/'+prefix+'_transcriptCoord_'+now+'.tsv')
+
+    # intron coordinates
+    os.system('compute_introns_gencode_per_transc.py transcripts/'+prefix+'_columnNames'+extension+ ' transcripts/'+prefix+'_introns_'+now+'.tsv')
+    ##print('compute_introns_gencode_per_transc.py transcripts/'+prefix+'_columnNames'+extension+ ' transcripts/'+prefix+'_introns_'+now+'.tsv')
+
+    print("Done")
+
+
+
 def main():
     """
     Main entry point
@@ -128,7 +162,9 @@ def main():
         parser.add_argument('--ref_link', required=True, type=str, help='reference genome link')
 
     elif '--transcripts' in sys.argv: 
-        parser.add_argument('--transc_link', required=True, type=str, help='transcripts link')
+        group = parser.add_mutually_exclusive_group(required=True)
+        group.add_argument('--transc_link', help='transcripts link', action='store_true')
+        group.add_argument('--transc_file', help='transcripts file', action='store_true')
         
     elif '--all' in sys.argv: 
         parser.add_argument('--ref_link', required=True, type=str, help='reference genome link')
