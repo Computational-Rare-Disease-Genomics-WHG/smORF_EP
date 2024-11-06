@@ -156,21 +156,21 @@ def main():
     group.add_argument('--transcripts', help='Run transripts download', action='store_true')
     group.add_argument('--all', help='Run reference and transcripts download', action='store_true')
 
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument('--link', help='Run transcripts processing from the link (downaload + processing)', action='store_true')
+    group.add_argument('--file', help='Run transripts processing from the file (processing)', action='store_true')
+
 
     ## define the mandatory other arguments deoending on the mutually excluding arguments
     if '--reference' in sys.argv: 
         parser.add_argument('--ref_link', required=True, type=str, help='reference genome link')
 
     elif '--transcripts' in sys.argv: 
-        group = parser.add_mutually_exclusive_group(required=True)
-        group.add_argument('--transc_link', help='transcripts link', action='store_true')
-        group.add_argument('--transc_file', help='transcripts file', action='store_true')
+        parser.add_argument('--transc_lf', help='transcripts link or filename', action='store_true')
         
     elif '--all' in sys.argv: 
         parser.add_argument('--ref_link', required=True, type=str, help='reference genome link')
-        group = parser.add_mutually_exclusive_group(required=True)
-        group.add_argument('--transc_link', help='transcripts link', action='store_true')
-        group.add_argument('--transc_file', help='transcripts file', action='store_true')
+        parser.add_argument('--transc_lf', required=True, type=str, help='transcripts link or filename', action='store_true')
 
 
     args = parser.parse_args()
@@ -180,19 +180,18 @@ def main():
         download_ref_genome(args.ref_link)
 
     elif args.transcripts: 
-        if args.transc_link:
-            download_gencode(args.transc_link)
-        elif args.transc_file:
-            gencode_from_file_gff3(args.transc_file)
+        if args.link:
+            download_gencode(args.transc_lf)
+        elif args.file:
+            gencode_from_file_gff3(args.transc_lf)
 
 
     elif args.all: 
         download_ref_genome(args.ref_link)
-        if args.transc_link:
-            download_gencode(args.transc_link)
-        elif args.transc_file:
-            gencode_from_file_gff3(args.transc_file)
-
+        if args.link:
+            download_gencode(args.transc_lf)
+        elif args.file:
+            gencode_from_file_gff3(args.transc_lf)
 
 
 if __name__ == '__main__':
