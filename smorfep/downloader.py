@@ -168,7 +168,9 @@ def main():
         
     elif '--all' in sys.argv: 
         parser.add_argument('--ref_link', required=True, type=str, help='reference genome link')
-        parser.add_argument('--transc_link', required=True, type=str, help='transcripts link')
+        group = parser.add_mutually_exclusive_group(required=True)
+        group.add_argument('--transc_link', help='transcripts link', action='store_true')
+        group.add_argument('--transc_file', help='transcripts file', action='store_true')
 
 
     args = parser.parse_args()
@@ -178,11 +180,18 @@ def main():
         download_ref_genome(args.ref_link)
 
     elif args.transcripts: 
-        download_gencode(args.transc_link)
+        if args.transc_link:
+            download_gencode(args.transc_link)
+        elif args.transc_file:
+            gencode_from_file_gff3(args.transc_file)
+
 
     elif args.all: 
         download_ref_genome(args.ref_link)
-        download_gencode(args.transc_link)
+        if args.transc_link:
+            download_gencode(args.transc_link)
+        elif args.transc_file:
+            gencode_from_file_gff3(args.transc_file)
 
 
 
