@@ -1270,6 +1270,58 @@ def check_stop_transcript(seq, new_sequence, start, end, variant_pos, strand, ma
     return None, '-', '-', '-'
         
 
+def genome2smorf_coords(smorf_start, smorf_end, strand, introns_df):
+    """
+    Helper function to compute the genome to smORF and smORF to genome maps.
+
+    Parameters:
+    - smorf_start: Start coordinate of the smORF.
+    - smorf_end: End coordinate of the smORF.
+    - strand: Strand of the smORF ('+' or '-').
+    - introns_df: DataFrame containing all introns with columns ['start', 'end'].
+
+    Returns:
+    - map_gen2smorf: Dictionary mapping genome coordinates to smORF coordinates.
+    - map_smorf2gen: Dictionary mapping smORF coordinates to genome coordinates.
+    """
+    map_gen2smorf = {}
+    map_smorf2gen = {}
+    
+    # Filter introns to keep only those within the smORF range
+    introns = introns_df[(introns_df['start'] >= smorf_start) & (introns_df['end'] <= smorf_end)]
+    
+    # Sort introns by their genomic coordinates
+    sorted_introns = introns.sort_values('start') if strand == '+' else introns.sort_values('start', ascending=False)
+    
+    # Initialize smORF position and current genome position
+    smorf_pos = 0
+    current_genome_pos = smorf_start
+    
+    for _, intron in sorted_introns.iterrows():
+        intron_start = intron['start']
+        intron_end = intron['end']
+        
+        # Map genome positions before the intron
+        while current_genome_pos < intron_start and current_genome_pos <= smorf_end:
+            map_gen2smorf[current_genome_pos] = smorf_pos
+            map_smorf2gen[smorf_pos] = current_genome_pos
+            current_genome_pos += 1
+            smorf_pos += 1
+        
+        # Skip intron region
+        if current_genome_pos <= intron_end:
+            current_genome_pos = intron_end + 1
+    
+    # Map remaining genome positions after the last intron
+    while current_genome_pos <= smorf_end:
+        map_gen2smorf[current_genome_pos] = smorf_pos
+        map_smorf2gen[smorf_pos] = current_genome_pos
+        current_genome_pos += 1
+        smorf_pos += 1
+    
+    return map_gen2smorf, map_smorf2gen
+
+
 def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, smorf_id, smorf_start, smorf_end, strand):
     """
     Function to check the compatibility of smORF and transcript coordinates. 
@@ -1616,6 +1668,84 @@ def map_splice_regions(introns_df, splice_size, intron_exon_size=3, splice_da_si
         )
 
         new_line_index += 1        
+        splice_regions_df = pd.concat([splice_regions_df, new_line_acceptor])
+    
+    return splice_regions_df
+
+
+def map_splice_regions_smorfs(introns_df, splice_size, intron_exon_size=3, splice_da_size=2):
+
+    """
+        Function to create a dataframe with the splice regions considering the introns within a smORF. 
+        Maps the region as follow: 
+        (donor)
+        - splice_region_start = intron_start - into_exon_size
+        - splice_region_end = intron_start + splice-size
+        (acceptor)
+        - splice_region_start = intron_end - splice_size
+        - splice_region_end = intron_start + into_exon_size
+
+        Input: 
+        - intron_coordinates: dataframe with the coordinates of intron regions
+        - splice_size: user defined or default (8bps as VEP) splice region size 
+        - intron_exon_size: number of nucleotides in the exon precede the intron (by default 2bps as VEP)
+        - splice_da_size: size of the donor/acceptor region (by default 2bps as VEP)
+
+        Returns a dataframe with the start and end coordinate of splice regions -- 2 per intron. 
+
+        NOTE 1: donor and acceptor reported on the forward strand. For annotations on the reverse strand donor and acceptor should be reversed. 
+                
+        NOTE 2: by default the 3 last/first nucleotides in the exon (resp. donor/acceptor for forward strand, otherwise for reverse strand) are considered part of the splice_region (same as VEP).
+        To change this, change into_exon_size variable in this function.
+
+    """ 
+
+    ##into_exon_size = 3
+
+    ## final dataframe - start empty
+    splice_regions_df = pd.DataFrame(data=None, columns=['chr', 'start', 'end', 'splice_region', 'ID', 'da_start', 'da_end'])
+
+    new_line_index = 0
+    num = 1 ## count the number of introns
+    for index, row in introns_df.iterrows():
+        splice_region_donor_start = row.start - intron_exon_size
+        splice_region_donor_end = row.start + splice_size - 1 ## -1 as row.start is the first position of the intron
+        splice_region_acceptor_start = row.end - splice_size + 1 ## -1 as row.end is the last position of the intron
+        splice_region_acceptor_end = row.end + intron_exon_size 
+
+        c = row.chr
+        smorfid = row.ID
+
+        new_line_donor = pd.DataFrame(
+            {
+            'chr': c, 
+            'start': splice_region_donor_start, 
+            'end': splice_region_donor_end, 
+            'splice_region': 'donor_sr_intron_'+str(num), 
+            'ID': smorfid,
+            'da_start': row.start, 
+            'da_end': row.start + splice_da_size -1
+            }, index=[new_line_index]
+        )
+
+        new_line_index += 1
+        splice_regions_df = pd.concat([splice_regions_df, new_line_donor])
+
+
+        new_line_acceptor = pd.DataFrame(
+            {
+            'chr': c, 
+            'start': splice_region_acceptor_start, 
+            'end': splice_region_acceptor_end, 
+            'splice_region': 'acceptor_sr_intron_'+str(num), 
+            'ID': smorfid,
+            'da_start': row.end - splice_da_size +1, 
+            'da_end': row.end
+            }, index=[new_line_index]
+        )
+
+        new_line_index += 1   
+        num += 1      
         splice_regions_df = pd.concat([splice_regions_df, new_line_acceptor])
     
     return splice_regions_df
