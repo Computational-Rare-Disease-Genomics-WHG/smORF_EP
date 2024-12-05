@@ -15,12 +15,12 @@ from os.path import exists
 from datetime import date
 from numpy import require
 
-from smorfep.utils.functions import *
-from smorfep.utils.tool_script import *
+from smorfep.utils.functions import read_variants_file, read_file, genome2smorf_coords
+from smorfep.utils.tool_script_only import *
 
 
 
-def run_smorfep_smorfs(ref_path, transcripts_filename, introns_filename, splice_site, filename, outputname, excluded_transc_filename, smorf_no_t_filename):
+def run_smorfep_smorfs(ref_path, introns_filename, splice_site, filename, outputname):
 
     ## 1- reads the input file
     variants_df = read_variants_file(filename, '\t', 0)
@@ -38,12 +38,6 @@ def run_smorfep_smorfs(ref_path, transcripts_filename, introns_filename, splice_
     ## check files prefix and suffix 
     files_prefix, files_suffix = check_prefix_sufix_ref_files(ref_path)
 
-    ## excluded transcripts and flags file 
-    ## First time we write in this file we add the header
-    excluded_blank = True 
-    
-    ## open file to write smorfs without a single transcript 
-    nts_file = open(smorf_no_t_filename, 'w')
     
     for chrom_ref in all_chromosomes: 
         r = read_single_fasta(str(chrom_ref), ref_path, files_prefix, files_suffix)
@@ -52,11 +46,7 @@ def run_smorfep_smorfs(ref_path, transcripts_filename, introns_filename, splice_
 
     print('reference ready')
 
-    ## 1- Import transcripts
-    transcripts_df = read_file(transcripts_filename, '\t', 0)
-    print('transcripts ready')
-
-    ## 2- Import introns 
+    ## 1- Import introns 
     introns_df = read_file(introns_filename, '\t', 0) ## computed at the begining of the script
     ##print(introns_df.shape)
     ## controls for duplicates if any - Added on 2024-11-05 - OK
@@ -65,12 +55,6 @@ def run_smorfep_smorfs(ref_path, transcripts_filename, introns_filename, splice_
     ##print(introns_df.shape)
     print('introns ready')
     print('')
-
-    ## stats variables 
-    smorf_no_transcript = 0
-    variants_no_annotation = 0
-
-    ## 4- Check variant effect per transcript
 
     ## runs per chromosome
     for each_chrom in all_chromosomes: ## runs per chromosome
@@ -106,40 +90,27 @@ def run_smorfep_smorfs(ref_path, transcripts_filename, introns_filename, splice_
             ##print(smorf_id, smorf_start, smorf_end, smorf_strand)
 
             ## introns for the smORF
-            introns_smORF = introns_df.loc[introns_df['smORF_id'] == smorf_id]
+            introns_smORF = introns_df.loc[introns_df['ID'] == smorf_id]
 
-            ## compute compatible smorf-transcripts
-            matching_t, unmatching_t, transcripts_mapping_dictionary = compatibility_smorf_transcript(reference_genome[each_chrom], transcripts_smorf, introns_smorf, smorf_id, smorf_start, smorf_end, smorf_strand)
-            ##print(smorf_id)
-            ##print(matching_t)
-            ##print('unmatching')
-            ##print(unmatching_t)
-
+            ## mapping for this smORF
+            map_gen2smorf, map_smorf2gen = genome2smorf_coords(smorf_start, smorf_end, smorf_strand, introns_df)
 
             ## per variant - line
             for index, row in smorf_vars_df.iterrows():
                 ##print(index)
 
-                ##gen2transc mapping for this transcript
-                map_gen2transc = transcripts_mapping_dictionary[each_t][0]
-
-                ##transc2gen mapping for this transcript
-                map_transc2gen = transcripts_mapping_dictionary[each_t][1]
-
-
                 ## row_t is the info about the transctipt
                 consequence, change, prot_cons, prot_change = tool(
                     reference_genome[each_chrom], 
-                    ##this_transcript, ## XXX TODO: Adapt the tools script to do not receive the transcript data
                     introns_smORF, 
-                    row.start,
-                    row.end,
-                    row.strand,
+                    smorf_start,
+                    smorf_end,
+                    smorf_strand,
                     row.ref, 
                     row.alt, 
-                    row.var_pos,
-                    map_gen2transc, 
-                    map_transc2gen, 
+                    row.var_pos, 
+                    map_gen2smorf, 
+                    map_smorf2gen,
                     splice_site)
 
                 ##r_index = smorf_vars_df.index[smorf_vars_df['var_id'] == row.var_id].item()
@@ -236,13 +207,10 @@ def main():
 
     ## run code
     run_smorfep_smorfs(args.reference_path, 
-                args.transcripts_filename,
                 args.introns_filename, 
                 args.splice_site, 
                 args.variants_filename, 
-                args.output,
-                args.excluded_transcript,
-                args.no_transcript)
+                args.output)
 
     ## TODO: Add stats on how many smorfs skipped and how many variants successfully annotated (out of XXX)
 
