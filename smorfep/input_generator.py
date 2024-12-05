@@ -56,6 +56,7 @@ def bedvcf2intput(ref_path, bedfilename, vcffilename, outputname, bheader, vhead
     ## stores reference per chromosome into a dictionary
     reference_genome = {} 
 
+
     ## check files prefix and suffix 
     files_prefix, files_suffix = check_prefix_sufix_ref_files(ref_path)
     
