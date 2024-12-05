@@ -5,10 +5,10 @@
 ## main tool function 
 ## Performs the variants annotation 
 
-from smorfep.utils.functions import *
+from smorfep.utils.functions import map_splice_regions_smorfs, get_sequence, remove_introns, add_variant, check_stop, check_start, check_var_type, check_introns, add_anchor_nt, protein_consequence, frameshift, get_trios
+from smorfep.utils.functions import check_prefix_sufix_ref_files, read_single_fasta
 
-
-def tool(ref_sequence, introns_df, start, end, strand, ref, alt, variant_pos, map_gen2transc, map_transc2gen, splice_site=8, intron_exon_size=3, donor_acceptor_size = 2):
+def tool(ref_sequence, introns_df, start, end, strand, ref, alt, variant_pos, map_gen2smorf, map_smorf2gen, splice_site=8, intron_exon_size=3, donor_acceptor_size = 2):
 
     """
         Function that runs the variant consequence check.
@@ -62,7 +62,7 @@ def tool(ref_sequence, introns_df, start, end, strand, ref, alt, variant_pos, ma
         print('smORF with introns')
 
         ## map the splice regions in the smorf
-        splice_regions_df = map_splice_regions(introns_smorf, splice_site)
+        splice_regions_df = map_splice_regions_smorfs(introns_smorf, splice_site)
         ##print(splice_regions_df.head)
 
         ## 2.1- Get sequence without introns
@@ -79,7 +79,7 @@ def tool(ref_sequence, introns_df, start, end, strand, ref, alt, variant_pos, ma
         
         ## Check: exon-intron crossing variants
         try: 
-            dna_c, dna_seq_c, prot_c, prot_seq_c, all_var_pos = check_introns(seq, start, end, variant_pos, ref, alt, strand, map_gen2transc, splice_regions_df)
+            dna_c, dna_seq_c, prot_c, prot_seq_c, all_var_pos = check_introns(seq, start, end, variant_pos, ref, alt, strand, map_gen2smorf, splice_regions_df)
 
         except UnboundLocalError:
             print('no dna_cons')
@@ -106,7 +106,7 @@ def tool(ref_sequence, introns_df, start, end, strand, ref, alt, variant_pos, ma
 
 
             ## 2.3.1- introduce the variant 
-            new_sequence, ref_original, ref_inFile = add_variant_transcriptSeq(seq, start, end, ref, alt, variant_pos, map_gen2transc)
+            new_sequence, ref_original, ref_inFile = add_variant(seq, start, end, ref, alt, variant_pos, map_gen2smorf)
             if new_sequence == None: 
                 return 'Reference_mismatch', 'ref_genome:'+ str(ref_original), 'reference_given' + str(ref_inFile), '-'
 
@@ -118,12 +118,12 @@ def tool(ref_sequence, introns_df, start, end, strand, ref, alt, variant_pos, ma
             
             ## 2.5.2.1 - start related
             ## working with positions allows non-canonical starts
-            start_var, len_change, prot_cons, change_prot = check_start(seq, new_sequence, variant_pos, map_gen2transc)
+            start_var, len_change, prot_cons, change_prot = check_start(seq, new_sequence, variant_pos,strand)
             if start_var != None:         
                 return start_var, len_change, prot_cons, change_prot
             
             ## 2.5.2.2 - stop related
-            stop_var, len_change, prot_cons, change_prot = check_stop(seq, new_sequence, start, end, variant_pos, strand, map_gen2transc, map_transc2gen)
+            stop_var, len_change, prot_cons, change_prot = check_stop(seq, new_sequence, start, end, variant_pos, strand, map_gen2smorf, map_smorf2gen)
             if stop_var != None:        
                 return stop_var, len_change, prot_cons, change_prot
 
@@ -138,11 +138,11 @@ def tool(ref_sequence, introns_df, start, end, strand, ref, alt, variant_pos, ma
             matching = [s for s in seq_trios if any(xs in s for xs in stop_codons)] 
 
 
-            transcript_var_positon = map_gen2transc[variant_pos]
+            smorf_var_positon = map_gen2smorf[variant_pos]
             if len(alt) > len(ref): ## insertions 
-                var_trio = int(transcript_var_positon//3.0 +1)
+                var_trio = int(smorf_var_positon//3.0 +1)
             else: 
-                var_trio = int(transcript_var_positon//3.0)
+                var_trio = int(smorf_var_positon//3.0)
 
             if matching != [] and seq_trios[var_trio] in stop_codons:
                 first_stop_found = matching[0]
@@ -152,7 +152,7 @@ def tool(ref_sequence, introns_df, start, end, strand, ref, alt, variant_pos, ma
 
                 len_change = len(new_seq) - len(seq)
 
-                prot_cons, change_prot = protein_consequence_transcript(seq, new_seq, variant_pos, map_gen2transc)
+                prot_cons, change_prot = protein_consequence(seq, new_seq, variant_pos, map_gen2transc)
 
                 return 'stop_gained', len_change, prot_cons, change_prot
 
@@ -166,7 +166,7 @@ def tool(ref_sequence, introns_df, start, end, strand, ref, alt, variant_pos, ma
                 ## inframe
                 if len(new_sequence) % 3 == 0 and len_change % 3 == 0: 
 
-                    prot_cons, prot_change = protein_consequence_transcript(seq, new_sequence, variant_pos, map_gen2transc)
+                    prot_cons, prot_change = protein_consequence(seq, new_sequence, variant_pos, map_gen2transc)
                     
                     ## all_var_pos compiled all the positions the variant includes
                     if strand == '+':
@@ -207,7 +207,7 @@ def tool(ref_sequence, introns_df, start, end, strand, ref, alt, variant_pos, ma
                 if len(new_sequence) % 3 == 0: 
                     len_change = len(new_sequence) - len(seq)
 
-                    prot_cons, prot_change = protein_consequence_transcript(seq, new_sequence, variant_pos, map_gen2transc)
+                    prot_cons, prot_change = protein_consequence(seq, new_sequence, variant_pos, map_gen2transc)
                     
                     return 'inframe_deletion', len_change, prot_cons, change_prot
 
@@ -225,7 +225,7 @@ def tool(ref_sequence, introns_df, start, end, strand, ref, alt, variant_pos, ma
                     
                     return 'frameshift_variant', len_change, prot_cons, change_prot
 
-            prot_cons, change_prot = protein_consequence_transcript(seq, new_sequence, variant_pos, map_gen2transc)
+            prot_cons, change_prot = protein_consequence(seq, new_sequence, variant_pos, map_gen2transc)
 
             if prot_cons == 'missense_variant':
                 return 'missense_variant', 0, prot_cons, change_prot
@@ -257,7 +257,7 @@ def tool(ref_sequence, introns_df, start, end, strand, ref, alt, variant_pos, ma
             return start_var, len_change, prot_cons, change_prot
 
         ## 3.2.2 - affect stop
-        stop_var, len_change, prot_cons, change_prot = check_stop(seq, new_sequence, start, end, variant_pos, strand, transcript_info, ref_sequence, map_transc2gen)
+        stop_var, len_change, prot_cons, change_prot = check_stop(seq, new_sequence, start, end, variant_pos, strand, ref_sequence, map_smorf2gen)
         if stop_var != None:         
             return stop_var, len_change, prot_cons, change_prot
 
