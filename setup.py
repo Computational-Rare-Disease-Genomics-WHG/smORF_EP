@@ -49,9 +49,10 @@ with open("requirements.txt", encoding='utf-8') as f:
                 'smorfinit = smorfep.downloader:main',
                 'smorfinput = smorfep.input_generator:main',
                 'checkseq = smorfep.check_ref_seq:main',
-                'examplewizard = smorfep.generate_examples:main',
-                'examplepins = smorfep.generate_examples_singleLength:main',
-                'compare2vep = smorfep.compare2VEP:main'#,
+                #'examplewizard = smorfep.generate_examples:main',
+                #'examplepins = smorfep.generate_examples_singleLength:main',
+                'compare2vep = smorfep.compare2VEP:main',
+                'smorfonly = smorfep.run_smorf_annotation:main'#,
                 #'smorfreport = smorfep.generate_igv_report:main'
             ],
         },
