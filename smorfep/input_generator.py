@@ -2,7 +2,7 @@
 
 """
 Input generator script for smORF_EP
-This script generates the formated file for smORF_EP tool. 
+This script generates the formatted file for smORF_EP tool. 
 Merges the information from the variants and regions of interest (smORFs) into a dataframe and writes the output.
 
 Usage: smorfinput [OPTIONS]
@@ -37,7 +37,7 @@ def bedvcf2intput(ref_path, bedfilename, vcffilename, outputname, bheader, vhead
 
     ## 1- read bedfile - smorf regions
     smorfs_df = read_file(bedfilename, '\t', bheader)
-    ## Keep onlyt the first 6 columns in the BED file -- info we need
+    ## Keep only the first 6 columns in the BED file -- info we need
     smorfs_df = smorfs_df.iloc[:, :6]
     ## rename the columns
     smorfs_df.columns = ['chrm', 'start', 'end', 'smorf_id', 'score', 'strand']
@@ -55,7 +55,6 @@ def bedvcf2intput(ref_path, bedfilename, vcffilename, outputname, bheader, vhead
     ## read reference
     ## stores reference per chromosome into a dictionary
     reference_genome = {} 
-
 
     ## check files prefix and suffix 
     files_prefix, files_suffix = check_prefix_sufix_ref_files(ref_path)
