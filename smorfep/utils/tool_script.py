@@ -38,6 +38,9 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
     t_end = transcript_info.iloc[0].end
     t_strand = transcript_info.iloc[0].strand 
 
+    print('transcript start and end:')
+    print(t_start, t_end)
+
     ## testing print -- variant header
     # print('\n')
     # print(variant_pos, ref, alt)
@@ -339,6 +342,11 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
                 return stop_var, len_change, prot_cons, change_prot
         else: 
             ## 3.2.3 - start related
+            # print(variant_pos)
+            # print(variant_pos in map_gen2transc.keys())
+            # print(start in map_gen2transc.keys())
+            # print(end in map_gen2transc.keys())
+            # print(map_gen2transc.keys())
             start_var, len_change, prot_cons, change_prot = check_start_transcript(seq, new_sequence, variant_pos, map_gen2transc)
             if start_var != None:         
                 return start_var, len_change, prot_cons, change_prot
