@@ -1390,6 +1390,24 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
 
             ## Checks the number of stop codons in the sequence
             s, s_index = find_stop_inframe(smorf_seq[:len(smorf_seq)-3], map_transc2gen) ## removes last codon and searches for stop codons inframe
+
+            if smorf_start not in map_gen2transc.keys():
+                    new_row = pd.DataFrame({
+                        'smorf_id':[smorf_id],
+                        'transcript_id': [t_id], 
+                        'type': ['start_within_intron'], 
+                        'length': ['-']})
+                    unmatching_trancripts = pd.concat([unmatching_trancripts, new_row], ignore_index=True)
+                    continue
+        
+            elif smorf_end not in map_gen2transc.keys():
+                    new_row = pd.DataFrame({
+                        'smorf_id':[smorf_id],
+                        'transcript_id': [t_id], 
+                        'type': ['end_within_intron'], 
+                        'length': ['-']})
+                    unmatching_trancripts = pd.concat([unmatching_trancripts, new_row], ignore_index=True)
+                    continue
                 
 
         ## smorf with introns
