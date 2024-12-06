@@ -5,7 +5,7 @@
 ## main tool function 
 ## Performs the variants annotation 
 
-from smorfep.utils.functions import map_splice_regions_smorfs, get_sequence, remove_introns, add_variant, check_stop, check_start, check_var_type, check_introns, add_anchor_nt, protein_consequence, frameshift, get_trios
+from smorfep.utils.functions import map_splice_regions_smorfs, get_sequence, remove_introns, add_variant, check_stop_smorfonly, check_start, check_var_type, check_introns, add_anchor_nt, protein_consequence, frameshift_smorfonly, get_trios
 from smorfep.utils.functions import check_prefix_sufix_ref_files, read_single_fasta
 
 def tool(ref_sequence, introns_df, start, end, strand, ref, alt, variant_pos, map_gen2smorf, map_smorf2gen, splice_site=8, intron_exon_size=3, donor_acceptor_size = 2):
@@ -123,7 +123,7 @@ def tool(ref_sequence, introns_df, start, end, strand, ref, alt, variant_pos, ma
                 return start_var, len_change, prot_cons, change_prot
             
             ## 2.5.2.2 - stop related
-            stop_var, len_change, prot_cons, change_prot = check_stop(seq, new_sequence, start, end, variant_pos, strand, map_gen2smorf, map_smorf2gen)
+            stop_var, len_change, prot_cons, change_prot = check_stop_smorfonly(seq, new_sequence, start, end, variant_pos, strand)
             if stop_var != None:        
                 return stop_var, len_change, prot_cons, change_prot
 
@@ -184,20 +184,14 @@ def tool(ref_sequence, introns_df, start, end, strand, ref, alt, variant_pos, ma
 
                 ## frameshit insertion
                 else: 
-                    new_seq = frameshift(new_sequence, extension_seq, map_transc2gen)
-                    print(new_sequence)
-                    print(new_seq)
+                    frame_change = frameshift_smorfonly(new_sequence)
 
-                    if new_seq != None: ## stop found within the transcript
-                        len_change = len(new_seq) - len(seq)
-                        ## protein consequence
-                        prot_cons, change_prot = protein_consequence(seq, new_seq,variant_pos, start, end, strand)
-                    else: 
-                        len_change = 'off_transcript_stop'
-                        prot_cons = '-'
-                        change_prot = '-'
+                    len_change = 'frame change ' + str(frame_change)
+                    prot_cons = '-'
+                    change_prot = '-'
 
-                    return 'frameshift_variant', len_change, prot_cons, change_prot
+                    if frame_change != 0: ## if not inframe 
+                        return 'frameshift_variant', len_change, prot_cons, change_prot
 
 
             ## 2.3.3.3 - Deletions
@@ -213,17 +207,14 @@ def tool(ref_sequence, introns_df, start, end, strand, ref, alt, variant_pos, ma
 
                 ## frameshift deletion
                 else: 
-                    new_seq = frameshift(new_sequence, extension_seq, map_transc2gen)
+                    frame_change = frameshift_smorfonly(new_sequence)
 
-                    if new_seq != None: ## stop found within the transcript
-                        len_change = len(new_seq) - len(seq)
-                        prot_cons, change_prot = protein_consequence(seq, new_seq, variant_pos, start, end, strand)
-                    else: 
-                        len_change = 'off_transcript_stop'
-                        prot_cons = '-'
-                        change_prot = '-'
-                    
-                    return 'frameshift_variant', len_change, prot_cons, change_prot
+                    len_change = 'frame change ' + str(frame_change)
+                    prot_cons = '-'
+                    change_prot = '-'
+
+                    if frame_change != 0: ## if not inframe 
+                        return 'frameshift_variant', len_change, prot_cons, change_prot
 
             prot_cons, change_prot = protein_consequence(seq, new_sequence, variant_pos, map_gen2transc)
 
@@ -257,7 +248,7 @@ def tool(ref_sequence, introns_df, start, end, strand, ref, alt, variant_pos, ma
             return start_var, len_change, prot_cons, change_prot
 
         ## 3.2.2 - affect stop
-        stop_var, len_change, prot_cons, change_prot = check_stop(seq, new_sequence, start, end, variant_pos, strand, ref_sequence, map_smorf2gen)
+        stop_var, len_change, prot_cons, change_prot = check_stop_smorfonly(seq, new_sequence, start, end, variant_pos, strand)
         if stop_var != None:         
             return stop_var, len_change, prot_cons, change_prot
 
@@ -314,18 +305,14 @@ def tool(ref_sequence, introns_df, start, end, strand, ref, alt, variant_pos, ma
 
             ## 3.4.2 frameshift insertion
             else:
-                new_seq = frameshift(new_sequence, extension_seq, map_transc2gen)
+                frame_change = frameshift_smorfonly(new_sequence)
 
-                if new_seq != None: 
-                    len_change = len(new_seq) - len(seq)
-                    ## protein consequence
-                    prot_cons, change_prot = protein_consequence(seq, new_seq,variant_pos, start, end, strand)
-                else: 
-                    len_change = 'off_transcript_stop'
-                    prot_cons = '-'
-                    change_prot = '-'
+                len_change = 'frame change ' + str(frame_change)
+                prot_cons = '-'
+                change_prot = '-'
 
-                return 'frameshift_variant', len_change, prot_cons, change_prot
+                if frame_change != 0: ## if not inframe 
+                    return 'frameshift_variant', len_change, prot_cons, change_prot
 
         ## 3.5 - deletions
         elif len(ref) > len(alt): 
@@ -339,23 +326,16 @@ def tool(ref_sequence, introns_df, start, end, strand, ref, alt, variant_pos, ma
 
                 return 'inframe_deletion', len_change, prot_cons, change_prot
 
-            ## 3.5.2 frameshift deletion -- WORKING 2023-01-24
+            ## 3.5.2 frameshift deletion -- cahnged 2024-12-06
             else:
-                new_seq = frameshift(new_sequence, extension_seq, map_transc2gen)
+                frame_change = frameshift_smorfonly(new_sequence)
 
-                if new_seq != None: ## stop found within the transcript
-                    len_change = len(new_seq) - len(seq)
+                len_change = 'frame change ' + str(frame_change)
+                prot_cons = '-'
+                change_prot = '-'
 
-                    ##protein consequence
-                    prot_cons, change_prot = protein_consequence(seq, new_seq, variant_pos, start, end, strand)
-                    ##print(prot_cons, change_prot)
-
-                else: ## no new stop within the transcript 
-                    len_change = 'off_transcript_stop'
-                    prot_cons = '-'
-                    change_prot = '-'
-
-                return 'frameshift_variant', len_change, prot_cons, change_prot
+                if frame_change != 0: ## if not inframe 
+                    return 'frameshift_variant', len_change, prot_cons, change_prot
 
 
         ## 3.6 - single nucleotide change
