@@ -1423,6 +1423,15 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
                     unmatching_trancripts = pd.concat([unmatching_trancripts, new_row], ignore_index=True)
                     continue
 
+                elif smorf_start not in map_gen2transc.keys():
+                    new_row = pd.DataFrame({
+                        'smorf_id':[smorf_id],
+                        'transcript_id': [t_id], 
+                        'type': ['start_within_intron'], 
+                        'length': ['-']})
+                    unmatching_trancripts = pd.concat([unmatching_trancripts, new_row], ignore_index=True)
+                    continue
+
                 elif not end_intron.empty:
                     new_row = pd.DataFrame({
                         'smorf_id':[smorf_id],
@@ -1431,17 +1440,16 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
                         'length': ['-']})
                     unmatching_trancripts = pd.concat([unmatching_trancripts, new_row], ignore_index=True)
                     continue
-                
-                elif not start_intron.empty and not end_intron.empty:
-                    ## start and end in the intron 
-                    ## full smORF in an intron
+
+                elif smorf_end not in map_gen2transc.keys():
                     new_row = pd.DataFrame({
                         'smorf_id':[smorf_id],
                         'transcript_id': [t_id], 
-                        'type': ['intron_smorf'], 
+                        'type': ['end_within_intron'], 
                         'length': ['-']})
                     unmatching_trancripts = pd.concat([unmatching_trancripts, new_row], ignore_index=True)
                     continue
+     
 
             elif strand == '-': 
                 ## check if start is within an intron
@@ -1458,6 +1466,15 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
                     unmatching_trancripts = pd.concat([unmatching_trancripts, new_row], ignore_index=True)
                     continue
                 
+                elif smorf_start not in map_gen2transc.keys():
+                    new_row = pd.DataFrame({
+                        'smorf_id':[smorf_id],
+                        'transcript_id': [t_id], 
+                        'type': ['start_within_intron'], 
+                        'length': ['-']})
+                    unmatching_trancripts = pd.concat([unmatching_trancripts, new_row], ignore_index=True)
+                    continue
+
                 elif not end_intron.empty:
                     new_row = pd.DataFrame({
                         'smorf_id':[smorf_id],
@@ -1467,13 +1484,11 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
                     unmatching_trancripts = pd.concat([unmatching_trancripts, new_row], ignore_index=True)
                     continue
 
-                elif not start_intron.empty and not end_intron.empty:
-                    ## start and end in the intron 
-                    ## full smORF in an intron
+                elif smorf_end not in map_gen2transc.keys():
                     new_row = pd.DataFrame({
                         'smorf_id':[smorf_id],
                         'transcript_id': [t_id], 
-                        'type': ['intron_smorf'], 
+                        'type': ['end_within_intron'], 
                         'length': ['-']})
                     unmatching_trancripts = pd.concat([unmatching_trancripts, new_row], ignore_index=True)
                     continue
