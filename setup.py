@@ -41,7 +41,8 @@ with open("requirements.txt", encoding='utf-8') as f:
                  'smorfep/download/ref_per_chr.py', 
                  'smorfep/utils/genetic_code.py',
                  'smorfep/utils/functions.py',
-                 'smorfep/utils/tool_script.py'
+                 'smorfep/utils/tool_script.py',
+                'smorfep/utils/tool_script_only.py'
                  ], 
         entry_points={
             'console_scripts': [
