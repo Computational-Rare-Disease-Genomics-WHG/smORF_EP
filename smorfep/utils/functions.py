@@ -1268,7 +1268,56 @@ def check_stop_transcript(seq, new_sequence, start, end, variant_pos, strand, ma
             return 'stop_lost', len_change, prot_cons, change_prot
     
     return None, '-', '-', '-'
+
+
+def check_stop_smorfonly(seq, new_sequence, start, end, variant_pos, strand):
+    """
+        Function to check if the variant affects the stop codon.
+        Input: 
+        - sequence: before variant
+        - new_sequence: sequence with the variant
+        - start: start coordinate of the sequence (genomic coord)
+        - end: end coordinate of the sequence (genomic coord)
+        - variant_pos: variant position (genomic coord)
+        - strand
+        - transcript_info: used to check the transcript end coordinate
+        - ref_sequence need in case the stop is lost and there is an extension
+        - map_cordinates: mapping between transcript and genomic coordinates
+
+        Returns: stop_lost or stop_retain if the variant affects the stop codon, or None otherwise.
+
+    """
+
+    stop_codons = ['TAG', 'TAA', 'TGA']
+
+    if strand == '+': 
+        if variant_pos <= end and variant_pos >= end -2: 
+            ## new_sequence is the sequence with the variant
+            ## new end is not a stop codon
+
+            len_change = seq[len(seq)-3:] + '->' + new_sequence[len(new_sequence)-3:]
+
+            if new_sequence[len(new_sequence)-3:] in stop_codons:
+                return 'stop_retained_variant', len_change, '-', '-'
         
+            else:              
+                return 'stop_lost', '-', '-', '-'
+
+        else: 
+            return None, '-', '-', '-'
+        
+    if strand == '-':
+
+        if variant_pos >= start and variant_pos <= start +2: 
+
+            len_change = seq[len(seq)-3:] + '->' + new_sequence[len(new_sequence)-3:]
+            if new_sequence[len(new_sequence)-3:] in stop_codons:
+                return 'stop_retained_variant', len_change, '-', '-'
+            else:
+                return 'stop_lost', '-', '-', '-'
+        else: 
+            return None, '-', '-', '-'
+
 
 def genome2smorf_coords(smorf_start, smorf_end, strand, introns_df):
     """
