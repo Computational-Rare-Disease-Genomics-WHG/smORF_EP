@@ -807,7 +807,7 @@ def frameshift(seq, transcript_extension, map_coordinates):
 
     seq_len = len(seq)
     difference = seq_len%3 ## -> how many nucleotides it shifts: 0 (inframe), 1 or 2
-    print(difference)
+    ##print(difference)
 
     if difference == 1: ## we need to add 2 base to get new frame
         corrected_seq = seq + transcript_extension[:2]
@@ -826,6 +826,40 @@ def frameshift(seq, transcript_extension, map_coordinates):
 
     else: ## stop found (1-on the corrected sequence 2-on the extended sequence (until end of the transcript))
         return new_seq
+    
+
+def frameshift_smorfonly(seq): 
+    """
+        Function that extends the sequence and searches for the new stop codon. 
+        Used to access the consequence on the protein when a frameshift mutation happens.
+
+        Works on genomic sequence: ATGC
+
+        Input: 
+        - seq = sequence after mutation
+        - map_coordinates = dictionary with the correspondence of transcript to genomic coordinates 
+
+        Note: as we provide the searcheable range we don't need strand neither coordinates 
+            as in the previous version of this function
+
+
+        Output: 
+        - new_seq = sequence until the first stop codon found, given the frameshift
+    """
+
+    seq_len = len(seq)
+    difference = seq_len%3 ## -> how many nucleotides it shifts: 0 (inframe), 1 or 2
+    ##print(difference)
+
+    if difference == 1: ## we need to add 2 base to get new frame
+        return 1
+
+    elif difference == 2: ## we need to add 1 base to get new frame 
+        return 2
+    elif difference == 0: ## inframe
+        return 0
+    else:
+        return None
 
 
 
