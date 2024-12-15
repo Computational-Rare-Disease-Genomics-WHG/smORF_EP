@@ -231,6 +231,9 @@ def get_sequence(start, end, strand, ref):
         seq = reverse_complement_seq(ref[start:end].upper())
     ## upper to have all capital letters needed for protein sequence
     
+    print('get_sequence function')
+    print(start, end)
+    print(seq)
     return seq
 
 
@@ -301,8 +304,12 @@ def add_variant(sequence, start, end,  ref, alt, position, strand):
 
     if strand == '+':
         variant_index = (position - start)-1 ## index -1 as the python starts in 0
+        if position == start: 
+            variant_index = 0
     elif strand == '-':
-        variant_index = end - position
+        variant_index = end - position ## TODO: Confirm this is correct!!
+        if position == end: 
+            variant_index = 0
 
     print(position, strand)
     print(variant_index)
@@ -1089,7 +1096,6 @@ def check_start(seq, new_sequence, start, end, variant_pos, strand):
 
     """
 
-
     if strand == '+':
         len_change = '-'
         prot_cons = '-'
@@ -1098,6 +1104,9 @@ def check_start(seq, new_sequence, start, end, variant_pos, strand):
         if variant_pos >= start and variant_pos <= start +2 and seq[:3] != new_sequence[:3]: 
         ## last condition is for indels right after the start codon, as the coordinate will be the last nt of the start codon, which is kept the same
             len_change = seq[:3] + '->' + new_sequence[:3]
+
+            if new_sequence[:3] == 'ATG': 
+                return 'start_change', len_change, prot_cons, change_prot
             return 'start_lost', len_change, prot_cons, change_prot
         
         else:
@@ -1110,6 +1119,8 @@ def check_start(seq, new_sequence, start, end, variant_pos, strand):
 
         if variant_pos <= end and variant_pos >= end -2 and seq[:3] != new_sequence[:3]: ## last condition is for indels right after the start codon, as the coordinate will be the last nt of the start codon, which is kept the same
             len_change = seq[:3] + '->' + new_sequence[:3]
+            if new_sequence[:3] == 'ATG': 
+                return 'start_change', len_change, prot_cons, change_prot
             return 'start_lost', len_change, prot_cons, change_prot
     
         else: 
@@ -1147,6 +1158,8 @@ def check_start_transcript(seq, new_sequence, variant_pos, map_coordinates):
             return 'start_retained_variant', len_change, prot_cons, change_prot
         else: 
             len_change = seq[:3] + '->' + new_sequence[:3]
+            if new_sequence[:3] == 'ATG': 
+                return 'start_change', len_change, prot_cons, change_prot
             return 'start_lost', len_change, prot_cons, change_prot
 
     else: ## not a start affecting variant
@@ -2844,3 +2857,4 @@ def read_clinvar_file(clinvar_filename, chrm, region_start, region_end):
 
 
     return region_vars_clinvar
+
