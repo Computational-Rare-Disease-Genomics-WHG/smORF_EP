@@ -300,9 +300,12 @@ def add_variant(sequence, start, end,  ref, alt, position, strand):
     """
 
     if strand == '+':
-        variant_index = position - start-1
+        variant_index = (position - start)-1 ## index -1 as the python starts in 0
     elif strand == '-':
         variant_index = end - position
+
+    print(position, strand)
+    print(variant_index)
 
     if sequence[variant_index:variant_index+len(ref)] == ref:
         prefix = sequence[:variant_index] ## excludes the variant position
@@ -324,12 +327,14 @@ def add_variant(sequence, start, end,  ref, alt, position, strand):
  
         
     else:
+        print('add_variant function')
         print(position, ref, alt, strand, start, end)
         print('ref allele does not correspond!')
         print('reference genome: ', sequence[variant_index:variant_index+len(ref)])
         print('ref input: ', ref)
         print(position) 
         print(sequence)
+        print('')
         return None, sequence[variant_index:variant_index+len(ref)], ref
 
     return new_seq, None, None
@@ -500,6 +505,7 @@ def add_variant_transcriptSeq(sequence, start, end, ref, alt, position, map_coor
         ##print(map_coordinates)
         ##print(position) 
         print(sequence)
+        print('')
         return None, sequence[variant_index:variant_index+len(ref)], ref
 
     return new_seq, None, None
@@ -689,7 +695,6 @@ def protein_consequence(seq, new_seq, var_pos, start, end, strand):
         
         return consequence, change
 
-        
 
     elif len(prot_seq) == len(new_prot): ## single aminoacid change 
 
@@ -700,15 +705,16 @@ def protein_consequence(seq, new_seq, var_pos, start, end, strand):
         nt_aa = nt2aaMAP(seq)
 
         if strand == '+': 
-            change_index =(var_pos-start) 
+            change_index =(var_pos-start) -1
         elif strand == '-':
-            change_index = (end - var_pos) 
+            change_index = (end - var_pos)
         aa_index = nt_aa[change_index]
 
         ref_aa = prot_seq[aa_index]
         alt_aa = new_prot[aa_index]
 
         change = ref_aa + '>' + alt_aa
+
 
         return consequence, change
 
@@ -744,6 +750,8 @@ def protein_consequence_transcript(seq, new_seq, var_pos, map_coordinates):
 
     ##  New protein sequence
     new_prot = get_protein(new_seq)
+
+    print('protein transcript')
 
     ## synonymous variant 
     if prot_seq == new_prot:
