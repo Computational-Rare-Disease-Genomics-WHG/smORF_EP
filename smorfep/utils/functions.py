@@ -231,9 +231,9 @@ def get_sequence(start, end, strand, ref):
         seq = reverse_complement_seq(ref[start:end].upper())
     ## upper to have all capital letters needed for protein sequence
     
-    print('get_sequence function')
-    print(start, end)
-    print(seq)
+    # print('get_sequence function')
+    # print(start, end)
+    # print(seq)
     return seq
 
 
@@ -313,6 +313,7 @@ def add_variant(sequence, start, end,  ref, alt, position, strand):
 
     print(position, strand)
     print(variant_index)
+    print(sequence[variant_index:variant_index+len(ref)])
 
     if sequence[variant_index:variant_index+len(ref)] == ref:
         prefix = sequence[:variant_index] ## excludes the variant position
@@ -337,6 +338,7 @@ def add_variant(sequence, start, end,  ref, alt, position, strand):
         print('add_variant function')
         print(position, ref, alt, strand, start, end)
         print('ref allele does not correspond!')
+        print(variant_index)
         print('reference genome: ', sequence[variant_index:variant_index+len(ref)])
         print('ref input: ', ref)
         print(position) 
