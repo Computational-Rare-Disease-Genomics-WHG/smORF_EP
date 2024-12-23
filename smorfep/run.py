@@ -89,10 +89,16 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
     smorf_no_transcript = 0
     variants_no_annotation = 0
 
+    # Initialize the buffer and counter
+    temp_df = pd.DataFrame()
+    save_interval = 1  # Number of lines to process before saving
+    processed_count = 0
+
     ## 4- Check variant effect per transcript
 
     ## runs per chromosome
     for each_chrom in all_chromosomes: ## runs per chromosome
+        print('chromosome:', each_chrom)
         ## TODO: OPTIMIZE --> allow cache freeing after each chromosome -- remove chromosome from the ref_genome dictionary
 
         ## variants/smorfs per chromosome
@@ -243,7 +249,14 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
                             }, index=[index]
                         )
 
-                        vars_cons_df = pd.concat([vars_cons_df, consequence_computed])
+                        ## commented - 2024-12-23
+                        ##vars_cons_df = pd.concat([vars_cons_df, consequence_computed])
+                        temp_df = pd.concat([temp_df, consequence_computed])
+                        processed_count += 1
+                        # Save the buffer to the file every 100 lines
+                        if processed_count % save_interval == 0:
+                            temp_df.to_csv(outputname, sep='\t', lineterminator='\n', index=False, mode='a', header=not os.path.exists(outputname))
+                            temp_df = pd.DataFrame()  # Reset the temporary DataFrame  
 
                         ## NOTE 1: Removed no transcript -- we report the smORF IDS for smORFs without transcript but don't run the analysis for those
 
@@ -254,7 +267,12 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
     ##print(vars_cons_df)
             
     ## write_the output
-    vars_cons_df.to_csv(outputname, sep='\t', lineterminator='\n', index=False)
+    # commented - 2024-12-23
+    ##vars_cons_df.to_csv(outputname, sep='\t', lineterminator='\n', index=False)
+    
+    # Write any remaining data in the temporary DataFrame
+    if not temp_df.empty:
+        temp_df.to_csv(outputname, sep='\t', lineterminator='\n', index=False, mode='a', header=not os.path.exists(outputname))
 
     ## close no transcript smorfs file 
     nts_file.close()
