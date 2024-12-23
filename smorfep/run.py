@@ -89,7 +89,7 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
     smorf_no_transcript = 0
     variants_no_annotation = 0
 
-    # Initialize the buffer and counter
+    # Initialize the temporary DataFrame and counter
     temp_df = pd.DataFrame()
     save_interval = 1  # Number of lines to process before saving
     processed_count = 0
