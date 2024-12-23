@@ -484,6 +484,10 @@ def add_variant_transcriptSeq(sequence, start, end, ref, alt, position, map_coor
 
         Returns the new genomic sequence
     """
+    print(sequence)
+    filtered_items = {key: value for key, value in map_coordinates.items() if start <= key <= end}
+    for key, value in filtered_items.items():
+        print(key, value, sequence[value])
 
     ## position in the sequence
     variant_index = map_coordinates[position]
