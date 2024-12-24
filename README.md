@@ -236,19 +236,24 @@ Annotations provided by smORF-EP follow the same standard of VEP.
 |   |   |
 -->
 
-Note: 
+
+<br><hr>
+[:arrow_up: Back to top](#smorf-ep)
+
+# Issues and new features
+
+You can report any issue through the "Bug report" form or contact the authors.
+
+There is also a form for "Feature request". 
 
 
 <br><hr>
 [:arrow_up: Back to top](#smorf-ep)
 
+<!--
 
 # Caveats
-<!--
 - Tested on 10 replicas for variants within exon-intron boundaries (forawrd and reverse strand, donor and acceptor sites)
 -Teste on insertions crosisng exon-intron boundaries: all permutations of 6nts (forawrd and reverse strand, donor and acceptor sites)
 
 -->
-
-<br><hr>
-[:arrow_up: Back to top](#smorf-ep)
