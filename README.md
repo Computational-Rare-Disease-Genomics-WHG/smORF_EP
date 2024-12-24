@@ -14,7 +14,7 @@ smORF-EP: predicting the effect of variants in small open reading frames.
 - [Run smORF-EP](#run-smorf-ep)
 - [Input and output](#intput-and-output)
 - [Annotations description](#annotations-description)
-- [Caveats](#caveats)
+- [Issues and new features](#issues-and-new-features)
 
 
 # smORF-EP overview
