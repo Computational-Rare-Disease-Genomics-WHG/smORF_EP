@@ -307,7 +307,7 @@ def add_variant(sequence, start, end,  ref, alt, position, strand):
         if position == start: 
             variant_index = 0
     elif strand == '-':
-        variant_index = end - position ## TODO: Confirm this is correct!!
+        variant_index = end - position -1 ## Added -1 to get the right position - OK 2024-12-30
         if position == end: 
             variant_index = 0
 
@@ -484,10 +484,10 @@ def add_variant_transcriptSeq(sequence, start, end, ref, alt, position, map_coor
 
         Returns the new genomic sequence
     """
-    print(sequence)
-    filtered_items = {key: value for key, value in map_coordinates.items() if start <= key <= end}
-    for key, value in filtered_items.items():
-        print(key, value, sequence[value])
+    # print(sequence)
+    # filtered_items = {key: value for key, value in map_coordinates.items() if start <= key <= end}
+    # for key, value in filtered_items.items():
+    #     print(key, value, sequence[value])
 
     ## position in the sequence
     variant_index = map_coordinates[position]
@@ -2170,6 +2170,9 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
                 if var_pos in splice_region_exon_nts:
 
                     new_sequence, ref_original, ref_inFile = add_variant_transcriptSeq(seq, start_orf, end_orf, ref, alt, var_pos, map_gen2transc)
+                    if new_sequence == None: 
+                        return 'Reference_mismatch', 'ref_genome:'+ str(ref_original), 'reference_given' + str(ref_inFile), '-', '-'
+
                     prot_cons, change_prot = protein_consequence_transcript(seq, new_sequence, var_pos, map_gen2transc)
 
                     ## should only report those two annotations
@@ -2385,6 +2388,9 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
                 if var_pos in splice_region_exon_nts:
 
                     new_sequence, ref_original, ref_inFile = add_variant_transcriptSeq(seq, start_orf, end_orf, ref, alt, var_pos, map_gen2transc)
+                    if new_sequence == None: 
+                        return 'Reference_mismatch', 'ref_genome:'+ str(ref_original), 'reference_given' + str(ref_inFile), '-', '-'
+
                     prot_cons, change_prot = protein_consequence_transcript(seq, new_sequence, var_pos, map_gen2transc)
 
                     ## should only report those two annotations
