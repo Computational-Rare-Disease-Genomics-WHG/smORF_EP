@@ -147,6 +147,8 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
         seq, new_len = remove_introns(introns_smorf, start, end, strand, ref_sequence)
         ## region sequence without introns
         print(introns_smorf)
+        print(introns_smorf['start'])
+        print(introns_smorf['end'])
         print(seq)
 
 
@@ -157,6 +159,8 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
         
         ## Check: exon-intron crossing variants
         try: 
+            print(seq)
+            print(start, end, variant_pos)
             dna_c, dna_seq_c, prot_c, prot_seq_c, all_var_pos = check_introns(seq, start, end, variant_pos, ref, alt, strand, map_gen2transc, splice_regions_df)
 
         except UnboundLocalError:
@@ -184,8 +188,12 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
 
 
             ## 2.3.1- introduce the variant 
+            print('adding variant - transcript')
             new_sequence, ref_original, ref_inFile = add_variant_transcriptSeq(seq, start, end, ref, alt, variant_pos, map_gen2transc)
+            print('add_variant_transc result')
+            print(new_sequence)
             if new_sequence == None: 
+                print('mismatch ref')
                 return 'Reference_mismatch', 'ref_genome:'+ str(ref_original), 'reference_given' + str(ref_inFile), '-'
 
 
