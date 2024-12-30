@@ -159,8 +159,7 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
         
         ## Check: exon-intron crossing variants
         try: 
-            print(seq)
-            print(start, end, variant_pos)
+
             dna_c, dna_seq_c, prot_c, prot_seq_c, all_var_pos = check_introns(seq, start, end, variant_pos, ref, alt, strand, map_gen2transc, splice_regions_df)
 
         except UnboundLocalError:
@@ -188,13 +187,10 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
 
 
             ## 2.3.1- introduce the variant 
-            print('adding variant - transcript')
             new_sequence, ref_original, ref_inFile = add_variant_transcriptSeq(seq, start, end, ref, alt, variant_pos, map_gen2transc)
-            print('add_variant_transc result')
-            print(new_sequence)
             if new_sequence == None: 
                 print('mismatch ref')
-                return 'Reference_mismatch', 'ref_genome:'+ str(ref_original), 'reference_given' + str(ref_inFile), '-'
+                return 'Reference_mismatch', 'ref_genome: '+ str(ref_original), 'reference_given: ' + str(ref_inFile), '-'
 
 
             if len(ref) > len(alt): ## deletion
@@ -208,7 +204,7 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
             if start_var != None:        
                 ref_seq_ref_allele = get_sequence(variant_pos, variant_pos+len(ref), strand, ref_sequence)
                 if ref != ref_seq_ref_allele:
-                    return 'Reference_mismatch', 'ref_genome:'+ str(ref_seq_ref_allele), 'reference_given' + str(ref), '-'
+                    return 'Reference_mismatch', 'ref_genome: '+ str(ref_seq_ref_allele), 'reference_given: ' + str(ref), '-'
     
                 return start_var, len_change, prot_cons, change_prot
             
@@ -217,7 +213,7 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
             if stop_var != None:  
                 ref_seq_ref_allele = get_sequence(variant_pos, variant_pos+len(ref), strand, ref_sequence)
                 if ref != ref_seq_ref_allele:
-                    return 'Reference_mismatch', 'ref_genome:'+ str(ref_seq_ref_allele), 'reference_given' + str(ref), '-'
+                    return 'Reference_mismatch', 'ref_genome: '+ str(ref_seq_ref_allele), 'reference_given: ' + str(ref), '-'
       
                 return stop_var, len_change, prot_cons, change_prot
 
@@ -337,7 +333,7 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
         # ## 3.1 - Introduce the variant
         new_sequence, ref_original, ref_inFile = add_variant(seq, start, end, ref, alt, variant_pos, strand)
         if new_sequence == None: 
-            return 'Reference_mismatch', 'ref_genome:'+ str(ref_original), 'reference_given' + str(ref_inFile), '-'
+            return 'Reference_mismatch', 'ref_genome: '+ str(ref_original), 'reference_given: ' + str(ref_inFile), '-'
 
 
         if len(ref) > len(alt): ## deletion
@@ -352,7 +348,7 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
             if start_var != None:    
                 ref_seq_ref_allele = get_sequence(variant_pos, variant_pos+len(ref), strand, ref_sequence)
                 if ref != ref_seq_ref_allele:
-                    return 'Reference_mismatch', 'ref_genome:'+ str(ref_seq_ref_allele), 'reference_given' + str(ref), '-'
+                    return 'Reference_mismatch', 'ref_genome: '+ str(ref_seq_ref_allele), 'reference_given: ' + str(ref), '-'
      
                 return start_var, len_change, prot_cons, change_prot
 
@@ -361,7 +357,7 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
             if stop_var != None: 
                 ref_seq_ref_allele = get_sequence(variant_pos, variant_pos+len(ref), strand, ref_sequence)
                 if ref != ref_seq_ref_allele:
-                    return 'Reference_mismatch', 'ref_genome:'+ str(ref_seq_ref_allele), 'reference_given' + str(ref), '-'
+                    return 'Reference_mismatch', 'ref_genome: '+ str(ref_seq_ref_allele), 'reference_given: ' + str(ref), '-'
         
                 return stop_var, len_change, prot_cons, change_prot
         else: 
@@ -376,7 +372,7 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
             if start_var != None:     
                 ref_seq_ref_allele = get_sequence(variant_pos, variant_pos+len(ref), strand, ref_sequence)
                 if ref != ref_seq_ref_allele:
-                    return 'Reference_mismatch', 'ref_genome:'+ str(ref_seq_ref_allele), 'reference_given' + str(ref), '-'
+                    return 'Reference_mismatch', 'ref_genome: '+ str(ref_seq_ref_allele), 'reference_given: ' + str(ref), '-'
     
                 return start_var, len_change, prot_cons, change_prot
             
@@ -385,7 +381,7 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
             if stop_var != None:  
                 ref_seq_ref_allele = get_sequence(variant_pos, variant_pos+len(ref), strand, ref_sequence)
                 if ref != ref_seq_ref_allele:
-                    return 'Reference_mismatch', 'ref_genome:'+ str(ref_seq_ref_allele), 'reference_given' + str(ref), '-'
+                    return 'Reference_mismatch', 'ref_genome: '+ str(ref_seq_ref_allele), 'reference_given: ' + str(ref), '-'
       
                 return stop_var, len_change, prot_cons, change_prot
 
