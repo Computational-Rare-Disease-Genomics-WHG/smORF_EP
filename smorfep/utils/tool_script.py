@@ -49,7 +49,11 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
     ##print(strand)
     ##print(start, end)
     seq = get_sequence(start, end, strand, ref_sequence)
-    # print(seq)
+    print('sequence')
+    print(seq)
+    print(start)
+    print(end)
+    print(strand)
     # print('seq len before variant ', len(seq))
     # print('diff end - start ', end-start)
 
@@ -490,4 +494,4 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
             return 'missense_variant', 0, prot_cons, change_prot
         elif prot_cons == 'synonymous_variant':
             return 'synonymous_variant', 0, prot_cons, change_prot
-
+        
