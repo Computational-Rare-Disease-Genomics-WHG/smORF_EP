@@ -44,6 +44,10 @@ def tool(ref_sequence, introns_df, start, end, strand, ref, alt, variant_pos, ma
     # print('seq len before variant ', len(seq))
     # print('diff end - start ', end-start)
 
+    reference_allele = get_sequence(variant_pos, variant_pos+len(ref), strand, ref_sequence)
+    if ref != reference_allele:
+        return 'Reference_mismatch', 'ref_genome: '+ str(reference_allele), 'reference_given: ' + str(ref), '-' 
+
     ## check if the format is deletion without anchor: 
     check_anchor_nt = check_var_type(ref, alt)
     if check_anchor_nt == 'no_anchor':
@@ -108,7 +112,7 @@ def tool(ref_sequence, introns_df, start, end, strand, ref, alt, variant_pos, ma
             ## 2.3.1- introduce the variant 
             new_sequence, ref_original, ref_inFile = add_variant(seq, start, end, ref, alt, variant_pos, map_gen2smorf)
             if new_sequence == None: 
-                return 'Reference_mismatch', 'ref_genome:'+ str(ref_original), 'reference_given' + str(ref_inFile), '-'
+                return 'Reference_mismatch', 'ref_genome: '+ str(ref_original), 'reference_given: ' + str(ref_inFile), '-'
 
 
             if len(ref) > len(alt): ## deletion
@@ -234,7 +238,7 @@ def tool(ref_sequence, introns_df, start, end, strand, ref, alt, variant_pos, ma
         # ## 3.1 - Introduce the variant
         new_sequence, ref_original, ref_inFile = add_variant(seq, start, end, ref, alt, variant_pos, strand)
         if new_sequence == None: 
-            return 'Reference_mismatch', 'ref_genome:'+ str(ref_original), 'reference_given' + str(ref_inFile), '-'
+            return 'Reference_mismatch', 'ref_genome: '+ str(ref_original), 'reference_given: ' + str(ref_inFile), '-'
 
 
         if len(ref) > len(alt): ## deletion
@@ -244,7 +248,7 @@ def tool(ref_sequence, introns_df, start, end, strand, ref, alt, variant_pos, ma
 
         ## 3.4.1 - affect start
         start_var, len_change, prot_cons, change_prot = check_start(seq, new_sequence, start, end, variant_pos, strand)
-        if start_var != None:         
+        if start_var != None:    
             return start_var, len_change, prot_cons, change_prot
 
         ## 3.2.2 - affect stop
