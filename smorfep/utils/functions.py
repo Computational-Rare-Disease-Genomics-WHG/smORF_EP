@@ -2176,7 +2176,7 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
 
                     new_sequence, ref_original, ref_inFile = add_variant_transcriptSeq(seq, start_orf, end_orf, ref, alt, var_pos, map_gen2transc)
                     if new_sequence == None: 
-                        return 'Reference_mismatch', 'ref_genome:'+ str(ref_original), 'reference_given' + str(ref_inFile), '-', '-'
+                        return 'Reference_mismatch', 'ref_genome: '+ str(ref_original), 'reference_given: ' + str(ref_inFile), '-', '-'
 
                     prot_cons, change_prot = protein_consequence_transcript(seq, new_sequence, var_pos, map_gen2transc)
 
@@ -2394,7 +2394,7 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
 
                     new_sequence, ref_original, ref_inFile = add_variant_transcriptSeq(seq, start_orf, end_orf, ref, alt, var_pos, map_gen2transc)
                     if new_sequence == None: 
-                        return 'Reference_mismatch', 'ref_genome:'+ str(ref_original), 'reference_given' + str(ref_inFile), '-', '-'
+                        return 'Reference_mismatch', 'ref_genome: '+ str(ref_original), 'reference_given: ' + str(ref_inFile), '-', '-'
 
                     prot_cons, change_prot = protein_consequence_transcript(seq, new_sequence, var_pos, map_gen2transc)
 
