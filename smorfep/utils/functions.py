@@ -313,12 +313,22 @@ def add_variant(sequence, start, end,  ref, alt, position, strand):
             variant_index = 0
         elif position == start: 
             variant_index = -1
+            
 
     print(position, strand)
     print(variant_index)
-    print(sequence[variant_index:variant_index+len(ref)])
+    print(sequence[variant_index])
 
-    if sequence[variant_index:variant_index+len(ref)] == ref:
+
+    if variant_index == -1 and sequence[variant_index]== ref and len(ref) == 1: ## special case - SNP
+        ##print(sequence)
+        ##print(sequence[:-len(ref)]+alt)
+        return sequence[:-len(ref)]+alt, None, None
+
+    elif variant_index == 0 and sequence[variant_index:variant_index+len(ref)]== ref: ## special case 
+        return alt+sequence[len(alt):], None, None
+
+    elif sequence[variant_index:variant_index+len(ref)] == ref:
         prefix = sequence[:variant_index] ## excludes the variant position
         suffix = sequence[variant_index+1:] ## excludes the variant position
 
@@ -335,8 +345,6 @@ def add_variant(sequence, start, end,  ref, alt, position, strand):
 
         elif len(ref) <= len(alt): ## insertions and SNPs
             new_seq = prefix + alt + suffix
- 
-        
     else:
         print('add_variant function')
         print(position, ref, alt, strand, start, end)
