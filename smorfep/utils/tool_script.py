@@ -49,6 +49,7 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
     ##print(strand)
     ##print(start, end)
     seq = get_sequence(start, end, strand, ref_sequence)
+    print('')
     print('sequence')
     print(seq)
     print(start)
@@ -58,8 +59,11 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
     # print('diff end - start ', end-start)
 
     ## check reference allele matching
-    reference_allele = get_sequence(variant_pos, variant_pos+len(ref), strand, ref_sequence)
+    reference_allele = get_sequence(variant_pos-1, variant_pos-1+len(ref), strand, ref_sequence)
     if ref != reference_allele:
+        print('reference check 1')
+        print(reference_allele)
+        
         return 'Reference_mismatch', 'ref_genome: '+ str(reference_allele), 'reference_given: ' + str(ref), '-' 
 
     ## check if the format is deletion without anchor: 
@@ -114,9 +118,6 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
 
 
         ## Variant conversion to reverse strand
-        ##print('\n')
-        ##print('original info')
-        ##print(variant_pos, ref, alt)
         ## pre-process variant on the reverse strand
         if len(ref) == len(alt): ##SNV
             ref = complement_seq(ref)
@@ -198,6 +199,7 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
             ## 2.3.1- introduce the variant 
             new_sequence, ref_original, ref_inFile = add_variant_transcriptSeq(seq, start, end, ref, alt, variant_pos, map_gen2transc)
             if new_sequence == None: 
+                print('add_variant_transcript')
                 return 'Reference_mismatch', 'ref_genome: '+ str(ref_original), 'reference_given: ' + str(ref_inFile), '-'
 
 
@@ -277,8 +279,6 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
                 ## frameshit insertion
                 else: 
                     new_seq = frameshift(new_sequence, extension_seq, map_transc2gen)
-                    print(new_sequence)
-                    print(new_seq)
 
                     if new_seq != None: ## stop found within the transcript
                         len_change = len(new_seq) - len(seq)
@@ -335,6 +335,7 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
         # ## 3.1 - Introduce the variant
         new_sequence, ref_original, ref_inFile = add_variant(seq, start, end, ref, alt, variant_pos, strand)
         if new_sequence == None: 
+            print('add_variant')
             return 'Reference_mismatch', 'ref_genome: '+ str(ref_original), 'reference_given: ' + str(ref_inFile), '-'
 
 
@@ -348,13 +349,11 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
             ## 3.4.1 - affect start
             start_var, len_change, prot_cons, change_prot = check_start(seq, new_sequence, start, end, variant_pos, strand)
             if start_var != None:    
-                ref_seq_ref_allele = get_sequence(variant_pos, variant_pos+len(ref), strand, ref_sequence)
                 return start_var, len_change, prot_cons, change_prot
 
             ## 3.2.2 - affect stop
             stop_var, len_change, prot_cons, change_prot = check_stop(seq, new_sequence, start, end, variant_pos, strand, transcript_info, ref_sequence, map_transc2gen)
             if stop_var != None: 
-                ref_seq_ref_allele = get_sequence(variant_pos, variant_pos+len(ref), strand, ref_sequence)
                 return stop_var, len_change, prot_cons, change_prot
         else: 
             ## 3.2.3 - start related
@@ -366,13 +365,11 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
 
             start_var, len_change, prot_cons, change_prot = check_start_transcript(seq, new_sequence, variant_pos, map_gen2transc)
             if start_var != None:     
-                ref_seq_ref_allele = get_sequence(variant_pos, variant_pos+len(ref), strand, ref_sequence)
                 return start_var, len_change, prot_cons, change_prot
             
             ## 3.2.4 - stop related
             stop_var, len_change, prot_cons, change_prot = check_stop_transcript(seq, new_sequence, start, end, variant_pos, strand, map_gen2transc, map_transc2gen, extension_seq)
             if stop_var != None:  
-                ref_seq_ref_allele = get_sequence(variant_pos, variant_pos+len(ref), strand, ref_sequence)
                 return stop_var, len_change, prot_cons, change_prot
 
   
