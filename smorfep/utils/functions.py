@@ -305,10 +305,14 @@ def add_variant(sequence, start, end,  ref, alt, position, strand):
         variant_index = (position - start)-1 ## index -1 as the python starts in 0
         if position == start: 
             variant_index = 0
+        elif position == end: 
+            variant_index = -1
     elif strand == '-':
         variant_index = end - position -1 ## Added -1 to get the right position - OK 2024-12-30
         if position == end: 
             variant_index = 0
+        elif position == start: 
+            variant_index = -1
 
     print(position, strand)
     print(variant_index)
@@ -1969,12 +1973,6 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
         elif strand == '-':
             all_var_pos = [v for v in range(var_pos - (len(ref)-1), var_pos+1)]
             var_next_pos = var_pos-1
-
-    ##print(var_type)
-    
-    # print('all_var_positions:')
-    # print(all_var_pos)
-
 
     ## Filter donor and acceptor regions -- should contain the variant position
     ## NOTE: donor and acceptor are mutually exclusive
