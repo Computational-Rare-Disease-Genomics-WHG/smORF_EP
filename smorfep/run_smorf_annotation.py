@@ -150,10 +150,6 @@ def run_smorfep_smorfs(ref_path, introns_filename, splice_site, filename, output
     ## write_the output
     vars_cons_df.to_csv(outputname, sep='\t', lineterminator='\n', index=False)
 
-    ## close no transcript smorfs file 
-    nts_file.close()
-
-
 
 def main():
     ## day date
