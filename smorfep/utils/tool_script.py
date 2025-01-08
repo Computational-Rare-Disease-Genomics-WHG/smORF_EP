@@ -52,11 +52,9 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
     print('')
     print('sequence')
     print(seq)
-    print(start)
-    print(end)
-    print(strand)
     # print('seq len before variant ', len(seq))
     # print('diff end - start ', end-start)
+
 
     ## check if the format is deletion without anchor: 
     check_anchor_nt = check_var_type(ref, alt)
@@ -102,11 +100,13 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
         ##map_gen2transc, map_transc2gen = genome2transcript_coords(t_start, end, strand, transcript_introns_df)
 
         if not transcript_introns_df_extension.empty:
-            extension_seq, ext_len = remove_introns(transcript_introns_df_extension, t_start, start-1, strand, ref_sequence)
+            extension_seq, ext_len = remove_introns(transcript_introns_df_extension, t_start, start, strand, ref_sequence)
 
         else: 
-            extension_seq = get_sequence(t_start, start-1, strand, ref_sequence)
+            extension_seq = get_sequence(t_start, start, strand, ref_sequence)
             ext_len = len(extension_seq)
+        ## Extension correct - 2025-01-08
+        ##print(extension_seq) 
 
 
         ## Variant conversion to reverse strand
