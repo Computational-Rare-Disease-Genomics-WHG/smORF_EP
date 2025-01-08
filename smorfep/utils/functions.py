@@ -308,7 +308,7 @@ def add_variant(sequence, start, end,  ref, alt, position, strand):
         elif position == end: 
             variant_index = -1
     elif strand == '-':
-        variant_index = end - position -1 ## Added -1 to get the right position - OK 2024-12-30
+        variant_index = end - position ## right position - OK 2025-01-08
         if position == end: 
             variant_index = 0
         elif position == start: 
@@ -318,6 +318,7 @@ def add_variant(sequence, start, end,  ref, alt, position, strand):
     print(position, strand)
     print(variant_index)
     print(sequence[variant_index])
+
 
 
     if variant_index == -1 and sequence[variant_index]== ref and len(ref) == 1: ## special case - SNP
