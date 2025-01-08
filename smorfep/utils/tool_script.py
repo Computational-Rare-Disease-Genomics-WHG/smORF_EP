@@ -59,9 +59,11 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
     # print('diff end - start ', end-start)
 
     ## check reference allele matching
-
-    reference_allele = get_sequence(variant_pos-1, variant_pos-1+len(ref), strand, ref_sequence)
-    ##print('ref_allele', reference_allele)
+    if strand == '+':
+        reference_allele = get_sequence(variant_pos-1, variant_pos-1+len(ref), strand, ref_sequence)
+    elif strand == '-': 
+        reference_allele = get_sequence(variant_pos+1, variant_pos+1+len(ref), strand, ref_sequence)
+        print('ref_allele', reference_allele)
     if ref != reference_allele:
         print('reference check 1')
         print(reference_allele)
