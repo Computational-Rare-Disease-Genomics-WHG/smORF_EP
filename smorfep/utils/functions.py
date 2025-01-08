@@ -318,6 +318,7 @@ def add_variant(sequence, start, end,  ref, alt, position, strand):
     print(position, strand)
     print(variant_index)
     print(sequence[variant_index])
+    print(sequence[variant_index-len(ref)+1:variant_index+1])
 
 
 
@@ -329,23 +330,39 @@ def add_variant(sequence, start, end,  ref, alt, position, strand):
     elif variant_index == 0 and sequence[variant_index:variant_index+len(ref)]== ref: ## special case 
         return alt+sequence[len(alt):], None, None
 
-    elif sequence[variant_index:variant_index+len(ref)] == ref:
+    elif strand == '+' and sequence[variant_index:variant_index+len(ref)] == ref:
         prefix = sequence[:variant_index] ## excludes the variant position
         suffix = sequence[variant_index+1:] ## excludes the variant position
 
         if len(ref) > len(alt): ## deletions
-            del_size = len(ref) - len(alt)
-            new_alt = '-'* del_size
-
             ## for deletions the first postion on the ref is mantained, the remaining is removed
             ## so add 1 to prefix to keep this base
             prefix = sequence[:variant_index+1] 
             suffix = sequence[variant_index+len(ref):]
 
-            new_seq = prefix + new_alt + suffix
+            new_seq = prefix + alt + suffix
 
         elif len(ref) <= len(alt): ## insertions and SNPs
             new_seq = prefix + alt + suffix
+    elif strand == '-' and sequence[variant_index-len(ref)+1:variant_index+1] == ref:
+        prefix = sequence[:variant_index-len(ref)+1] ## excludes the variant position
+        suffix = sequence[variant_index+1:] ## excludes the variant position
+
+        if len(ref) > len(alt): ## deletions
+            print('new condition')
+            print(sequence[variant_index-len(ref)+1:variant_index+1])
+            del_size = len(ref) - len(alt)
+            new_alt = '-'* del_size
+
+            ## for deletions the first postion on the ref is mantained, the remaining is removed
+            ## so add 1 to prefix to keep this base
+            prefix = sequence[:variant_index-len(ref)+1] 
+            suffix = sequence[variant_index+1:]
+            print('prefix',prefix)
+            print('suffix', suffix)
+
+        new_seq = prefix + alt + suffix
+
     else:
         print('add_variant function')
         print(position, ref, alt, strand, start, end)
