@@ -108,42 +108,17 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
         ## Extension correct - 2025-01-08
         ##print(extension_seq) 
 
-
         ## Variant conversion to reverse strand
         ## pre-process variant on the reverse strand
-        if len(ref) == len(alt): ##SNV
-            ref = complement_seq(ref)
-            alt = complement_seq(alt)
-            ## same position as reported
-
-        elif len(ref) > len(alt): ## deletion - OK
-            pos_diff = len(ref) - len(alt)
-
-            alt = get_sequence(int(variant_pos)+pos_diff+1, int(variant_pos)+pos_diff+1, strand, ref_sequence)
-            ref_allele_sufix = reverse_complement_seq(ref)
-            ref = alt + ref_allele_sufix[:-1] ## removes the last nt
-            variant_pos = int(variant_pos)+pos_diff+1 ## var pos next position after the deletion section
-            ##print(alt, ref_allele_sufix, ref, variant_pos)
-            ## re-defines variant_pos
-
-        elif len(ref) < len(alt): ## insertion 
-            ref = get_sequence(int(variant_pos)+1, int(variant_pos)+1, strand, ref_sequence)
-            alt_allele_sufix = reverse_complement_seq(alt)
-            alt = ref + alt_allele_sufix[:-1] ## removes the last nt
-            variant_pos = variant_pos+1 ## same position as reported
-            ## re-defines variant_pos 
-        
-        # print('After conversion -- reverse strand only')
-        # print(variant_pos)
-        # print(ref, alt)
-
+        ref = reverse_complement_seq(ref)
+        alt = reverse_complement_seq(alt)
+\
     ## 1.1 check reference allele matching
     reference_allele = get_sequence(variant_pos-1, variant_pos-1+len(ref), strand, ref_sequence) ## the same for forward and reverse strand: OK 2025-01-08
     ##TEST reference allele is the right varaint position: OK 2025-01-08
-    #print('test_reference:')
-    #print(reference_allele, ref)
+    ##print('test_reference:')
+    ##print(reference_allele, ref)
     #print(get_sequence(variant_pos-2, variant_pos+len(ref), strand, ref_sequence)) ## check the neighboor nucleotides to confirm the positon is correct
-
     if ref != reference_allele:
         return 'Reference_mismatch', 'ref_genome: '+ str(reference_allele), 'reference_given: ' + str(ref), '-' 
 
