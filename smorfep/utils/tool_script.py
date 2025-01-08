@@ -58,23 +58,6 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
     # print('seq len before variant ', len(seq))
     # print('diff end - start ', end-start)
 
-    ## check reference allele matching
-    # if strand == '+':
-    reference_allele = get_sequence(variant_pos-1, variant_pos-1+len(ref), strand, ref_sequence)
-    ##TEST reference allele is the right varaint position: OK 2025-01-08
-    #print('test_reference:')
-    #print(reference_allele, ref)
-    #print(get_sequence(variant_pos-2, variant_pos-2+len(ref)+2, strand, ref_sequence)) ## check the neighboor nucleotides to confirm the positon is correct
-
-    # elif strand == '-': 
-    #     reference_allele = get_sequence(variant_pos, variant_pos+len(ref), strand, ref_sequence)
-    #     print('ref_allele', reference_allele)
-    if ref != reference_allele:
-        print('reference check 1')
-        print(reference_allele)
-        
-        return 'Reference_mismatch', 'ref_genome: '+ str(reference_allele), 'reference_given: ' + str(ref), '-' 
-
     ## check if the format is deletion without anchor: 
     check_anchor_nt = check_var_type(ref, alt)
     if check_anchor_nt == 'no_anchor':
@@ -153,6 +136,17 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
         # print('After conversion -- reverse strand only')
         # print(variant_pos)
         # print(ref, alt)
+
+    ## 1.1 check reference allele matching
+    reference_allele = get_sequence(variant_pos-1, variant_pos-1+len(ref), strand, ref_sequence) ## the same for forward and reverse strand: OK 2025-01-08
+    ##TEST reference allele is the right varaint position: OK 2025-01-08
+    #print('test_reference:')
+    #print(reference_allele, ref)
+    #print(get_sequence(variant_pos-2, variant_pos+len(ref), strand, ref_sequence)) ## check the neighboor nucleotides to confirm the positon is correct
+
+    if ref != reference_allele:
+        return 'Reference_mismatch', 'ref_genome: '+ str(reference_allele), 'reference_given: ' + str(ref), '-' 
+
 
     ## 2 - Processing presence of introns in the smORF
     if not introns_smorf.empty:  ## if there are introns in the smORF range
