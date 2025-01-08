@@ -59,11 +59,16 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
     # print('diff end - start ', end-start)
 
     ## check reference allele matching
-    if strand == '+':
-        reference_allele = get_sequence(variant_pos-1, variant_pos-1+len(ref), strand, ref_sequence)
-    elif strand == '-': 
-        reference_allele = get_sequence(variant_pos+1, variant_pos+1+len(ref), strand, ref_sequence)
-        print('ref_allele', reference_allele)
+    # if strand == '+':
+    reference_allele = get_sequence(variant_pos-1, variant_pos-1+len(ref), strand, ref_sequence)
+    ##TEST reference allele is the right varaint position: OK 2025-01-08
+    #print('test_reference:')
+    #print(reference_allele, ref)
+    #print(get_sequence(variant_pos-2, variant_pos-2+len(ref)+2, strand, ref_sequence)) ## check the neighboor nucleotides to confirm the positon is correct
+
+    # elif strand == '-': 
+    #     reference_allele = get_sequence(variant_pos, variant_pos+len(ref), strand, ref_sequence)
+    #     print('ref_allele', reference_allele)
     if ref != reference_allele:
         print('reference check 1')
         print(reference_allele)
