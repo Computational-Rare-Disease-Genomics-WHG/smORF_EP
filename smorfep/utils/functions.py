@@ -2186,8 +2186,8 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
         
             elif var_pos in splice_region: ## three possibilities
                 ## VEP reports: 
-                # missense_variant&splice_region_variant - if in the exon and changes the aminoacid
-                # splice_region_variant&synonymous_variant - if in the exon and do NOT change the aminoacid
+                # missense_variant&splice_region_variant - if in the exon and changes the amino acid
+                # splice_region_variant&synonymous_variant - if in the exon and do NOT change the amino acid
                 # splice_region_variant&intron_variant - if in the intron 
                 
                 if var_pos in splice_region_exon_nts:
