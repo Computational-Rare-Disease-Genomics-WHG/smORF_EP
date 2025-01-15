@@ -38,9 +38,6 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
     t_end = transcript_info.iloc[0].end
     t_strand = transcript_info.iloc[0].strand 
 
-    print('transcript start and end:')
-    print(t_start, t_end)
-
     ## testing print -- variant header
     # print('\n')
     # print(variant_pos, ref, alt)
@@ -112,7 +109,7 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
         ## pre-process variant on the reverse strand
         ref = reverse_complement_seq(ref)
         alt = reverse_complement_seq(alt)
-\
+
     ## 1.1 check reference allele matching
     reference_allele = get_sequence(variant_pos-1, variant_pos-1+len(ref), strand, ref_sequence) ## the same for forward and reverse strand: OK 2025-01-08
     ##TEST reference allele is the right varaint position: OK 2025-01-08
