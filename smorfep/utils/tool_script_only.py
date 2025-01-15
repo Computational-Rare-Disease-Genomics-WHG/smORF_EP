@@ -7,6 +7,7 @@
 
 from smorfep.utils.functions import map_splice_regions_smorfs, get_sequence, remove_introns, add_variant, add_variant_transcriptSeq, check_stop_smorfonly, check_start, check_var_type, check_introns, add_anchor_nt, protein_consequence, protein_consequence_transcript, frameshift_smorfonly, get_trios
 from smorfep.utils.functions import check_prefix_sufix_ref_files, read_single_fasta
+from smorfep.utils.functions import reverse_complement_seq
 
 def tool(ref_sequence, introns_df, start, end, strand, ref, alt, variant_pos, map_gen2smorf, map_smorf2gen, splice_site=8, intron_exon_size=3, donor_acceptor_size = 2):
 
@@ -44,10 +45,6 @@ def tool(ref_sequence, introns_df, start, end, strand, ref, alt, variant_pos, ma
     # print('seq len before variant ', len(seq))
     # print('diff end - start ', end-start)
 
-    reference_allele = get_sequence(variant_pos-1, variant_pos-1+len(ref), strand, ref_sequence)
-    if ref != reference_allele:
-        return 'Reference_mismatch', 'ref_genome: '+ str(reference_allele), 'reference_given: ' + str(ref), '-' 
-
     ## check if the format is deletion without anchor: 
     check_anchor_nt = check_var_type(ref, alt)
     if check_anchor_nt == 'no_anchor':
@@ -59,6 +56,17 @@ def tool(ref_sequence, introns_df, start, end, strand, ref, alt, variant_pos, ma
     ## sort the introns
     introns_smorf = introns_df.sort_values(by=['start'])
     ##print(introns_smorf[['start','end']])
+
+    if strand == '-':
+        ## Variant conversion to reverse strand
+        ## pre-process variant on the reverse strand
+        ref = reverse_complement_seq(ref)
+        alt = reverse_complement_seq(alt)
+
+
+    reference_allele = get_sequence(variant_pos-1, variant_pos-1+len(ref), strand, ref_sequence)
+    if ref != reference_allele:
+        return 'Reference_mismatch', 'ref_genome: '+ str(reference_allele), 'reference_given: ' + str(ref), '-' 
 
 
     ## 2 - Processing presence of introns in the smORF
