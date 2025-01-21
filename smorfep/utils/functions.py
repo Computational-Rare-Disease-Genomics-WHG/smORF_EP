@@ -350,9 +350,9 @@ def add_variant(sequence, start, end,  ref, alt, position, strand):
 
         if len(ref) > len(alt): ## deletions
             print('new condition')
+            print('sequence:', sequence)
             print(sequence[variant_index-len(ref)+1:variant_index+1])
             del_size = len(ref) - len(alt)
-            new_alt = '-'* del_size
 
             ## for deletions the first postion on the ref is mantained, the remaining is removed
             ## so add 1 to prefix to keep this base
@@ -360,8 +360,10 @@ def add_variant(sequence, start, end,  ref, alt, position, strand):
             suffix = sequence[variant_index+1:]
             print('prefix',prefix)
             print('suffix', suffix)
+            print(alt)
 
         new_seq = prefix + alt + suffix
+        print(new_seq)
 
     else:
         print('add_variant function')
