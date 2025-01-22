@@ -310,7 +310,6 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
         # ## 3.1 - Introduce the variant
         new_sequence, ref_original, ref_inFile = add_variant(seq, start, end, ref, alt, variant_pos, strand)
         if new_sequence == None: 
-            print('add_variant')
             return 'Reference_mismatch', 'ref_genome: '+ str(ref_original), 'reference_given: ' + str(ref_inFile), '-'
 
 
@@ -323,11 +322,13 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
 
             ## 3.4.1 - affect start
             start_var, len_change, prot_cons, change_prot = check_start(seq, new_sequence, start, end, variant_pos, strand)
+            print('start_var check:', start_var)
             if start_var != None:    
                 return start_var, len_change, prot_cons, change_prot
 
             ## 3.2.2 - affect stop
             stop_var, len_change, prot_cons, change_prot = check_stop(seq, new_sequence, start, end, variant_pos, strand, transcript_info, ref_sequence, map_transc2gen)
+            print('stop_var check:', stop_var)
             if stop_var != None: 
                 return stop_var, len_change, prot_cons, change_prot
         else: 
@@ -338,12 +339,18 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
             # print(end in map_gen2transc.keys())
             # print(map_gen2transc.keys())
 
+            print('NOVA')
+
             start_var, len_change, prot_cons, change_prot = check_start_transcript(seq, new_sequence, variant_pos, map_gen2transc)
+            print('start_var check:', start_var)
+
             if start_var != None:     
                 return start_var, len_change, prot_cons, change_prot
             
             ## 3.2.4 - stop related
             stop_var, len_change, prot_cons, change_prot = check_stop_transcript(seq, new_sequence, start, end, variant_pos, strand, map_gen2transc, map_transc2gen, extension_seq)
+            print('stop_var check:', stop_var)
+
             if stop_var != None:  
                 return stop_var, len_change, prot_cons, change_prot
 
