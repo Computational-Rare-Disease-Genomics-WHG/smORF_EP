@@ -363,6 +363,7 @@ def add_variant(sequence, start, end,  ref, alt, position, strand):
             print(alt)
 
         new_seq = prefix + alt + suffix
+        print('new comment here')
         print(new_seq)
 
     else:
@@ -1264,7 +1265,8 @@ def check_stop(seq, new_sequence, start, end, variant_pos, strand, transcript_in
         
     if strand == '-':
 
-        if variant_pos >= start and variant_pos <= start +2: 
+        if variant_pos >= start+1 and variant_pos <= start +3: ## updated line - 2025-01-22 - start position is excluded from the sequence
+        ##if variant_pos >= start and variant_pos <= start +2:  ## line when start position is included in the sequence
 
             if start == transcript_info.iloc[0].start: ## smorf stops in the last position of the transcript
                 if len(seq) == len(new_sequence):
@@ -1327,13 +1329,15 @@ def check_stop_transcript(seq, new_sequence, start, end, variant_pos, strand, ma
         last_position = map_coordinates_g[end]
         stop_positions = [map_coordinates_t[last_position-2], map_coordinates_t[last_position-1], map_coordinates_t[last_position]]
         ## below does not work if there are introns in the stop codon
-        stop_positions = [end-2, end-1, end]
+        ##stop_positions = [end-2, end-1, end]
     elif strand == '-':
-        last_position = map_coordinates_g[start]
+        last_position = map_coordinates_g[start+1] ## start is excluded from the sequence therefore +1 - updated 2025-01-22
 
         stop_positions = [map_coordinates_t[last_position-2], map_coordinates_t[last_position-1], map_coordinates_t[last_position]]
+        print('stop positions')
+        print(stop_positions)
         ## below does not work if there are introns in the stop codon
-        stop_positions = [start+2, start+1, start]
+        ##stop_positions = [start+2, start+1, start]
 
     ## mapping is addapted: transcript starts from start if forward strand, and end for the reverse strand
     if variant_pos in stop_positions: 
