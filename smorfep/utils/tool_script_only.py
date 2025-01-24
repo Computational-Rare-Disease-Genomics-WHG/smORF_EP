@@ -119,6 +119,8 @@ def tool(ref_sequence, introns_df, start, end, strand, ref, alt, variant_pos, ma
 
             ## 2.3.1- introduce the variant 
             new_sequence, ref_original, ref_inFile = add_variant_transcriptSeq(seq, start, end, ref, alt, variant_pos, map_gen2smorf)
+            print(seq)
+            print(new_sequence)
             if new_sequence == None: 
                 return 'Reference_mismatch', 'ref_genome: '+ str(ref_original), 'reference_given: ' + str(ref_inFile), '-'
 
