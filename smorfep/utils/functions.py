@@ -1404,7 +1404,8 @@ def check_stop_smorfonly(seq, new_sequence, start, end, variant_pos, strand):
         
     if strand == '-':
 
-        if variant_pos >= start and variant_pos <= start +2: 
+        ##if variant_pos >= start and variant_pos <= start +2:  ## old line
+        if variant_pos >= start+1 and variant_pos <= start +3:     ## updated line - 2025-01-24 - start position is excluded from the sequence
 
             len_change = seq[len(seq)-3:] + '->' + new_sequence[len(new_sequence)-3:]
             if new_sequence[len(new_sequence)-3:] in stop_codons:
