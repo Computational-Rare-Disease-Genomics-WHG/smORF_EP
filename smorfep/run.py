@@ -77,10 +77,8 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
 
     ## 2- Import introns 
     introns_df = read_file(introns_filename, '\t', 0) ## computed at the begining of the script
-    ##print(introns_df.shape)
     ## controls for duplicates if any - Added on 2024-11-05 - OK
     introns_df = introns_df.drop_duplicates()
-    ##print('shape after removing duplicates')
     ##print(introns_df.shape)
     print('introns ready')
     print('')
@@ -143,7 +141,6 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
             ## collect the introns to the transcripts found for this smorf
             introns_smorf = introns_chr[introns_chr['transcript_id'].apply(lambda x: any(val in x for val in transcripts_to_check_smorf))]
             ## NOTE: might be possible to improve this step
-            ##print(introns_smorf)
             
             ## compute compatible smorf-transcripts
             matching_t, unmatching_t, transcripts_mapping_dictionary = compatibility_smorf_transcript(reference_genome[each_chrom], transcripts_smorf, introns_smorf, smorf_id, smorf_start, smorf_end, smorf_strand)
@@ -173,19 +170,15 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
                 continue ## moves to next smorf
 
             else: 
-                ##print(smorf_vars_df)
-
                 ## per variant - line
                 for index, row in smorf_vars_df.iterrows():
-                    ##print(index)
 
                     ## run tool per transcript
                     for each_t in matching_t:
-                        print(each_t)
+                        print('transcript:', each_t)
 
                         ## transcript info
                         this_transcript = transcripts_smorf[transcripts_smorf['transcript_id'] == each_t]
-                        ##print(this_transcript)
                         ##print(this_transcript.iloc[0].transcript_type) ## OK
 
                         ## introns per transcript
@@ -220,10 +213,6 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
                             map_transc2gen, 
                             splice_site)
 
-                        ##r_index = smorf_vars_df.index[smorf_vars_df['var_id'] == row.var_id].item()
-                        ## variant IDs are unique - so we only get one index out of this
-                        ##print(r_index)
-                        ##print( smorf_vars_df.index)
 
                         ## adds to the dataframe the output 
                         consequence_computed = pd.DataFrame(
@@ -263,10 +252,10 @@ def run_smorfep(ref_path, transcripts_filename, introns_filename, splice_site, f
                         ## NOTE 2: Removed var outside smorf region -- as we remove the non-matching transcripts from analysis
                         ## they are in a separate file
 
-
+    ## Test block - see variant consequences DF
     ##print(vars_cons_df)
             
-    ## write_the output
+    ## write_the output - at the end only
     # commented - 2024-12-23
     ##vars_cons_df.to_csv(outputname, sep='\t', lineterminator='\n', index=False)
     
@@ -284,9 +273,7 @@ def main():
     today = date.today()
     default_outputname = 'output_'+today.strftime("%Y-%m-%d")+'.tsv'
     default_excluded_filename = 'excluded_'+today.strftime("%Y-%m-%d")+'.tsv'
-    default_smorf_no_t_filename = 'smorf_no_t_'+today.strftime("%Y-%m-%d")+'.tsv'
-
-    ##print(default_outputname)
+    default_smorf_no_t_filename = 'smorf_no_transcript_'+today.strftime("%Y-%m-%d")+'.tsv'
 
     parser = argparse.ArgumentParser(description='Script to annotate variants within small open reading frames (smORFs)')
 
