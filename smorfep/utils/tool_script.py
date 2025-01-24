@@ -38,13 +38,8 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
     t_end = transcript_info.iloc[0].end
     t_strand = transcript_info.iloc[0].strand 
 
-    ## testing print -- variant header
-    # print('\n')
-    # print(variant_pos, ref, alt)
 
     ## 1 - Get sequence from Ref genome
-    ##print(strand)
-    ##print(start, end)
     seq = get_sequence(start, end, strand, ref_sequence)
     print('')
     print('sequence')
@@ -131,10 +126,12 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
         ## 2.1- Get sequence without introns
         seq, new_len = remove_introns(introns_smorf, start, end, strand, ref_sequence)
         ## region sequence without introns
-        print(introns_smorf)
-        print(introns_smorf['start'])
-        print(introns_smorf['end'])
-        print(seq)
+    
+        ## Test block
+        ##print(introns_smorf)
+        ##print(introns_smorf['start'])
+        ##print(introns_smorf['end'])
+        ##print(seq)
 
 
         ## 2.2 - Check if variant falls into an intron region     
@@ -151,9 +148,6 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
             print('no dna_cons')
             print(variant_pos, ref, alt, strand)
         
-        ##print(' ')
-        ##print(variant_pos, ref, alt)
-        ## print(dna_c, dna_seq_c, prot_c, prot_seq_c)
 
         ## 2.3 -- not intron related variants
         if dna_c == 'Not_intronic':  ## runs if the variant is not intronic
@@ -174,7 +168,6 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
             ## 2.3.1- introduce the variant 
             new_sequence, ref_original, ref_inFile = add_variant_transcriptSeq(seq, start, end, ref, alt, variant_pos, map_gen2transc)
             if new_sequence == None: 
-                print('add_variant_transcript')
                 return 'Reference_mismatch', 'ref_genome: '+ str(ref_original), 'reference_given: ' + str(ref_inFile), '-'
 
 
@@ -243,11 +236,8 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
                         ##print('excluded anchor all_var_pos', no_anchor_all_var_pos)
                     elif strand == '-':
                         no_anchor_all_var_pos = all_var_pos[:len(all_var_pos)]
-                        ##print('excluded anchor all_var_pos', no_anchor_all_var_pos)
 
                     ##print('splice_region_exon_nts', donor_splice_region_exon) ## splice_region_exon_nts is empty if the var does not fall into it
-                
-                    ##print('inframe_insertion')
                     return 'inframe_insertion', len_change, prot_cons, prot_change
 
 
@@ -333,24 +323,20 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
                 return stop_var, len_change, prot_cons, change_prot
         else: 
             ## 3.2.3 - start related
+
+            ## test block
             # print(variant_pos)
             # print(variant_pos in map_gen2transc.keys())
             # print(start in map_gen2transc.keys())
             # print(end in map_gen2transc.keys())
             # print(map_gen2transc.keys())
 
-            print('NOVA')
-
             start_var, len_change, prot_cons, change_prot = check_start_transcript(seq, new_sequence, variant_pos, map_gen2transc)
-            print('start_var check:', start_var)
-
             if start_var != None:     
                 return start_var, len_change, prot_cons, change_prot
             
             ## 3.2.4 - stop related
             stop_var, len_change, prot_cons, change_prot = check_stop_transcript(seq, new_sequence, start, end, variant_pos, strand, map_gen2transc, map_transc2gen, extension_seq)
-            print('stop_var check:', stop_var)
-
             if stop_var != None:  
                 return stop_var, len_change, prot_cons, change_prot
 
