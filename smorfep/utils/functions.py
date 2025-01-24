@@ -230,9 +230,6 @@ def get_sequence(start, end, strand, ref):
         seq = reverse_complement_seq(ref[start:end].upper())
     ## upper to have all capital letters needed for protein sequence
     
-    # print('get_sequence function')
-    # print(start, end)
-    # print(seq)
     return seq
 
 
@@ -269,7 +266,6 @@ def get_protein(sequence):
     """
 
     trios = get_trios(sequence)
-    ##print(trios)
     
     prot = ''
 
@@ -314,11 +310,11 @@ def add_variant(sequence, start, end,  ref, alt, position, strand):
         elif position == start: 
             variant_index = -1
             
-
-    print(position, strand)
-    print(variant_index)
-    print(sequence[variant_index])
-    print(sequence[variant_index-len(ref)+1:variant_index+1])
+    ## Test block
+    ##print(position, strand)
+    ##print(variant_index)
+    ##print(sequence[variant_index])
+    ##print(sequence[variant_index-len(ref)+1:variant_index+1])
 
 
 
@@ -349,22 +345,14 @@ def add_variant(sequence, start, end,  ref, alt, position, strand):
         suffix = sequence[variant_index+1:] ## excludes the variant position
 
         if len(ref) > len(alt): ## deletions
-            print('new condition')
-            print('sequence:', sequence)
-            print(sequence[variant_index-len(ref)+1:variant_index+1])
             del_size = len(ref) - len(alt)
 
             ## for deletions the first postion on the ref is mantained, the remaining is removed
             ## so add 1 to prefix to keep this base
             prefix = sequence[:variant_index-len(ref)+1] 
             suffix = sequence[variant_index+1:]
-            print('prefix',prefix)
-            print('suffix', suffix)
-            print(alt)
 
         new_seq = prefix + alt + suffix
-        print('new comment here')
-        print(new_seq)
 
     else:
         print('add_variant function')
@@ -488,6 +476,7 @@ def genome2transcript_coords(start, end, strand, introns_df):
                 pos_transc += 1
 
 
+    ## Test block
     # print(introns_df)
     # print(introns_df.start)
     # print(introns_df.end)
@@ -516,6 +505,7 @@ def add_variant_transcriptSeq(sequence, start, end, ref, alt, position, map_coor
 
         Returns the new genomic sequence
     """
+    ## Test block
     # print(sequence)
     # filtered_items = {key: value for key, value in map_coordinates.items() if start <= key <= end}
     # for key, value in filtered_items.items():
@@ -547,8 +537,6 @@ def add_variant_transcriptSeq(sequence, start, end, ref, alt, position, map_coor
         print('ref allele does not correspond!')
         print('reference genome: ', sequence[variant_index:variant_index+len(ref)])
         print('ref input: ', ref) 
-        ##print(map_coordinates)
-        ##print(position) 
         print(sequence)
         print('')
         return None, sequence[variant_index:variant_index+len(ref)], ref
@@ -796,8 +784,6 @@ def protein_consequence_transcript(seq, new_seq, var_pos, map_coordinates):
     ##  New protein sequence
     new_prot = get_protein(new_seq)
 
-    print('protein transcript')
-
     ## synonymous variant 
     if prot_seq == new_prot:
         consequence = 'synonymous_variant'
@@ -860,7 +846,6 @@ def frameshift(seq, transcript_extension, map_coordinates):
 
     seq_len = len(seq)
     difference = seq_len%3 ## -> how many nucleotides it shifts: 0 (inframe), 1 or 2
-    ##print(difference)
 
     if difference == 1: ## we need to add 2 base to get new frame
         corrected_seq = seq + transcript_extension[:2]
@@ -902,7 +887,6 @@ def frameshift_smorfonly(seq):
 
     seq_len = len(seq)
     difference = seq_len%3 ## -> how many nucleotides it shifts: 0 (inframe), 1 or 2
-    ##print(difference)
 
     if difference == 1: ## we need to add 2 base to get new frame
         return 1
@@ -951,9 +935,6 @@ def find_stop_inframe(seq, map_coordinates):
         ## as we work in the sequence we want alway the first stop position -> first seq_index on the stops list 
         stop_trios.sort()
         new_stop_index = stop_trios[0]*3 ## gives the index of the first letter on the stop codon
-
-        ##print(map_coordinates)
-        ##print(new_stop_index, new_stop_index+3)
 
         return map_coordinates[new_stop_index+3], new_stop_index+3
     
@@ -1334,8 +1315,6 @@ def check_stop_transcript(seq, new_sequence, start, end, variant_pos, strand, ma
         last_position = map_coordinates_g[start+1] ## start is excluded from the sequence therefore +1 - updated 2025-01-22
 
         stop_positions = [map_coordinates_t[last_position-2], map_coordinates_t[last_position-1], map_coordinates_t[last_position]]
-        print('stop positions')
-        print(stop_positions)
         ## below does not work if there are introns in the stop codon
         ##stop_positions = [start+2, start+1, start]
 
@@ -1515,11 +1494,6 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
         elif strand == '-':
             introns_transcript = introns_transcript[(introns_transcript['start']>= t_start) & (introns_transcript['end']<= smorf_end)]
 
-        ##print('introns transcript')
-        ##print(introns_transcript)
-        ##print('introns smORF')
-        ##print(introns_smorf)
-
 
         ## smorf without introns
         #if introns_transcript.empty:
@@ -1566,7 +1540,7 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
                 map_gen2transc, map_transc2gen = genome2transcript_coords(smorf_start, t_end, strand, introns_transcript)
             elif strand == '-':
                 map_gen2transc, map_transc2gen = genome2transcript_coords(t_start, smorf_end, strand, introns_transcript)
-
+            
             ## Check the number of stop codons in the sequence
             s, s_index = find_stop_inframe(smorf_seq[:len(smorf_seq)-3], map_transc2gen) ## removes last codon and searches for stop codons inframe
 
@@ -2447,11 +2421,6 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
             insertion_size = len(alt) -1 ## -1 to remove anchor base
 
             ##print('acceptor insertion')
-
-            ##print('check no anchor in splice_region', [x for x in check_no_anchor if x in splice_region])
-            ##print('check no anchor in splice_region_exon_nts', [x for x in check_no_anchor if x in splice_region_exon_nts])
-            ##print('splice_region exon nts', splice_region_exon_nts)
-
             if len([x for x in all_var_pos if x in donor_acceptor_positions]) == len(donor_acceptor_positions) and var_pos in donor_acceptor_positions: ## insertion in the middle of the acceptor main site
                 ##XXtestXX
                 ##print('insertion in the middle of the main splice acceptor site')
@@ -2480,13 +2449,11 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
                 if len([x for x in all_var_pos if x in donor_acceptor_positions]) != len(all_var_pos): ## insertion overlaps, but is before the acceptor splice site - there is at least one nt not within the acceptor main splice site
                     ##print('variant overlaps splice region ')
                     if insertion_size % 3 == 0: ## multiple of 3 conditions added on 15-08-2023 working for strand +
-                        ##print('multiple of 3')
                         if len([x for x in all_var_pos if x in donor_acceptor_positions]) > 1: ## condition need for splice_polypyrimidine_tract_variant&intron_variant annotation 15-08-2023 working for strand +
                             dna_cons = 'splice_polypyrimidine_tract_variant&intron_variant'
                         else:
                             dna_cons = 'splice_region_variant&splice_polypyrimidine_tract_variant&intron_variant'
                     else:
-                        ##print('not multiple of 3')
                         dna_cons = 'splice_polypyrimidine_tract_variant&intron_variant'
 
                 else: 
@@ -2536,13 +2503,11 @@ def check_introns(seq, start_orf, end_orf, var_pos, ref, alt, strand, map_gen2tr
 
             elif [x for x in check_no_anchor if x in splice_region] != [] and strand == '+': ## added 15-08-2023
                 ##print('no anchor var pos -- splice region and strand +')
-                ##dna_cons = 'splice_region_variant&intron_variant'
                 dna_cons = 'splice_polypyrimidine_tract_variant&intron_variant'
 
 
             elif [x for x in check_no_anchor if x in splice_region] != [] and strand == '-': ## edited on the 23-08-2023
                 ##print('no anchor var pos -- splice region and strand - ')
-                ##dna_cons = 'splice_region_variant&intron_variant'
                 dna_cons = 'splice_polypyrimidine_tract_variant&intron_variant'
 
             
@@ -2758,9 +2723,6 @@ def find_type(smorf_start, smorf_end, cds_start, cds_end, utr5_start, utr5_end, 
         end_region = "3'UTR"
     else:
         end_region = "Unknown"
-
-    # print(smorf_start, smorf_end)
-    # print(start_region, end_region)
 
     ## Assigning type
     if start_region == "5'UTR" and end_region == "5'UTR":
