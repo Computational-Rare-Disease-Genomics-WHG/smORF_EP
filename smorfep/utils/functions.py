@@ -1057,7 +1057,7 @@ def remove_introns(introns_df, start, end, strand, ref):
             if strand == '+':
                 exon_end = row['start'] - 1
                 seq_without_introns = get_sequence(start, exon_end, strand, ref)
-                next_start = row['end'] + 1
+                next_start = row['end'] ## removed +1 as the first coordinate does not count - 2025-01-25
             elif strand == '-':
                 exon_end = row['end'] + 1
                 seq_without_introns = get_sequence(exon_end, end, strand, ref)
@@ -1070,7 +1070,7 @@ def remove_introns(introns_df, start, end, strand, ref):
                 exon_start = next_start
                 exon_end = row['start'] - 1
                 seq_without_introns = seq_without_introns + get_sequence(exon_start, exon_end, strand, ref)
-                next_start = row['end'] + 1
+                next_start = row['end'] ## removed +1 as the first coordinate does not count - 2025-01-25
             
             elif strand == '-': ## add sequence before
                 exon_start = row['end'] + 1
@@ -1534,6 +1534,8 @@ def compatibility_smorf_transcript(ref_sequence, transcript_info, introns_df, sm
         ##elif not introns_transcript.empty:
         elif not introns_smorf.empty:
             smorf_seq, smorf_len = remove_introns(introns_smorf, smorf_start, smorf_end, strand, ref_sequence)
+            print(smorf_seq)
+            print(smorf_len)
 
             ## compute coordinates map 
             if strand == '+':
