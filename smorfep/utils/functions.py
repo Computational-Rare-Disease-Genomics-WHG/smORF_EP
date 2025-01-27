@@ -506,13 +506,16 @@ def add_variant_transcriptSeq(sequence, start, end, ref, alt, position, map_coor
         Returns the new genomic sequence
     """
     ## Test block
-    # print(sequence)
-    # filtered_items = {key: value for key, value in map_coordinates.items() if start <= key <= end}
-    # for key, value in filtered_items.items():
-    #     print(key, value, sequence[value])
+    print(sequence)
+    filtered_items = {key: value for key, value in map_coordinates.items() if start <= key <= end}
+    for key, value in filtered_items.items():
+         print(key, value, sequence[value])
 
     ## position in the sequence
     variant_index = map_coordinates[position]
+    print(variant_index)
+    print(sequence[variant_index])
+    print(sequence[variant_index-2:variant_index+2])
 
     if sequence[variant_index:variant_index+len(ref)] == ref:
         prefix = sequence[:variant_index] ## excludes the variant position
