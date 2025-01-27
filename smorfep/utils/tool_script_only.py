@@ -80,7 +80,6 @@ def tool(ref_sequence, introns_df, start, end, strand, ref, alt, variant_pos, ma
         ## 2.1- Get sequence without introns
         seq, new_len = remove_introns_smorf(introns_smorf, start, end, strand, ref_sequence)
         ## region sequence without introns
-        print(introns_smorf)
         print(seq)
 
 
