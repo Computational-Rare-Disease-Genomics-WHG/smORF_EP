@@ -1487,27 +1487,26 @@ def genome2smorf_coords(smorf_start, smorf_end, strand, introns_df):
     
     # Filter introns to keep only those within the smORF range
     introns = introns_df[(introns_df['start'] >= smorf_start) & (introns_df['end'] <= smorf_end)]
-    
-    # Sort introns by their genomic coordinates
-    sorted_introns = introns.sort_values('start') if strand == '+' else introns.sort_values('start', ascending=False)
+    # NOTE: Assumes the coordinates are sorted 
     
     # Initialize smORF position and current genome position
     smorf_pos = 0
-    current_genome_pos = smorf_start
+    current_genome_pos = smorf_start +1 ## Added +1 to exclude the first coordinate # 2025-01-27
     
-    for _, intron in sorted_introns.iterrows():
+    for _, intron in introns.iterrows():
         intron_start = intron['start']
         intron_end = intron['end']
+        intron_coordinates = range(intron_start,intron_end+1)
         
         # Map genome positions before the intron
-        while current_genome_pos < intron_start and current_genome_pos <= smorf_end:
+        while current_genome_pos < intron_start and current_genome_pos <= smorf_end and current_genome_pos not in intron_coordinates:
             map_gen2smorf[current_genome_pos] = smorf_pos
             map_smorf2gen[smorf_pos] = current_genome_pos
             current_genome_pos += 1
             smorf_pos += 1
         
         # Skip intron region
-        if current_genome_pos <= intron_end:
+        if current_genome_pos == intron_start:
             current_genome_pos = intron_end + 1
     
     # Map remaining genome positions after the last intron
