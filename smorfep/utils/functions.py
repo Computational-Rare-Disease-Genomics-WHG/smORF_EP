@@ -1489,33 +1489,64 @@ def genome2smorf_coords(smorf_start, smorf_end, strand, introns_df):
     introns = introns_df[(introns_df['start'] >= smorf_start) & (introns_df['end'] <= smorf_end)]
     # NOTE: Assumes the coordinates are sorted 
     
-    # Initialize smORF position and current genome position
-    smorf_pos = 0
-    current_genome_pos = smorf_start +1 ## Added +1 to exclude the first coordinate # 2025-01-27
-    
-    for _, intron in introns.iterrows():
-        intron_start = intron['start']
-        intron_end = intron['end']
-        intron_coordinates = range(intron_start,intron_end+1)
+
+    if strand == '+':
+        # Initialize smORF position and current genome position
+        smorf_pos = 0
+        current_genome_pos = smorf_start +1 ## Added +1 to exclude the first coordinate # 2025-01-27
         
-        # Map genome positions before the intron
-        while current_genome_pos < intron_start and current_genome_pos <= smorf_end and current_genome_pos not in intron_coordinates:
+        for _, intron in introns.iterrows():
+            intron_start = intron['start']
+            intron_end = intron['end']
+            
+            # Map genome positions before the intron
+            while current_genome_pos < intron_start and current_genome_pos <= smorf_end:
+                map_gen2smorf[current_genome_pos] = smorf_pos
+                map_smorf2gen[smorf_pos] = current_genome_pos
+                current_genome_pos += 1
+                smorf_pos += 1
+            
+            # Skip intron region
+            if current_genome_pos == intron_start:
+                current_genome_pos = intron_end + 1
+        
+        # Map remaining genome positions after the last intron
+        while current_genome_pos <= smorf_end:
             map_gen2smorf[current_genome_pos] = smorf_pos
             map_smorf2gen[smorf_pos] = current_genome_pos
             current_genome_pos += 1
             smorf_pos += 1
+
+    elif strand == '-':
+         # Initialize smORF position and current genome position
+        smorf_pos = 0
+        current_genome_pos = smorf_end
         
-        # Skip intron region
-        if current_genome_pos == intron_start:
-            current_genome_pos = intron_end + 1
-    
-    # Map remaining genome positions after the last intron
-    while current_genome_pos <= smorf_end:
-        map_gen2smorf[current_genome_pos] = smorf_pos
-        map_smorf2gen[smorf_pos] = current_genome_pos
-        current_genome_pos += 1
-        smorf_pos += 1
-    
+        ## invert introns order:
+        introns_sorted = introns.sort_values(by=['start'], ascending=False)
+
+        for _, intron in introns_sorted.iterrows():
+            intron_start = intron['start']
+            intron_end = intron['end']
+            
+            # Map genome positions before the intron
+            while current_genome_pos > intron_end and current_genome_pos >= smorf_start+1:
+                map_gen2smorf[current_genome_pos] = smorf_pos
+                map_smorf2gen[smorf_pos] = current_genome_pos
+                current_genome_pos -= 1
+                smorf_pos += 1
+            
+            # Skip intron region
+            if current_genome_pos == intron_end:
+                current_genome_pos = intron_start - 1
+            
+        # Map remaining genome positions after the last intron
+        while current_genome_pos >= smorf_start+1:
+            map_gen2smorf[current_genome_pos] = smorf_pos
+            map_smorf2gen[smorf_pos] = current_genome_pos
+            current_genome_pos -= 1
+            smorf_pos += 1
+        
     return map_gen2smorf, map_smorf2gen
 
 
