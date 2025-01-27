@@ -51,7 +51,6 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
     ## check if the format is deletion without anchor: 
     check_anchor_nt = check_var_type(ref, alt)
     if check_anchor_nt == 'no_anchor':
-        ##print('no anchor')
         ## convert to with-anchor-nt format
         variant_pos, ref, alt = add_anchor_nt(variant_pos, ref, alt, ref_sequence)
         ## Checked: varainat reported on the forward strand -- OK
@@ -121,7 +120,6 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
 
         ## map the splice regions in the smorf
         splice_regions_df = map_splice_regions(introns_smorf, splice_site)
-        ##print(splice_regions_df.head)
 
         ## 2.1- Get sequence without introns
         seq, new_len = remove_introns(introns_smorf, start, end, strand, ref_sequence)
@@ -221,8 +219,7 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
 
             ## 2.3.3.2 - Insertions
             if len(alt) > len(ref):
-                ##print('insertion')
-
+                
                 len_change = len(alt) - len(ref)
 
                 ## inframe
@@ -312,13 +309,11 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
 
             ## 3.4.1 - affect start
             start_var, len_change, prot_cons, change_prot = check_start(seq, new_sequence, start, end, variant_pos, strand)
-            print('start_var check:', start_var)
             if start_var != None:    
                 return start_var, len_change, prot_cons, change_prot
 
             ## 3.2.2 - affect stop
             stop_var, len_change, prot_cons, change_prot = check_stop(seq, new_sequence, start, end, variant_pos, strand, transcript_info, ref_sequence, map_transc2gen)
-            print('stop_var check:', stop_var)
             if stop_var != None: 
                 return stop_var, len_change, prot_cons, change_prot
         else: 
@@ -428,7 +423,6 @@ def tool(ref_sequence, transcript_info, transcript_introns_df, start, end, stran
 
                     ##protein consequence
                     prot_cons, change_prot = protein_consequence(seq, new_seq, variant_pos, start, end, strand)
-                    ##print(prot_cons, change_prot)
 
                 else: ## no new stop within the transcript 
                     len_change = 'off_transcript_stop'
