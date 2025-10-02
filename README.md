@@ -26,6 +26,7 @@ smORF-EP: predicting the effect of variants in small open reading frames.
 
 # How to cite
 
+To cite smORF-EP please use the repository DOI: 
 
 <br><hr>
 [:arrow_up: Back to top](#smorf-ep)
