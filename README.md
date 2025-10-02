@@ -1,3 +1,6 @@
+[![DOI](https://sandbox.zenodo.org/badge/605157988.svg)](https://handle.test.datacite.org/10.5072/zenodo.342187)
+
+
 ![logo](https://github.com/Computational-Rare-Disease-Genomics-WHG/smORF_EP/blob/main/support/smorfEPlogo_resized3.png) 
 # smORF-EP
 
